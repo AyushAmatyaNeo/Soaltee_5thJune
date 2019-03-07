@@ -266,5 +266,15 @@ class ShiftForm {
      * @Annotation\Attributes({ "id":"halfDayOutTime", "data-format":"h:mm a", "data-template":"hh : mm A", "class":"form-control"})
      */
     public $halfDayOutTime;
+    
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Required(true)
+     * @Annotation\Filter({"name":"StripTags","name":"StringTrim"})
+     * @Annotation\Options({"label":"Night Shift","value_options":{"Y":"Yes","N":"No"}})
+     * @Annotation\Attributes({"id":"nightShift","class":"form-control","value":"N"})
+     */
+    public $nightShift;
 
 }

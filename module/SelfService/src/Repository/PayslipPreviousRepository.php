@@ -115,7 +115,8 @@ class PayslipPreviousRepository extends HrisRepository {
                     AND SSD.COMPANY_CODE= HSS.COMPANY_CODE
                     AND SSD.COMPANY_CODE= HES.COMPANY_CODE
                   )
-                AND HSSD.EMPLOYEE_CODE='{$employeeCode}'";
+                AND HSSD.EMPLOYEE_CODE='{$employeeCode}' 
+                AND E.COMPANY_CODE='{$companyCode}'";
         return $this->rawQuery($sql);
     }
 

@@ -77,6 +77,7 @@ class JobHistoryRepository implements RepositoryInterface {
             new Expression("INITCAP(TO_CHAR(H.EVENT_DATE, 'DD-MON-YYYY')) AS EVENT_DATE_AD"),
             new Expression("BS_DATE(TRUNC(H.EVENT_DATE)) AS EVENT_DATE_BS"),
             new Expression("H.EMPLOYEE_ID AS EMPLOYEE_ID"),
+            new Expression("E.EMPLOYEE_CODE AS EMPLOYEE_CODE"),
             new Expression("H.JOB_HISTORY_ID AS JOB_HISTORY_ID")], true);
         $select->from(['H' => "HRIS_JOB_HISTORY"])
                 ->join(['E' => 'HRIS_EMPLOYEES'], 'H.EMPLOYEE_ID=E.EMPLOYEE_ID', ["FIRST_NAME" => new Expression("INITCAP(E.FIRST_NAME)"), "MIDDLE_NAME" => new Expression("INITCAP(E.MIDDLE_NAME)"), "LAST_NAME" => new Expression("INITCAP(E.LAST_NAME)"), "FULL_NAME" => new Expression("INITCAP(E.FULL_NAME)")], "left")
@@ -101,49 +102,60 @@ class JobHistoryRepository implements RepositoryInterface {
 
         if ($employeeTypeId != null && $employeeTypeId != -1) {
             $select->where([
-                "E.EMPLOYEE_TYPE= '{$employeeTypeId}'"
+                EntityHelper::conditionBuilder($employeeTypeId, "E.EMPLOYEE_TYPE", "")
             ]);
         }
 
-        if ($employeeId != -1) {
+        if ($employeeId != -1 && $employeeId != null) {
             $select->where([
-                'E.EMPLOYEE_ID=' . $employeeId
+                EntityHelper::conditionBuilder($employeeId, "E.EMPLOYEE_ID", "")
             ]);
         }
 
         if ($serviceEventTypeId != null && $serviceEventTypeId != -1) {
             $select->where([
-                "H.SERVICE_EVENT_TYPE_ID=" . $serviceEventTypeId
+                EntityHelper::conditionBuilder($serviceEventTypeId, "H.SERVICE_EVENT_TYPE_ID", "")
             ]);
         }
         if ($companyId != null && $companyId != -1) {
             $select->where([
-                "E.COMPANY_ID=" . $companyId
+                EntityHelper::conditionBuilder($companyId, "E.COMPANY_ID", "")
             ]);
         }
         if ($branchId != null && $branchId != -1) {
             $select->where([
-                "E.BRANCH_ID=" . $branchId
+                EntityHelper::conditionBuilder($branchId, "E.BRANCH_ID", "")
             ]);
         }
         if ($departmentId != null && $departmentId != -1) {
+            $parentQuery = "(SELECT DEPARTMENT_ID FROM
+                         HRIS_DEPARTMENTS 
+                        START WITH PARENT_DEPARTMENT in (INVALUES)
+                        CONNECT BY PARENT_DEPARTMENT= PRIOR DEPARTMENT_ID
+                        UNION 
+                        SELECT DEPARTMENT_ID FROM HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN (INVALUES)
+                        UNION
+                        SELECT  TO_NUMBER(TRIM(REGEXP_SUBSTR(EXCEPTIONAL,'[^,]+', 1, LEVEL) )) DEPARTMENT_ID
+  FROM (SELECT EXCEPTIONAL  FROM  HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN  (INVALUES))
+   CONNECT BY  REGEXP_SUBSTR(EXCEPTIONAL, '[^,]+', 1, LEVEL) IS NOT NULL
+                        )";
             $select->where([
-                "E.DEPARTMENT_ID=" . $departmentId
+                EntityHelper::conditionBuilder($departmentId, "E.DEPARTMENT_ID", "", false, $parentQuery)
             ]);
         }
         if ($designationId != null && $designationId != -1) {
             $select->where([
-                "E.DESIGNATION_ID=" . $designationId
+                EntityHelper::conditionBuilder($designationId, "E.DESIGNATION_ID", "")
             ]);
         }
         if ($positionId != null && $positionId != -1) {
             $select->where([
-                "E.POSITION_ID=" . $positionId
+                EntityHelper::conditionBuilder($positionId, "E.POSITION_ID", "")
             ]);
         }
         if ($serviceTypeId != null && $serviceTypeId != -1) {
             $select->where([
-                "E.SERVICE_TYPE_ID=" . $serviceTypeId
+                EntityHelper::conditionBuilder($serviceTypeId, "E.SERVICE_TYPE_ID", "")
             ]);
         }
         $select->order("E.FIRST_NAME,H.START_DATE ASC");

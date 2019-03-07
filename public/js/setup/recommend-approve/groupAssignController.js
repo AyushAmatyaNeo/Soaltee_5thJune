@@ -27,7 +27,7 @@ angular.module('hris', ['ui.bootstrap'])
                 }
             };
             $scope.checkReportingHierarchy = function () {
-                if ($scope.recommenderAssign || $scope.approverAssign) {
+                if ($scope.recommenderAssign || $scope.approverAssign || $scope.alternateRecomenderAssign || $scope.alternateApproverAssign) {
                     $scope.showHideAssignBtn = true;
                 } else {
                     $scope.showHideAssignBtn = false;
@@ -70,6 +70,8 @@ angular.module('hris', ['ui.bootstrap'])
                     console.log("Employee Get All", failure);
                 });
             };
+            $scope.alternateRecommenderOptions = document.employeeList;
+            $scope.alternateApproverOptions = document.employeeList;
             $scope.recommenderOptions = document.employeeList;
             $scope.recommenderSelected = $scope.recommenderOptions[0]
             $scope.approverOptions = document.employeeList;
@@ -151,6 +153,10 @@ angular.module('hris', ['ui.bootstrap'])
                 var approverElement = angular.element(document.getElementById('approverId'));
                 var approverId = approverElement.val();
                 var approverName = document.getElementById('approverId').options[document.getElementById('approverId').selectedIndex].text;
+                var alternateRecommendor = angular.element(document.getElementById('alternateRecomender'));
+                var arVal = alternateRecommendor.val();
+                var alternateApprover = angular.element(document.getElementById('alternateApprover'));
+                var aaVal = alternateApprover.val();
 
                 var errorFlagR = false;
                 if ($scope.recommenderAssign) {
@@ -182,11 +188,11 @@ angular.module('hris', ['ui.bootstrap'])
 
                 if (!errorFlagR && !errorFlagA) {
                     App.blockUI({target: "#hris-page-content"});
-                    submitRecord(recommenderId, recommenderName, approverId, approverName);
+                    submitRecord(recommenderId, recommenderName, approverId, approverName,arVal,aaVal);
                 }
             };
 
-            var submitRecord = function (recommenderId, recommenderName, approverId, approverName) {
+            var submitRecord = function (recommenderId, recommenderName, approverId, approverName,ars,aas) {
                 var promises = [];
 
                 if (!$scope.recommenderAssign) {
@@ -205,7 +211,9 @@ angular.module('hris', ['ui.bootstrap'])
                         promises.push(window.app.pullDataById(document.assignEmployeeReportingHierarchyLink, {
                             employeeId: $scope.employeeList[index].EMPLOYEE_ID,
                             recommenderId: recommenderId1,
-                            approverId: approverId1
+                            approverId: approverId1,
+                            alternateRecommendorId: ars,
+                            alternateApproverId: aas
                         }));
                     }
                 }

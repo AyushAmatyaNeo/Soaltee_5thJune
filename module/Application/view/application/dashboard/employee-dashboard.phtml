@@ -36,6 +36,7 @@ $this->headScript()
     document.todoTaskList = <?php echo json_encode($todoList); ?>;
     document.todoTaskUpdateStatus = '<?php echo $this->url('task', ['action' => 'updateStatus']); ?>';
     document.getEmpDashboardUrl = '<?php echo $this->url('dashboard', ['action' => 'fetchEmployeeDashBoardDetails']); ?>'
+    document.calendarType = '<?php echo $calendarType ?>'
 
 </script>
 <?php

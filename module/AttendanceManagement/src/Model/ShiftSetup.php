@@ -42,6 +42,7 @@ class ShiftSetup extends Model {
     const GRACE_END_TIME = "GRACE_END_TIME";
     const HALF_DAY_IN_TIME = "HALF_DAY_IN_TIME";
     const HALF_DAY_OUT_TIME = "HALF_DAY_OUT_TIME";
+    const NIGHT_SHIFT = "NIGHT_SHIFT";
 
     public $shiftId;
     public $shiftCode;
@@ -78,6 +79,7 @@ class ShiftSetup extends Model {
     public $graceEndTime;
     public $halfDayInTime;
     public $halfDayOutTime;
+    PUBLIC $nightShift;
     public $mappings = [
         'shiftId' => self::SHIFT_ID,
         'shiftCode' => self::SHIFT_CODE,
@@ -114,6 +116,7 @@ class ShiftSetup extends Model {
         'graceEndTime' => self::GRACE_END_TIME,
         'halfDayInTime' => self::HALF_DAY_IN_TIME,
         'halfDayOutTime' => self::HALF_DAY_OUT_TIME,
+        'nightShift' => self::NIGHT_SHIFT,
     ];
 
 }

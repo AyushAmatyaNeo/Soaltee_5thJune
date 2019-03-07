@@ -5,10 +5,12 @@
         var $table = $("#table");
         var $search = $('#search');
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code", width: 150, locked: true},
             {field: "FULL_NAME", title: "Employee", width: 150, locked: true},
         ];
         var map = {
             'EMPLOYEE_ID': 'Id',
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name'
         };
 
@@ -40,7 +42,7 @@
         }
 
         app.initializeKendoGrid($table, columns);
-        app.searchTable($table, ['EMPLOYEE_ID']);
+        app.searchTable($table, ['EMPLOYEE_ID', 'EMPLOYEE_CODE']);
         var months = null;
         var $year = $('#fiscalYear');
         var $month = $('#fiscalMonth');

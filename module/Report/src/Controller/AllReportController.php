@@ -1,4 +1,5 @@
 <?php
+
 namespace Report\Controller;
 
 use Application\Controller\HrisController;
@@ -29,11 +30,11 @@ class AllReportController extends HrisController {
         $branchId = (int) $this->params()->fromRoute('id2');
 
         return Helper::addFlashMessagesToArray($this, [
-                'comBraList' => [
-                    'BRANCH_LIST' => EntityHelper::getTableList($this->adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME, Branch::COMPANY_ID], [Branch::STATUS => "E"])
-                ],
-                'monthId' => $monthId,
-                'branchId' => $branchId
+                    'comBraList' => [
+                        'BRANCH_LIST' => EntityHelper::getTableList($this->adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME, Branch::COMPANY_ID], [Branch::STATUS => "E"])
+                    ],
+                    'monthId' => $monthId,
+                    'branchId' => $branchId
         ]);
     }
 
@@ -65,10 +66,10 @@ class AllReportController extends HrisController {
     public function branchWiseAction() {
         $branchId = (int) $this->params()->fromRoute('id1');
         return $this->stickFlashMessagesTo([
-                'comBraDepList' => [
-                    'BRANCH_LIST' => EntityHelper::getTableList($this->adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME], [Branch::STATUS => "E"])
-                ],
-                'branchId' => $branchId
+                    'comBraDepList' => [
+                        'BRANCH_LIST' => EntityHelper::getTableList($this->adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME], [Branch::STATUS => "E"])
+                    ],
+                    'branchId' => $branchId
         ]);
     }
 
@@ -94,13 +95,13 @@ class AllReportController extends HrisController {
 
     private function getFiscalYearSE() {
         $fiscalYearList = HrisQuery::singleton()
-            ->setAdapter($this->adapter)
-            ->setTableName(FiscalYear::TABLE_NAME)
-            ->setColumnList([FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME])
-            ->setWhere([FiscalYear::STATUS => 'E'])
-            ->setOrder([FiscalYear::START_DATE => Select2::ORDER_DESCENDING])
-            ->setKeyValue(FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME)
-            ->result();
+                ->setAdapter($this->adapter)
+                ->setTableName(FiscalYear::TABLE_NAME)
+                ->setColumnList([FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME])
+                ->setWhere([FiscalYear::STATUS => 'E'])
+                ->setOrder([FiscalYear::START_DATE => Select2::ORDER_DESCENDING])
+                ->setKeyValue(FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME)
+                ->result();
         $config = [
             'name' => 'fiscalYear',
             'id' => 'fiscalYearId',
@@ -146,20 +147,20 @@ class AllReportController extends HrisController {
 //        $monthId = (int) $this->params()->fromRoute('id1');
 //        $departmentId = (int) $this->params()->fromRoute('id2');
 //        $monthList = $this->repository->getMonthList();
-        $request=$this->getRequest();
+        $request = $this->getRequest();
         if ($request->isPost()) {
             try {
                 $data = $request->getPost();
-                 $postedData = $request->getPost();
+                $postedData = $request->getPost();
                 $data = $this->repository->employeeDailyReport($postedData);
                 return new JsonModel(['success' => true, 'data' => $data, 'error' => '']);
             } catch (Exception $e) {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
-        
-        
-        
+
+
+
         return $this->stickFlashMessagesTo([
 //                'comBraDepList' => [
 //                    'DEPARTMENT_LIST' => EntityHelper::getTableList($this->adapter, Department::TABLE_NAME, [Department::DEPARTMENT_ID, Department::DEPARTMENT_NAME, Department::COMPANY_ID, Department::BRANCH_ID], [Department::STATUS => "E"])
@@ -167,33 +168,33 @@ class AllReportController extends HrisController {
 //                'monthList' => $monthList,
 //                'monthId' => $monthId,
 //                'departmentId' => $departmentId,
-                'fiscalYearSE' => $this->getFiscalYearSE()
-        ]);
-    }
+                    'fiscalYearSE' => $this->getFiscalYearSE()
+        ]); 
+    } 
 
     public function employeeWiseAction() {
 
         $employeeId = (int) $this->params()->fromRoute('id1');
         $employeeList = $this->repository->getEmployeeList();
-        
-        $request=$this->getRequest();
+
+        $request = $this->getRequest();
         if ($request->isPost()) {
             try {
                 $data = $request->getPost();
                 $postedData = $request->getPost();
-                 $employeeId=$postedData['employeeId'];
-                 $fiscalYearId=$postedData['fiscalYearId'];
-                $data = $this->repository->employeeYearlyReport($employeeId,$fiscalYearId);
+                $employeeId = $postedData['employeeId'];
+                $fiscalYearId = $postedData['fiscalYearId'];
+                $data = $this->repository->employeeYearlyReport($employeeId, $fiscalYearId);
                 return new JsonModel(['success' => true, 'data' => $data, 'error' => '']);
             } catch (Exception $e) {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
-        
+
 
         return $this->stickFlashMessagesTo([
-            'fiscalYearSE' => $this->getFiscalYearSE(),
-                'employeeList' => $employeeList
+                    'fiscalYearSE' => $this->getFiscalYearSE(),
+                    'employeeList' => $employeeList
         ]);
     }
 
@@ -210,8 +211,8 @@ class AllReportController extends HrisController {
         }
 
         return $this->stickFlashMessagesTo([
-                'searchValues' => EntityHelper::getSearchData($this->adapter),
-                'linkToEmpower' => $this->repository->checkIfEmpowerTableExists() ? 1 : 0
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'linkToEmpower' => $this->repository->checkIfEmpowerTableExists() ? 1 : 0
         ]);
     }
 
@@ -356,16 +357,16 @@ class AllReportController extends HrisController {
 
         $allLeave = $this->repository->fetchAllLeave();
         return Helper::addFlashMessagesToArray($this, [
-                'customWise' => $customFormElement,
-                'searchValues' => EntityHelper::getSearchData($this->adapter),
-                'allLeave' => $allLeave
+                    'customWise' => $customFormElement,
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'allLeave' => $allLeave
         ]);
     }
 
     public function HireAndFireReportAction() {
         $nepaliMonth = $this->repository->FetchNepaliMonth();
         return Helper::addFlashMessagesToArray($this, [
-                'nepaliMonth' => $nepaliMonth
+                    'nepaliMonth' => $nepaliMonth
         ]);
     }
 
@@ -415,4 +416,63 @@ class AllReportController extends HrisController {
             return new CustomViewModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
         }
     }
+
+    public function monthlyAllowanceAction() {
+        $request = $this->getRequest(); 
+        if ($request->isPost()) {
+            try {
+                $data = $request->getPost();
+                $postedData = $request->getPost();
+                $data = $this->repository->getMonthlyAllowance($postedData);
+                return new JsonModel(['success' => true, 'data' => $data, 'error' => '']);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+            }
+        }
+        return $this->stickFlashMessagesTo([
+                    'fiscalYearSE' => $this->getFiscalYearSE(),
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'acl' => $this->acl,
+                    'employeeDetail' => $this->storageData['employee_detail']
+        ]);
+    }
+
+    public function departmentWiseAttdReportAction() {
+        try {
+            $request = $this->getRequest();
+            if ($request->isPost()) {
+                $postedData = $request->getPost();
+
+                $date1 = $postedData['date1'];
+                if (!isset($date1)) {
+                    throw new Exception("parameter from_date is required");
+                }
+                $date2 = $postedData['date2'];
+                if (!isset($date2)) {
+                    throw new Exception("parameter to_date is required");
+                }
+
+                $companyId = $postedData['company'];
+
+                if($date2 == '' || $date2 == null){
+                    $date2 = $date1;
+                }
+
+                $reportData = $this->repository->departmentWiseAttdReport($companyId, $date1, $date2);
+                return new JsonModel(['success' => true, 'data' => $reportData, 'error' => '']);
+            } else {
+                $companies = $this->repository->getAllCompanies();
+               
+                return $this->stickFlashMessagesTo([
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'acl' => $this->acl,
+                    'employeeDetail' => $this->storageData['employee_detail'],
+                    'companies' => $companies
+                ]);
+            }
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+        }
+    }
+
 }

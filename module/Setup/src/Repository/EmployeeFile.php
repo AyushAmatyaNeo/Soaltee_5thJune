@@ -5,17 +5,21 @@ namespace Setup\Repository;
 use Application\Model\Model;
 use Application\Repository\RepositoryInterface;
 use Zend\Db\Adapter\AdapterInterface;
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Sql;
 use Zend\Db\TableGateway\TableGateway;
 
 class EmployeeFile implements RepositoryInterface {
 
     private $tableGateway;
     private $fileTypeTableGateway;
+    private $adapter;
 
     public function __construct(AdapterInterface $adapter) {
         $this->tableGateway = new TableGateway('HRIS_EMPLOYEE_FILE', $adapter);
         $this->fileTypeTableGateway = new TableGateway('HRIS_FILE_TYPE', $adapter);
+        $this->adapter=$adapter;
     }
 
     public function add(Model $model) {
@@ -42,9 +46,25 @@ class EmployeeFile implements RepositoryInterface {
     }
 
     public function fetchByEmpId($id) {
-        $rowsetRaw = $this->tableGateway->select(['EMPLOYEE_ID' => $id]);
+//        $rowsetRaw = $this->tableGateway->select(['EMPLOYEE_ID' => $id]);
+        
+         $sql = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->columns(['FILE_CODE',
+            'EMPLOYEE_ID',
+            'FILETYPE_CODE',
+            'FILE_PATH',
+            'FILE_NAME']);
+        $select->from(['EF' => "HRIS_EMPLOYEE_FILE"])
+                ->join(['FT' => "HRIS_FILE_TYPE"], 'EF.FILETYPE_CODE=FT.FILETYPE_CODE', ["FILE_TYPE" => new Expression('INITCAP(FT.NAME)')], "left");
+        $select->where(["EF.STATUS='E'"]);
+        $select->where(['EMPLOYEE_ID' => $id]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+//        echo $statement->getSql();
+        $result = $statement->execute();
+        
 
-        return \Application\Helper\Helper::extractDbData($rowsetRaw);
+        return \Application\Helper\Helper::extractDbData($result);
     }
 
     public function delete($id) {

@@ -10,7 +10,7 @@ class AdvanceStatusRepository extends HrisRepository {
     public function getFilteredRecord($data) {
         $fromDate = $data['fromDate'];
         $toDate = $data['toDate'];
-        $employeeId = $data['employeeId'];
+        $employeeId = $data['employeeId']; 
         $companyId = $data['companyId'];
         $branchId = $data['branchId'];
         $departmentId = $data['departmentId'];
@@ -40,6 +40,7 @@ class AdvanceStatusRepository extends HrisRepository {
 
         $sql = "SELECT
           AR.EMPLOYEE_ID AS EMPLOYEE_ID,
+          E.EMPLOYEE_CODE AS EMPLOYEE_CODE,
           AR.ADVANCE_REQUEST_ID AS ADVANCE_REQUEST_ID,
           INITCAP(TO_CHAR(AR.REQUESTED_DATE,'DD-MON-YYYY') ) AS REQUESTED_DATE,
           INITCAP(TO_CHAR(AR.REQUESTED_DATE,'DD-MON-YYYY') ) AS REQUESTED_DATE_AD,

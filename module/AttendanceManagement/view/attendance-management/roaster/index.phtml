@@ -22,6 +22,7 @@ $this->headScript()
     document.shifts =<?php echo json_encode($shifts); ?>;
     document.getRoasterListLink = '<?php echo $this->url('roaster', ['action' => 'getRoasterList']); ?>';
     document.assignRoasterLink = '<?php echo $this->url('roaster', ['action' => 'assignRoaster']); ?>';
+    document.getShiftDetails = '<?php echo $this->url('roaster', ['action' => 'getShiftDetails']); ?>';
     document.acl =<?php echo json_encode($acl); ?>;
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
 </script>

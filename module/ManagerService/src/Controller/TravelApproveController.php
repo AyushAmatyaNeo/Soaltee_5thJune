@@ -182,9 +182,10 @@ class TravelApproveController extends HrisController {
                 $notificationEvent = $approve ? NotificationEvents::TRAVEL_APPROVE_ACCEPTED : NotificationEvents::TRAVEL_APPROVE_REJECTED;
                 break;
         }
-        $this->repository->edit($model, $id);
+        $editError=$this->repository->edit($model, $id);
         if ($enableFlashNotification) {
             $this->flashmessenger()->addMessage($message);
+            $this->flashmessenger()->addMessage($editError);
         }
         try {
             HeadNotification::pushNotification($notificationEvent, $model, $this->adapter, $this);

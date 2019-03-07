@@ -29,7 +29,9 @@ class Roaster extends HrisController {
 
     public function getRoasterListAction() {
         try {
-            $result = $this->repository->fetchAll();
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $result = $this->repository->getRosterDetailList($data['q']);
             return new JsonModel(['success' => true, 'data' => $result, 'error' => '']);
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
@@ -41,10 +43,24 @@ class Roaster extends HrisController {
             $request = $this->getRequest();
             $data = $request->getPost();
 
+//            print_r($data['data']);
+//            die();
+
             foreach ($data['data'] as $item) {
                 $this->repository->merge($item['EMPLOYEE_ID'], $item['FOR_DATE'], $item['SHIFT_ID']);
             }
             return new JsonModel(['success' => true, 'data' => null, 'error' => '']);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function getShiftDetailsAction() {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $result = $this->repository->getshiftDetail($data);
+            return new JsonModel(['success' => true, 'data' => $result, 'error' => '']);
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'data' => null, 'error' => $e->getMessage()]);
         }

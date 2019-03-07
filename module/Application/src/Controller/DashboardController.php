@@ -39,6 +39,10 @@ class DashboardController extends AbstractActionController {
     public function indexAction() {
         $dashboardRepo = new DashboardRepository($this->adapter);
         $companyId=$this->auth->getStorage()->read()['employee_detail']['COMPANY_ID'];
+        $calenderType='N';
+        if(isset($this->auth->getStorage()->read()['preference']['calendarView'])){
+        $calenderType=$this->auth->getStorage()->read()['preference']['calendarView'];
+        }
         $data = [
             "upcomingHolidays" => $dashboardRepo->fetchUpcomingHolidays($this->employeeId),
             "employeeNotice" => $dashboardRepo->fetchEmployeeNotice($this->employeeId),
@@ -50,7 +54,8 @@ class DashboardController extends AbstractActionController {
             "employeeNews" => $dashboardRepo->fetchAllNews($this->employeeId),
             "noticeType" => $this->noticeType,
             "leaveEmpToday"=>$dashboardRepo->empOnLeaveToday($companyId),
-            "travelEmpToday"=>$dashboardRepo->empOnTravelToday($companyId)
+            "travelEmpToday"=>$dashboardRepo->empOnTravelToday($companyId),
+            "calendarType"=>$calenderType
         ];
         $view = new ViewModel(Helper::addFlashMessagesToArray($this, $data));
         $view->setTemplate("dashboard/employee");

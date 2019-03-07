@@ -16,7 +16,7 @@ class AuthRepository {
 
     public function getUserProfile($employeeId) {
         $sql = "
-            SELECT E.EMPLOYEE_ID,
+            SELECT E.EMPLOYEE_ID,E.ID_THUMB_ID,
               E.FULL_NAME,
               F.FILE_PATH
             FROM HRIS_EMPLOYEES E

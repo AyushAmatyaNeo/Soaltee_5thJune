@@ -10,7 +10,6 @@ use LeaveManagement\Repository\LeaveAssignRepository;
 use LeaveManagement\Repository\LeaveMasterRepository;
 use ManagerService\Repository\LeaveApproveRepository;
 use MobileApi\Repository\LeaveRepository;
-use Notification\Controller\HeadNotification;
 use Notification\Model\NotificationEvents;
 use SelfService\Model\LeaveSubstitute;
 use SelfService\Repository\LeaveRequestRepository;
@@ -140,19 +139,17 @@ class Leave extends AbstractActionController {
 
     public function requestAction() {
         try {
+            
             $request = $this->getRequest();
             $this->employeeId = $request->getHeader('Employee-Id')->getFieldValue();
-
             $requestType = $request->getMethod();
             $data = json_decode($request->getContent());
-            $id = $this->params()->fromRoute('id');
-
+            $id = $this->employeeId;
             $responseDate = [];
 
             switch ($requestType) {
                 case Request::METHOD_POST:
                     $responseDate = $this->requestPost($data);
-                    break;
                 case Request::METHOD_GET:
                     if (isset($id) && $id != null && $id != 0) {
                         $responseDate = $this->requestGetById($id);
@@ -179,14 +176,27 @@ class Leave extends AbstractActionController {
     }
 
     public function approvalAction() {
-        try {
+        try {          
+//            echo'asdf';
+//            die();
             $request = $this->getRequest();
+//            print_r($request);
+//            die();
             $this->employeeId = $request->getHeader('Employee-Id')->getFieldValue();
+//             print_r( $this->employeeId);
+//            die();
 
             $requestType = $request->getMethod();
+//            print_r($requestType);
+//            die();
+            
             $data = json_decode($request->getContent());
+//            print_r($data);
+//            die();
             $id = $this->params()->fromRoute('id');
-
+//            print_r($id);
+//            die();
+            
             $responseDate = [];
 
             switch ($requestType) {
@@ -267,7 +277,8 @@ class Leave extends AbstractActionController {
 
     private function requestGetById($id) {
         $request = new LeaveRequestRepository($this->adapter);
-        return [$request->fetchById($id)];
+        $result = $request->selectAll($id);
+        return Helper::extractDbData($result);
     }
 
     private function requestPost($data) {
@@ -331,9 +342,9 @@ class Leave extends AbstractActionController {
 
     private function calculateDays($data) {
         $request = new LeaveRequestRepository($this->adapter);
-        return $request->fetchAvailableDays(Helper::getExpressionDate($data->START_DATE)->getExpression(), Helper::getExpressionDate($data->END_DATE)->getExpression(), $data->EMPLOYEE_ID);
+        return $request->fetchAvailableDays(Helper::getExpressionDate($data->START_DATE)->getExpression(), Helper::getExpressionDate($data->END_DATE)->getExpression(), $data->EMPLOYEE_ID,$data->HALF_DAY,$data->LEAVE_ID);
     }
-
+    
     private function approvalGet() {
         $approvalRepository = new LeaveRepository($this->adapter);
         $list = $approvalRepository->getApproval($this->employeeId);
@@ -419,6 +430,46 @@ class Leave extends AbstractActionController {
     private function employeeLeaveGet($employeeId) {
         $leaveRepo = new LeaveRepository($this->adapter);
         return $leaveRepo->getEmployeeLeave($employeeId);
+    }
+    
+    
+    public function validateDaysAction() {
+        try {
+            $request = $this->getRequest();
+            $this->employeeId = $request->getHeader('Employee-Id')->getFieldValue();
+
+            $requestType = $request->getMethod();
+            $data = json_decode($request->getContent());
+            $responseDate = [];
+
+            switch ($requestType) {
+                case Request::METHOD_POST:
+                    $responseDate = $this->validateDays($data);
+                    break;
+                case Request::METHOD_GET:
+                    throw new Exception("Unavailable Request.");
+                    break;
+                case Request::METHOD_PUT:
+                    throw new Exception("Unavailable Request.");
+                    break;
+
+                case Request::METHOD_DELETE:
+                    throw new Exception("Unavailable Request.");
+                    break;
+
+                default:
+                    throw new Exception('the request  is unknown');
+            }
+            return new JsonModel(['success' => true, 'data' => $responseDate, 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
+    
+    
+     private function validateDays($data) {
+        $request = new LeaveRequestRepository($this->adapter);
+        return $request->validateLeaveRequest(Helper::getExpressionDate($data->START_DATE)->getExpression(), Helper::getExpressionDate($data->END_DATE)->getExpression(), $data->EMPLOYEE_ID);
     }
 
 }

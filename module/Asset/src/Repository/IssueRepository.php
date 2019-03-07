@@ -147,13 +147,14 @@ class IssueRepository implements RepositoryInterface {
         $assetId=$data['assetId'];
         $assetStatusId=$data['assetStatusId'];
         $employeeTypeId = $data['employeeTypeId'];
-        
+         
         
         $sql="SELECT AI.ISSUE_ID       AS ISSUE_ID,
                   INITCAP(TO_CHAR(AI.ISSUE_DATE, 'DD-MON-YYYY'))          AS ISSUE_DATE,
                   AI.ASSET_ID            AS ASSET_ID,
                   AI.SNO                 AS SNO,
                   AI.EMPLOYEE_ID         AS EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE         AS EMPLOYEE_CODE,
                   AI.QUANTITY            AS QUANTITY,
                   INITCAP(TO_CHAR(AI.REQUEST_DATE, 'DD-MON-YYYY'))        AS REQUEST_DATE,
                   INITCAP(TO_CHAR(AI.RETURN_DATE, 'DD-MON-YYYY'))         AS RETURN_DATE,

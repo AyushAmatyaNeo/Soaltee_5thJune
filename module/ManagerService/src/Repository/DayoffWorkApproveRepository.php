@@ -83,6 +83,7 @@ class DayoffWorkApproveRepository implements RepositoryInterface {
     public function getAllRequest($id, $status = null) {
         $sql = "SELECT 
                     WD.ID,
+                    E.EMPLOYEE_CODE AS EMPLOYEE_CODE,
                     WD.EMPLOYEE_ID,
                     INITCAP(TO_CHAR(WD.REQUESTED_DATE, 'DD-MON-YYYY')) AS REQUESTED_DATE,
                     BS_DATE(TO_CHAR(WD.REQUESTED_DATE, 'DD-MON-YYYY')) AS REQUESTED_DATE_N,

@@ -282,7 +282,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 
                 <div class="">
                     <?php
-                    if ($status == 'RQ' || ($status == 'RC' && $employeeId != $recommendedBy)) {
+                    if ($role==2 && $status == 'RQ' || ( ($role==3 && $role==4) && $status == 'RC' && $employeeId != $recommendedBy)) {
                         print $this->formSubmit($submit);
                         ?>
                         <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">

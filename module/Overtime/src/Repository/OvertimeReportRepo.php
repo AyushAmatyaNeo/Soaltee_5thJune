@@ -87,7 +87,7 @@ class OvertimeReportRepo extends HrisRepository {
         $searchConditon = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId']);
         $sql = "SELECT *
                 FROM
-                  (SELECT AD.EMPLOYEE_ID,
+                  (SELECT AD.EMPLOYEE_ID, E.EMPLOYEE_CODE AS EMPLOYEE_CODE,
                     E.FULL_NAME,
                     'D_'
                     ||TO_NUMBER(regexp_substr(BS_DATE(TRUNC(AD.ATTENDANCE_DATE)),'[^-]+', 1, 3)) AS MONTH_DAY,

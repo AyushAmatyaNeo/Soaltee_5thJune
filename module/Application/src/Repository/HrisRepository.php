@@ -34,7 +34,7 @@ class HrisRepository {
         return $iterator->count() > 0;
     }
 
-    private function conditionBuilder($colValue, $colName, $conditonType, $isString = false) {
+    private function conditionBuilder($colValue, $colName, $conditonType, $isString = false, $parentQuery = false) {
         if (gettype($colValue) === "array") {
             $valuesinCSV = "";
             for ($i = 0; $i < sizeof($colValue); $i++) {
@@ -45,9 +45,16 @@ class HrisRepository {
                     $valuesinCSV .= "{$value},";
                 }
             }
+            if ($parentQuery) {
+                $valuesinCSV = str_replace('INVALUES', $valuesinCSV, $parentQuery);
+            }
             return " {$conditonType} {$colName} IN ({$valuesinCSV})";
         } else {
             $value = $isString ? "'{$colValue}'" : $colValue;
+            if($parentQuery){
+            $value=str_replace('INVALUES', $value, $parentQuery);
+             return " {$conditonType} {$colName} IN ({$value})";
+            }
             return " {$conditonType} {$colName} = {$value}";
         }
     }
@@ -61,7 +68,18 @@ class HrisRepository {
             $conditon .= $this->conditionBuilder($branchId, "E.BRANCH_ID", "AND");
         }
         if ($departmentId != null && $departmentId != -1) {
-            $conditon .= $this->conditionBuilder($departmentId, "E.DEPARTMENT_ID", "AND");
+            $parentQuery = "(SELECT DEPARTMENT_ID FROM
+                         HRIS_DEPARTMENTS 
+                        START WITH PARENT_DEPARTMENT in (INVALUES)
+                        CONNECT BY PARENT_DEPARTMENT= PRIOR DEPARTMENT_ID
+                        UNION 
+                        SELECT DEPARTMENT_ID FROM HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN (INVALUES)
+                        UNION
+                        SELECT  TO_NUMBER(TRIM(REGEXP_SUBSTR(EXCEPTIONAL,'[^,]+', 1, LEVEL) )) DEPARTMENT_ID
+  FROM (SELECT EXCEPTIONAL  FROM  HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN  (INVALUES))
+   CONNECT BY  REGEXP_SUBSTR(EXCEPTIONAL, '[^,]+', 1, LEVEL) IS NOT NULL
+                        )";
+            $conditon .= $this->conditionBuilder($departmentId, "E.DEPARTMENT_ID", "AND", false, $parentQuery);
         }
         if ($positionId != null && $positionId != -1) {
             $conditon .= $this->conditionBuilder($positionId, "E.POSITION_ID", "AND");

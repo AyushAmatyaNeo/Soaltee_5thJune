@@ -72,5 +72,14 @@ class PositionForm {
      * @Annotation\Attributes({ "id":"wohFlag","class":"form-control"})
      */
     public $wohFlag;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Required(true)
+     * @Annotation\Filter({"name":"StripTags","name":"StringTrim"})
+     * @Annotation\Options({"label":"Shift Allowance","value_options":{"Y":"Yes","N":"No"}})
+     * @Annotation\Attributes({"id":"shiftAllowance","class":"form-control","value":"N"})
+     */
+    public $shiftAllowance;
 
 }

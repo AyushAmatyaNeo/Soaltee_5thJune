@@ -65,10 +65,13 @@ class LeaveRepository {
                 ON LS.EMPLOYEE_ID =SUB.EMPLOYEE_ID
                 WHERE E.STATUS    ='E'
                 AND E.RETIRED_FLAG='N'
-                AND (LR.STATUS = 'RQ' AND RA.RECOMMEND_BY = {$employeeId} OR (LR.STATUS = 'AP' AND RA.APPROVED_BY = {$employeeId}))
+                AND (LR.STATUS = 'RQ' AND RA.RECOMMEND_BY = {$employeeId} OR (LR.STATUS = 'AP' AND RA.APPROVED_BY = {$employeeId} OR (LR.STATUS='RC' AND RA.APPROVED_BY={$employeeId})))
                 {$idCondition}
                 ORDER BY LR.REQUESTED_DT DESC
 ";
+
+    // print_r($sql);
+//die();
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return Helper::extractDbData($result);
@@ -164,15 +167,61 @@ class LeaveRepository {
     }
 
     public function getEmployeeLeave($employeeId) {
-        $sql = new Sql($this->adapter);
-        $select = $sql->select();
-        $select->columns(EntityHelper::getColumnNameArrayWithOracleFns(LeaveMaster::class, [LeaveMaster::LEAVE_ENAME], NULL, NULL, NULL, NULL, 'L', false), false);
-        $select->from(['L' => LeaveMaster::TABLE_NAME]);
-        $select->join(['LA' => LeaveAssign::TABLE_NAME], "LA." . LeaveAssign::LEAVE_ID . "=" . "L." . LeaveMaster::LEAVE_ID, [], 'left');
-        $select->where(["L.STATUS= 'E'"]);
-        $select->where(["LA.EMPLOYEE_ID" => $employeeId]);
-        $select->order([LeaveMaster::LEAVE_ENAME => Select::ORDER_ASCENDING]);
-        $statement = $sql->prepareStatementForSqlObject($select);
+      //  $sql = new Sql($this->adapter);
+      //  $select = $sql->select();
+       // $select->columns(EntityHelper::getColumnNameArrayWithOracleFns(LeaveMaster::class, [LeaveMaster::LEAVE_ENAME], NULL, NULL, NULL, NULL, 'L', false), false);
+       // $select->from(['L' => LeaveMaster::TABLE_NAME]);
+       // $select->join(['LA' => LeaveAssign::TABLE_NAME], "LA." . LeaveAssign::LEAVE_ID . "=" . "L." . LeaveMaster::LEAVE_ID, [], 'left');
+       // $select->where(["L.STATUS= 'E'"]);
+       /// $select->where(["LA.EMPLOYEE_ID" => $employeeId]);
+      //  $select->order([LeaveMaster::LEAVE_ENAME => Select::ORDER_ASCENDING]);
+      //  $statement = $sql->prepareStatementForSqlObject($select);
+	  
+	  $sql="SELECT
+     distinct l.leave_id AS leave_id,
+    l.leave_code AS leave_code,
+    initcap(l.leave_ename) AS leave_ename,
+    l.leave_lname AS leave_lname,
+    l.allow_halfday AS allow_halfday,
+    l.default_days AS default_days,
+    l.fiscal_year AS fiscal_year,
+    l.carry_forward AS carry_forward,
+    l.cashable AS cashable,
+    l.created_dt AS created_dt,
+    l.modified_dt AS modified_dt,
+    l.status AS status,
+    l.remarks AS remarks,
+    l.created_by AS created_by,
+    l.modified_by AS modified_by,
+    l.paid AS paid,
+    l.max_accumulate_days AS max_accumulate_days,
+    l.is_substitute AS is_substitute,
+    l.allow_grace_leave AS allow_grace_leave,
+    l.is_monthly AS is_monthly,
+    l.is_substitute_mandatory AS is_substitute_mandatory,
+    l.assign_on_employee_setup AS assign_on_employee_setup,
+    l.is_prodata_basis AS is_prodata_basis,
+    l.enable_substitute AS enable_substitute,
+    l.company_id AS company_id,
+    l.branch_id AS branch_id,
+    l.department_id AS department_id,
+    l.designation_id AS designation_id,
+    l.position_id AS position_id,
+    l.service_type_id AS service_type_id,
+    l.employee_type AS employee_type,
+    l.gender_id AS gender_id,
+    l.employee_id AS employee_id,
+    l.day_off_as_leave AS day_off_as_leave,
+    l.holiday_as_leave AS holiday_as_leave
+FROM
+    hris_leave_master_setup l
+    LEFT JOIN hris_employee_leave_assign la ON la.leave_id = l.leave_id
+WHERE
+        l.status = 'E'
+    AND
+        la.employee_id ={$employeeId}
+ORDER BY leave_ename ASC";
+		$statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return Helper::extractDbData($result);
     }

@@ -37,7 +37,7 @@ class TravelStatusRepository extends HrisRepository {
                 $condition .= "AND TR.STATUS IN ('{$search['status']}')";
             }
         }
-
+ 
         $sql = "SELECT TR.TRAVEL_ID                        AS TRAVEL_ID,
                   TR.TRAVEL_CODE                           AS TRAVEL_CODE,
                   TR.EMPLOYEE_ID                           AS EMPLOYEE_ID,
@@ -105,6 +105,7 @@ class TravelStatusRepository extends HrisRepository {
         $sql = "SELECT TR.TRAVEL_ID                   AS TRAVEL_ID,
                   TR.TRAVEL_CODE                      AS TRAVEL_CODE,
                   TR.EMPLOYEE_ID                      AS EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE                      AS EMPLOYEE_CODE,
                   E.FULL_NAME                         AS EMPLOYEE_NAME,
                   TO_CHAR(TR.REQUESTED_DATE,'DD-MON-YYYY') AS REQUESTED_DATE_AD,
                   BS_DATE(TR.REQUESTED_DATE)               AS REQUESTED_DATE_BS,

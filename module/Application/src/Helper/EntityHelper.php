@@ -15,6 +15,7 @@ use Setup\Model\Position;
 use Setup\Model\ServiceEventType;
 use Setup\Model\ServiceType;
 use Zend\Db\Adapter\AdapterInterface;
+use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Predicate\Predicate;
 use Zend\Db\Sql\Select;
 use Zend\Db\TableGateway\TableGateway;
@@ -179,19 +180,32 @@ class EntityHelper {
         $genderList = self::getTableList($adapter, Gender::TABLE_NAME, [Gender::GENDER_ID, Gender::GENDER_NAME], [Gender::STATUS => "E"]);
         $locationList = self::getTableList($adapter, Location::TABLE_NAME, [Location::LOCATION_ID, Location::LOCATION_EDESC], [Location::STATUS => "E"]);
         $employeeList = self::getTableList($adapter, HrEmployees::TABLE_NAME, [
-                    HrEmployees::EMPLOYEE_ID,
-                    HrEmployees::EMPLOYEE_CODE,
-                    HrEmployees::FULL_NAME,
-                    HrEmployees::COMPANY_ID,
-                    HrEmployees::BRANCH_ID,
-                    HrEmployees::DEPARTMENT_ID,
-                    HrEmployees::DESIGNATION_ID,
-                    HrEmployees::POSITION_ID,
-                    HrEmployees::SERVICE_TYPE_ID,
-                    HrEmployees::SERVICE_EVENT_TYPE_ID,
-                    HrEmployees::GENDER_ID,
-                    HrEmployees::EMPLOYEE_TYPE,
-                    HrEmployees::GROUP_ID,
+                    new Expression(HrEmployees::EMPLOYEE_ID." AS ".HrEmployees::EMPLOYEE_ID),
+                    new Expression(HrEmployees::EMPLOYEE_CODE." AS ".HrEmployees::EMPLOYEE_CODE),
+                    new Expression("EMPLOYEE_CODE||'-'||FULL_NAME AS FULL_NAME"),
+                    new Expression(HrEmployees::COMPANY_ID." AS ".HrEmployees::COMPANY_ID),
+                    new Expression(HrEmployees::BRANCH_ID." AS ".HrEmployees::BRANCH_ID),
+                    new Expression(HrEmployees::DEPARTMENT_ID." AS ".HrEmployees::DEPARTMENT_ID),
+                    new Expression(HrEmployees::DESIGNATION_ID." AS ".HrEmployees::DESIGNATION_ID),
+                    new Expression(HrEmployees::POSITION_ID." AS ".HrEmployees::POSITION_ID),
+                    new Expression(HrEmployees::SERVICE_TYPE_ID." AS ".HrEmployees::SERVICE_TYPE_ID),
+                    new Expression(HrEmployees::SERVICE_EVENT_TYPE_ID." AS ".HrEmployees::SERVICE_EVENT_TYPE_ID),
+                    new Expression(HrEmployees::GENDER_ID." AS ".HrEmployees::GENDER_ID),
+                    new Expression(HrEmployees::EMPLOYEE_TYPE." AS ".HrEmployees::EMPLOYEE_TYPE),
+                    new Expression(HrEmployees::GROUP_ID." AS ".HrEmployees::GROUP_ID),
+//                    HrEmployees::EMPLOYEE_ID,
+//                    HrEmployees::EMPLOYEE_CODE,
+//                    HrEmployees::FULL_NAME,
+//                    HrEmployees::COMPANY_ID,
+//                    HrEmployees::BRANCH_ID,
+//                    HrEmployees::DEPARTMENT_ID,
+//                    HrEmployees::DESIGNATION_ID,
+//                    HrEmployees::POSITION_ID,
+//                    HrEmployees::SERVICE_TYPE_ID,
+//                    HrEmployees::SERVICE_EVENT_TYPE_ID,
+//                    HrEmployees::GENDER_ID,
+//                    HrEmployees::EMPLOYEE_TYPE,
+//                    HrEmployees::GROUP_ID,
                         ], $employeeWhere);
 
         $searchValues = [
@@ -281,6 +295,10 @@ class EntityHelper {
             return " {$conditonType} {$colName} IN ({$valuesinCSV})";
         } else {
             $value = $isString ? "'{$colValue}'" : $colValue;
+            if($parentQuery){
+            $value=str_replace('INVALUES', $value, $parentQuery);
+             return " {$conditonType} {$colName} IN ({$value})";
+            }
             return " {$conditonType} {$colName} = {$value}";
         }
     }

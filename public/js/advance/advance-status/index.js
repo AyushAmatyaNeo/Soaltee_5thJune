@@ -23,8 +23,9 @@
             #}#
             </div>
         `;
-
+ 
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "EMPLOYEE_NAME", title: "Employee"},
             {field: "ADVANCE_ENAME", title: "Advance"},
             {title: "Request Date",
@@ -59,7 +60,9 @@
                 }
             }});
 
-        app.searchTable($table, ['EMPLOYEE_NAME',
+        app.searchTable($table, [
+            'EMPLOYEE_CODE',
+            'EMPLOYEE_NAME',
             'ADVANCE_ENAME',
             'REQUESTED_DATE_AD',
             'REQUESTED_DATE_BS',
@@ -70,6 +73,7 @@
             'VOUCHER_NO'
         ]);
         var exportMap = app.prependPrefExportMap({
+            'EMPLOYEE_CODE': 'Code',
             'EMPLOYEE_NAME': 'Employee Name',
             'ADVANCE_ENAME': 'Advance',
             'REQUESTED_DATE_AD': 'Request Date(AD)',

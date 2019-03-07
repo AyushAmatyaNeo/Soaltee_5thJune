@@ -132,11 +132,12 @@ class TrainingAssignRepository implements RepositoryInterface {
                 $condition .= "AND TA.TRAINING_ID IN ('{$search['trainingId']}')";
             }
         }
-
+ 
         $sql = "SELECT TA.TRAINING_ID,
                   TMS.TRAINING_CODE,
                   TMS.TRAINING_NAME,
                   TMS.TRAINING_TYPE,
+                  E.EMPLOYEE_CODE AS EMPLOYEE_CODE,
                   (
                   CASE
                     WHEN TMS.TRAINING_TYPE = 'CC'

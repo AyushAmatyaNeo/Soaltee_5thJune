@@ -358,7 +358,7 @@ class EmployeeController extends HrisController {
                 'formSix' => $this->formSix,
                 'formSeven' => $this->formSeven,
                 'formEight' => $this->formEight,
-                'filetypes' => ApplicationHelper::getTableKVList($this->adapter, 'HRIS_FILE_TYPE', 'FILETYPE_CODE', ['NAME']),
+                'filetypes' => ApplicationHelper::getTableKVList($this->adapter, 'HRIS_FILE_TYPE', 'FILETYPE_CODE', ['NAME'],"Status='E'"),
                 'serviceTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SERVICE_TYPES", "SERVICE_TYPE_ID", ["SERVICE_TYPE_NAME"], ["STATUS" => 'E'], "SERVICE_TYPE_NAME", "ASC", null, true, true),
                 'positions' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_POSITIONS", "POSITION_ID", ["POSITION_NAME"], ["STATUS" => 'E'], "POSITION_NAME", "ASC", null, true, true),
                 'designations' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_DESIGNATIONS", "DESIGNATION_ID", ["DESIGNATION_TITLE"], ["STATUS" => 'E'], "DESIGNATION_TITLE", "ASC", null, true, true),
@@ -907,7 +907,7 @@ class EmployeeController extends HrisController {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
     }
-
+ 
     public function pullEmployeeListForEmployeeTableAction() {
         try {
             $request = $this->getRequest();

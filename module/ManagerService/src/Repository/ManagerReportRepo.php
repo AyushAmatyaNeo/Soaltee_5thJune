@@ -35,7 +35,7 @@ class ManagerReportRepo implements RepositoryInterface {
     }
 
     public function fetchAllEmployee($employeeId) {
-        $sql = "SELECT RA.EMPLOYEE_ID,E.FULL_NAME
+        $sql = "SELECT RA.EMPLOYEE_ID, E.EMPLOYEE_CODE||'-'||E.FULL_NAME AS FULL_NAME
                 FROM HRIS_RECOMMENDER_APPROVER  RA
                 LEFT join HRIS_EMPLOYEES E ON (E.EMPLOYEE_ID=RA.EMPLOYEE_ID)
                   WHERE (RA.RECOMMEND_BY={$employeeId}
@@ -116,6 +116,7 @@ class ManagerReportRepo implements RepositoryInterface {
                 SELECT A.ID                                        AS ID,
                   E.FULL_NAME                                      AS FULL_NAME,
                   A.EMPLOYEE_ID                                    AS EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE                                    AS EMPLOYEE_CODE,
                   INITCAP(TO_CHAR(A.ATTENDANCE_DT, 'DD-MON-YYYY')) AS ATTENDANCE_DT,
                   BS_DATE(TO_CHAR(A.ATTENDANCE_DT, 'DD-MON-YYYY')) AS ATTENDANCE_DT_N,
                   INITCAP(TO_CHAR(A.IN_TIME, 'HH:MI AM'))          AS IN_TIME,

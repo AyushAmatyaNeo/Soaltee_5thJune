@@ -3,6 +3,7 @@
 namespace ManagerService;
 
 use Application\Controller\ControllerFactory;
+use ManagerService\Controller\MapsController;
 use ManagerService\Controller\AppraisalEvaluation;
 use ManagerService\Controller\AppraisalFinalReview;
 use ManagerService\Controller\AppraisalReview;
@@ -163,6 +164,16 @@ return [
                     'route' => '/managerservice/subordinate[/:action[/:id][/:tab]]',
                     'defaults' => [
                         'controller' => Subordinate::class,
+                        'action' => 'index'
+                    ]
+                ]
+            ],
+            'location' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/managerservice/location[/:action]',
+                    'defaults' => [
+                        'controller' => MapsController::class,
                         'action' => 'index'
                     ]
                 ]
@@ -553,7 +564,8 @@ return [
             AppraisalReview::class => ControllerFactory::class,
             AppraisalFinalReview::class => ControllerFactory::class,
             ManagerReportController::class => ControllerFactory::class,
-            Subordinate::class => ControllerFactory::class
+            Subordinate::class => ControllerFactory::class,
+            MapsController::class => ControllerFactory::class
         ],
     ],
     'view_manager' => [

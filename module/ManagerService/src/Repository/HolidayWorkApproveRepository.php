@@ -77,6 +77,7 @@ class HolidayWorkApproveRepository {
         $sql = "SELECT 
                     WH.ID,
                     WH.EMPLOYEE_ID,
+                    E.EMPLOYEE_CODE AS EMPLOYEE_CODE,
                     INITCAP(TO_CHAR(WH.REQUESTED_DATE, 'DD-MON-YYYY')) AS REQUESTED_DATE,
                     BS_DATE(TO_CHAR(WH.REQUESTED_DATE, 'DD-MON-YYYY')) AS REQUESTED_DATE_N,
                     WH.APPROVED_BY,

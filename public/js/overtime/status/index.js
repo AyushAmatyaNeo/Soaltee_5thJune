@@ -8,6 +8,7 @@
         var $bulkActionDiv = $('#bulkActionDiv');
         var $bulkBtns = $(".btnApproveReject");
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
             {title: "Requested Date",
                 columns: [
@@ -45,6 +46,7 @@
             </span>`}
         ];
         var map = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name',
             'REQUESTED_DATE_AD': 'Request Date(AD)',
             'REQUESTED_DATE_BS': 'Request Date(BS)',
@@ -70,7 +72,7 @@
                     $bulkActionDiv.hide();
                 }
             }});
-        app.searchTable($tableContainer, ["FULL_NAME"]);
+        app.searchTable($tableContainer, ["FULL_NAME", "EMPLOYEE_CODE"]);
 
         $('#excelExport').on('click', function () {
             app.excelExport(processData(data), map, "OT Request List.xlsx");

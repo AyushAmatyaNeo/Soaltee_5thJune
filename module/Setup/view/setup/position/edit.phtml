@@ -15,6 +15,8 @@ $levelNo = $form->get('levelNo');
 
 $wohFlag = $form->get('wohFlag');
 
+$shiftAllowance = $form->get('shiftAllowance');
+
 $submit = $form->get('submit');
 $submit->setAttribute('value', 'SUBMIT');
 
@@ -94,6 +96,17 @@ $form->prepare();
                             <?php print $this->formElementErrors()->render($wohFlag, ['class' => 'help-block']); ?>
                         </div>
                     </div>
+                    
+                    <div class="col-sm-4">
+                        <div class="form-group padding-0 ">
+                            <?php print $this->formLabel($shiftAllowance); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($shiftAllowance); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($shiftAllowance, ['class' => 'help-block error']); ?>
+                    </div>
+                    
                     <div class="col-sm-4">
                         <div class="form-group <?= empty($remarks->getMessages()) ? "" : "has-error" ?>">
                             <?php print $this->formLabel($remarks); ?>

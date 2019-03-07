@@ -4,6 +4,7 @@ namespace Other;
 
 use Application\Controller\ControllerFactory;
 use Other\Controller\AccidentAndDeath;
+use Other\Controller\AllowanceAssign;
 use Other\Controller\Bonus;
 use Other\Controller\GradeChange;
 use Other\Controller\LifeInsurance;
@@ -113,6 +114,20 @@ return [
                     ],
                 ],
             ],
+            'allowance-assign' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/allowance/assign[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => AllowanceAssign::class,
+                        'action' => 'index'
+                    ],
+                ],
+            ],
         ]
     ],
     'controllers' => [
@@ -124,6 +139,7 @@ return [
             WorkforceManagement::class => ControllerFactory::class,
             LifeInsurance::class => ControllerFactory::class,
             PaymentSuspended::class => ControllerFactory::class,
+            AllowanceAssign::class => ControllerFactory::class,
         ],
     ],
     'navigation' => [

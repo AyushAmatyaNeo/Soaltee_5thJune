@@ -10,6 +10,7 @@ use System\Controller\PreferenceSetup;
 use System\Controller\RoleSetupController;
 use System\Controller\SettingController;
 use System\Controller\UserSetupController;
+use System\Controller\MapsController;
 use Zend\Router\Http\Segment;
 
 return [
@@ -25,6 +26,20 @@ return [
                     ],
                     'defaults' => [
                         'controller' => RoleSetupController::class,
+                        'action' => 'index'
+                    ],
+                ],
+            ],
+            'showlocation' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/system/location[/:action]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => MapsController::class,
                         'action' => 'index'
                     ],
                 ],
@@ -181,6 +196,23 @@ return [
                         'label' => 'Edit',
                         'route' => 'rolesetup',
                         'action' => 'edit',
+                    ],
+                ],
+            ],
+        ],
+        'showlocation' => [
+            [
+                'label' => "Show Location",
+                'route' => "location"
+            ],
+            [
+                'label' => "Show Location",
+                'route' => "location",
+                'pages' => [
+                    [
+                        'label' => 'show',
+                        'route' => 'location',
+                        'action' => 'index',
                     ],
                 ],
             ],
@@ -388,7 +420,8 @@ return [
             PreferenceSetup::class => ControllerFactory::class,
             Controller\MenuReport::class => ControllerFactory::class,
             Controller\SystemSetting::class => ControllerFactory::class,
-            Controller\SystemUtility::class => ControllerFactory::class
+            Controller\SystemUtility::class => ControllerFactory::class,
+            Controller\MapsController::class => ControllerFactory::class,
         ],
     ],
     'view_manager' => [

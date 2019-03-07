@@ -51,6 +51,7 @@ class PenaltyRepo extends HrisRepository {
                   D.DEPARTMENT_NAME,
                   E.FULL_NAME,
                   E.EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE,
                   TO_CHAR(A.ATTENDANCE_DT,'DD-MON-YYYY') AS ATTENDANCE_DT,
                   BS_DATE(A.ATTENDANCE_DT)               AS ATTENDANCE_DT_N,
                   (

@@ -2,11 +2,23 @@
     'use strict';
     $(document).ready(function () {
         var $fromDate = $('#fromDate');
-        var $toDate = $('#toDate');
+        var $toDate = $('#toDate'); 
         var $presentStatusId = $("#presentStatusId");
         var $status = $('#statusId');
         var $table = $('#table');
         var $search = $('#search');
+
+        $('select').select2();
+        $('#inTime').combodate({
+            minuteStep: 1
+        });
+        $('#outTime').combodate({
+            minuteStep: 1
+        });
+        
+        (document.allowShiftChange=="Y")? $(".manualShift").show(): $(".manualShift").hide();
+        (document.allowTimeChange=="Y")? $(".manualTime").show(): $(".manualTime").hide();
+
         $.each(document.searchManager.getIds(), function (key, value) {
             $('#' + value).select2();
         });
@@ -78,7 +90,7 @@
                     scrollable: false,
                     sortable: false,
                     pageable: false,
-                    serverPaging: true,
+                    serverPaging: true, 
                     serverSorting: true,
                     serverFiltering: true,
                     columns:
@@ -91,7 +103,7 @@
                     class: "col-sm-2",
                     css: {
                         float: "left",
-                        padding: "0px",
+                        padding: "0px", 
                         margin: "0px 0px 0px 20px",
                         width: "11%"
                     }
@@ -120,16 +132,17 @@
             }, function (failure) {
                 console.log(failure);
             });
-        };
+        }; 
         app.initializeKendoGrid($table, [
             {
                 title: 'Select All',
                 headerTemplate: "<input type='checkbox' id='header-chb' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='header-chb'></label>",
                 template: "<input type='checkbox' id='#:ID#'  class='k-checkbox row-checkbox'><label class='k-checkbox-label' for='#:ID#'></label>",
-                width: 80
+                width: 50
             },
             {field: "COMPANY_NAME", title: "Company"},
             {field: "DEPARTMENT_NAME", title: "Department"},
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "EMPLOYEE_NAME", title: "Employee", template: "<span>#: (EMPLOYEE_NAME == null) ? '-' : EMPLOYEE_NAME # </span>"},
             {title: "Attendance Date",
                 columns: [
@@ -144,6 +157,8 @@
                 ]},
             {field: "IN_TIME", title: "Check In", template: "<span>#: (IN_TIME == null) ? '-' : IN_TIME # </span>"},
             {field: "OUT_TIME", title: "Check Out", template: "<span>#: (OUT_TIME == null) ? '-' : OUT_TIME # </span>"},
+//            {field: "SYSTEM_OVERTIME", title: "OT", template: "<span>#: (SYSTEM_OVERTIME == null) ? '-' : SYSTEM_OVERTIME # </span>"},
+//            {field: "MANUAL_OVERTIME", title: "MOT", template: "<span>#: (MANUAL_OVERTIME == null) ? '-' : MANUAL_OVERTIME # </span>"},
             {field: "STATUS", title: "Status", template: "<span>#: (STATUS == null) ? '-' : STATUS # </span>"},
             {title: 'Shift Details', columns: [
                     {field: "SHIFT_ENAME", title: "Name"},
@@ -174,10 +189,11 @@
             });
         });
 
-        app.searchTable($table, ['EMPLOYEE_NAME']);
+        app.searchTable($table, ['EMPLOYEE_NAME', 'EMPLOYEE_CODE']);
         var exportMap = {
             'COMPANY_NAME': ' Company',
             'DEPARTMENT_NAME': ' Department',
+            'EMPLOYEE_CODE': 'Code',
             'EMPLOYEE_NAME': ' Name',
             'ATTENDANCE_DT': 'Attendance Date(AD)',
             'ATTENDANCE_DT_N': 'Attendance Date(BS)',
@@ -186,6 +202,8 @@
             'IN_REMARKS': 'In Remarks',
             'OUT_REMARKS': 'Out Remarks',
             'TOTAL_HOUR': 'Total Hour',
+//            'SYSTEM_OVERTIME': 'System OT',
+//            'MANUAL_OVERTIME': 'Manual OT',
             'STATUS': 'Status',
             'SHIFT_ENAME': 'Shift Name',
             'START_TIME': 'Start Time',
@@ -229,23 +247,35 @@
                 } else {
                     $bulkBtnContainer.hide();
                 }
-
+ 
             }
         });
-        $bulkBtns.bind("click", function () {
+        $bulkBtns.bind("click", function () { 
             var btnId = $(this).attr('id');
             var selectedValues = [];
+            var shiftId = $("#shiftId").val();
+            var in_time = $("#inTime").val();
+            var out_time = $("#outTime").val();
+            $bulkBtnContainer.hide();
             var impactOtherDays = $impactOtherDays.prop('checked');
             for (var i in selectItems) {
                 if (selectItems[i].checked) {
-                    selectedValues.push({id: i, employeeId: selectItems[i]['employeeId'], attendanceDt: selectItems[i]['attendanceDt'], action: btnId, impactOtherDays: impactOtherDays});
+                    selectedValues.push({
+                        in_time: in_time,
+                        out_time: out_time, 
+                        shiftId: shiftId,
+                        id: i, employeeId: selectItems[i]['employeeId'], 
+                        attendanceDt: selectItems[i]['attendanceDt'], 
+                        action: btnId, 
+                        impactOtherDays: impactOtherDays
+                    });
                 }
             }
             app.bulkServerRequest(document.bulkAttendanceWS, selectedValues, function () {
                 $search.trigger('click');
             }, function (data, error) {
-
-            });
+                
+            }); 
         });
         var $impactOtherDays = $('#impact_other_days');
 

@@ -57,12 +57,12 @@ class AdvanceApply extends HrisController {
             }
         }
 
-
+        $employeeListWithCode= EntityHelper::rawQueryResult($this->adapter, "SELECT EMPLOYEE_ID,EMPLOYEE_CODE||'-'||FULL_NAME AS FULL_NAME,SALARY FROM HRIS_EMPLOYEES WHERE STATUS='E' AND RETIRED_FLAG='N'"); 
         return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
                     'advance' => EntityHelper::getTableList($this->adapter, AdvanceSetupModel::TABLE_NAME, ['*'], [AdvanceSetupModel::STATUS => 'E']),
                     'customRenderer' => Helper::renderCustomView(),
-                    'employeeList' => EntityHelper::getTableList($this->adapter, HrEmployees::TABLE_NAME, [HrEmployees::EMPLOYEE_ID, HrEmployees::FULL_NAME, HrEmployees::SALARY], [HrEmployees::STATUS => "E", HrEmployees::RETIRED_FLAG => "N"]),
+                    'employeeList' => Helper::extractDbData($employeeListWithCode),
         ]);
     }
 

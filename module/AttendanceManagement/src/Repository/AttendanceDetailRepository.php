@@ -120,7 +120,7 @@ class AttendanceDetailRepository implements RepositoryInterface {
         }
 
         if ($min != null && $max != null) {
-            $rowNums = "WHERE (Q.R BETWEEN {$min} AND {$max})";
+            $rowNums = "WHERE (Q.R BETWEEN {$min} AND {$max})"; 
         }
           $orderByString=EntityHelper::getOrderBy('A.ATTENDANCE_DT DESC ,A.IN_TIME ASC','A.ATTENDANCE_DT DESC ,A.IN_TIME ASC','E.SENIORITY_LEVEL','P.LEVEL_NO','E.JOIN_DATE','DES.ORDER_NO','E.FULL_NAME');
         $sql = "
@@ -128,6 +128,7 @@ class AttendanceDetailRepository implements RepositoryInterface {
                   ROWNUM                                           AS R,
                   A.ID                                             AS ID,
                   A.EMPLOYEE_ID                                    AS EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE                                    AS EMPLOYEE_CODE,
                   INITCAP(TO_CHAR(A.ATTENDANCE_DT, 'DD-MON-YYYY')) AS ATTENDANCE_DT,
                   BS_DATE(TO_CHAR(A.ATTENDANCE_DT, 'DD-MON-YYYY')) AS ATTENDANCE_DT_N,
                   INITCAP(TO_CHAR(A.IN_TIME, 'HH:MI AM'))          AS IN_TIME,
@@ -202,7 +203,18 @@ class AttendanceDetailRepository implements RepositoryInterface {
                   END) AS STATUS,
                    S.SHIFT_ENAME,
                   TO_CHAR(S.START_TIME,'HH:MI AM') AS START_TIME,
-                  TO_CHAR(S.END_TIME,'HH:MI AM')   AS END_TIME
+                  TO_CHAR(S.END_TIME,'HH:MI AM')   AS END_TIME,
+                   CASE WHEN A.OT_MINUTES>0
+                   THEN 
+                   MIN_TO_HOUR(A.OT_MINUTES)
+                   ELSE ''
+                   END
+                   AS SYSTEM_OVERTIME,
+                  CASE WHEN A.OM.OVERTIME_HOUR is not null
+                   THEN 
+                  MIN_TO_HOUR(A.OM.OVERTIME_HOUR*60)
+                   ELSE ''
+                   END AS MANUAL_OVERTIME
                 FROM HRIS_ATTENDANCE_DETAIL A
                 LEFT JOIN HRIS_EMPLOYEES E
                 ON A.EMPLOYEE_ID=E.EMPLOYEE_ID
@@ -226,6 +238,8 @@ class AttendanceDetailRepository implements RepositoryInterface {
                 ON A.TRAVEL_ID      =TVL.TRAVEL_ID
                 LEFT JOIN HRIS_SHIFTS S
                 ON A.SHIFT_ID=S.SHIFT_ID
+                LEFT JOIN  HRIS_OVERTIME_MANUAL OM
+                ON (OM.ATTENDANCE_DATE=A.ATTENDANCE_DT AND OM.EMPLOYEE_ID=A.EMPLOYEE_ID)
                 WHERE 1=1
                 {$searchConditon}
                 {$fromDateCondition}
@@ -677,16 +691,16 @@ class AttendanceDetailRepository implements RepositoryInterface {
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result->current();
-    }
-
-    public function manualAttendance($employeeId, $attendanceDt, $action, $impactOtherDays) {
-        if ($impactOtherDays) {
+    } 
+ 
+    public function manualAttendance($employeeId, $attendanceDt, $action, $impactOtherDays, $shiftId = null, $in_time = null, $out_time = null) {
+        if ($impactOtherDays) { 
             $sql = "BEGIN
-                  HRIS_MANUAL_ATTENDANCE_ALL({$employeeId},{$attendanceDt},'{$action}');
+                  HRIS_MANUAL_ATTENDANCE_ALL({$employeeId},{$attendanceDt},'{$action}', {$shiftId}, {$in_time}, {$out_time});
                 END;";
         } else {
             $sql = "BEGIN
-                  HRIS_MANUAL_ATTENDANCE({$employeeId},{$attendanceDt},'{$action}');
+                  HRIS_MANUAL_ATTENDANCE({$employeeId},{$attendanceDt},'{$action}', {$shiftId}, {$in_time}, {$out_time});
                 END;";
         }
         $statement = $this->adapter->query($sql);

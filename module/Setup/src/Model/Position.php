@@ -21,6 +21,7 @@ class Position extends Model {
     const POSITION_CODE = "POSITION_CODE";
     const WOH_FLAG_LEAVE = 'L';
     const WOH_FLAG_OT = 'O';
+    const SHIFT_ALLOWANCE = 'SHIFT_ALLOWANCE';
 
     public $positionId;
     public $positionName;
@@ -34,6 +35,7 @@ class Position extends Model {
     public $levelNo;
     public $wohFlag;
     public $positionCode;
+    public $shiftAllowance;
     public $mappings = [
         'positionId' => self::POSITION_ID,
         'positionName' => self::POSITION_NAME,
@@ -46,7 +48,8 @@ class Position extends Model {
         'companyId' => self::COMPANY_ID,
         'levelNo' => self::LEVEL_NO,
         'wohFlag' => self::WOH_FLAG,
-        'positionCode' => self::POSITION_CODE
+        'positionCode' => self::POSITION_CODE,
+        'shiftAllowance' => self::SHIFT_ALLOWANCE,
     ];
 
 }

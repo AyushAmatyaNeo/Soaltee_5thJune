@@ -18,6 +18,7 @@
             </div>
         `;
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
             {field: "TITLE", title: "Training"},
             {field: "TRAINING_TYPE", title: "Type"},
@@ -79,13 +80,14 @@
                 app.showMessage(error, 'error');
             });
         });
-        app.searchTable($table, ['FULL_NAME','TITLE','TRAINING_TYPE','REQUESTED_DATE','REQUESTED_DATE_BS',
+        app.searchTable($table, ['FULL_NAME','EMPLOYEE_CODE','TITLE','TRAINING_TYPE','REQUESTED_DATE','REQUESTED_DATE_BS',
             'START_DATE','START_DATE_BS',
             'END_DATE','END_DATE_BS',
             'DURATION','STATUS_DETAIL',
             'REMARKS'
         ]);
         var exportMap = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Employee Name',
             'TITLE': 'Training Name',
             'TRAINING_TYPE': 'Training Type',

@@ -1669,7 +1669,7 @@ if ($this->messages) {
                                                     </label>
                                                 </td>
                                                 <td>
-                                                    <label ng-bind="empDoc.FILETYPE_CODE">
+                                                    <label ng-bind="empDoc.FILE_TYPE">
                                                     </label>
 
                                                 </td>
@@ -1956,12 +1956,23 @@ if ($this->messages) {
         </div>
         </div>
         <div class="row margin-top-10">
+        <div class="col-sm-2">
+        <label>File Type:</label>
+        </div>
         <div class="col-sm-4">
         <select class="form-control " ng-options="key as value for (key,value) in fileTypes" ng-model="fileTypeCode">
-        <!--<option ng-repeat="(key,fileType) in fileTypes" value="{{key}}">{{fileType}}</option>-->
         </select>
         </div>
 
+        </div>
+        
+        <div class="row">
+        <div class="col-sm-2">
+        <label>File Name:</label>
+        </div>
+        <div class="col-sm-4">
+            <input class="form-control" type="text" ng-model="fileTypeName">
+        </div>
         </div>
 
 

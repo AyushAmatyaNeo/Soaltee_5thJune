@@ -21,6 +21,7 @@
         app.initializeKendoGrid($table, [
             {field: "COMPANY_NAME", title: "Company", width: 150},
             {field: "DEPARTMENT_NAME", title: "Department", width: 150},
+            {field: "EMPLOYEE_CODE", title: "Code", width: 150},
             {field: "FULL_NAME", title: "Name", width: 150},
             {title: "Date", columns: [
                     {field: "ATTENDANCE_DT", title: "AD", width: 75},
@@ -56,10 +57,11 @@
             }, function (error) {
             });
         });
-        app.searchTable('withOTReport', ['COMPANY_NAME', 'DEPARTMENT_NAME', 'FULL_NAME', 'ATTENDANCE_DT', 'ATTENDANCE_DT_N', 'TYPE'], true);
+        app.searchTable('withOTReport', ['COMPANY_NAME', 'EMPLOYEE_CODE', 'DEPARTMENT_NAME', 'FULL_NAME', 'ATTENDANCE_DT', 'ATTENDANCE_DT_N', 'TYPE'], true);
         var exportMap = {
             'COMPANY_NAME': 'Company',
             'DEPARTMENT_NAME': 'Department',
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name',
             'ATTENDANCE_DT': 'Date(AD)',
             'ATTENDANCE_DT_N': 'Date(BS)',

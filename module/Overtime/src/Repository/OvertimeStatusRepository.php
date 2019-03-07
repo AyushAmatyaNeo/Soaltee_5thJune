@@ -141,6 +141,7 @@ class OvertimeStatusRepository extends HrisRepository {
                   REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE,
                   OT.REMARKS                                                      AS REMARKS,
                   OT.DESCRIPTION                                                  AS DESCRIPTION,
+                  E.EMPLOYEE_CODE                                                 AS EMPLOYEE_CODE,
                   OT.EMPLOYEE_ID                                                  AS EMPLOYEE_ID,
                   OT.OVERTIME_ID                                                  AS OVERTIME_ID,
                   OT.MODIFIED_DATE                                                AS MODIFIED_DATE,

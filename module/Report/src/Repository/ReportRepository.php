@@ -11,7 +11,7 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Sql;
 
 class ReportRepository extends HrisRepository {
-
+ 
     public function employeeWiseDailyReport($employeeId) {
         $sql = <<<EOT
             SELECT R.*,
@@ -85,6 +85,7 @@ EOT;
                       TRUNC(AD.ATTENDANCE_DT)-TRUNC(M.FROM_DATE)+1                              AS DAY_COUNT, 
                       E.EMPLOYEE_ID                                                             AS EMPLOYEE_ID ,
                       E.FIRST_NAME                                                                   AS FIRST_NAME,
+                      E.EMPLOYEE_CODE                                                                   AS EMPLOYEE_CODE,
                       E.MIDDLE_NAME                                                                  AS MIDDLE_NAME,
                       E.LAST_NAME                                                                    AS LAST_NAME,
                       CONCAT(CONCAT(CONCAT(E.FIRST_NAME,' '),CONCAT(E.MIDDLE_NAME, '')),E.LAST_NAME) AS FULL_NAME,
@@ -260,7 +261,7 @@ EOT;
               E.FIRST_NAME                                                                   AS FIRST_NAME,
               E.MIDDLE_NAME                                                                  AS MIDDLE_NAME,
               E.LAST_NAME                                                                    AS LAST_NAME,
-              CONCAT(CONCAT(CONCAT(E.FIRST_NAME,' '),CONCAT(E.MIDDLE_NAME, '')),E.LAST_NAME) AS FULL_NAME,
+              EMPLOYEE_CODE||'-'||FULL_NAME                                                                      AS FULL_NAME,
               E.COMPANY_ID                                                                   AS COMPANY_ID,
               E.BRANCH_ID                                                                    AS BRANCH_ID,
               E.DEPARTMENT_ID                                                                AS DEPARTMENT_ID
@@ -1020,7 +1021,7 @@ EOT;
     public function employeeMonthlyReport($searchQuery) {
         $searchConditon = EntityHelper::getSearchConditon($searchQuery['companyId'], $searchQuery['branchId'], $searchQuery['departmentId'], $searchQuery['positionId'], $searchQuery['designationId'], $searchQuery['serviceTypeId'], $searchQuery['serviceEventTypeId'], $searchQuery['employeeTypeId'], $searchQuery['employeeId']);
         $sql = <<<EOT
-                SELECT D.FULL_NAME,
+                SELECT D.FULL_NAME, D.EMPLOYEE_CODE,
                   R.*
                 FROM
                   (SELECT *
@@ -1136,6 +1137,7 @@ EOT;
 (SELECT 
 E.FULL_NAME,
 AD.EMPLOYEE_ID,
+E.EMPLOYEE_CODE,
 CASE WHEN AD.OVERALL_STATUS IN ('TV','TN','PR','BA','LA','TP','LP','VP')
 THEN 'PR' ELSE AD.OVERALL_STATUS END AS OVERALL_STATUS,
 --AD.ATTENDANCE_DT,
@@ -1234,7 +1236,149 @@ EOT;
         return Helper::extractDbData($result);
     }
     
-   
     
+    public function getMonthlyAllowance($searchQuery) {
+        $fromDate=$searchQuery['fromDate'];
+        $toDate=$searchQuery['toDate'];
+        
+        $searchConditon = EntityHelper::getSearchConditon($searchQuery['companyId'], $searchQuery['branchId'], $searchQuery['departmentId'], $searchQuery['positionId'], $searchQuery['designationId'], $searchQuery['serviceTypeId'], $searchQuery['serviceEventTypeId'], $searchQuery['employeeTypeId'], $searchQuery['employeeId']);
+        $sql="SELECT  
+EMPLOYEE_ID,
+EMPLOYEE_CODE,
+FULL_NAME,
+        COMPANY_NAME,
+        BRANCH_NAME,
+        DEPARTMENT_NAME,
+        DESIGNATION_TITLE,
+        POSITION_NAME,
+        SUM(SYSTEM_OVERTIME) AS SYSTEM_OVERTIME,
+        SUM(MANUAL_OVERTIME) AS MANUAL_OVERTIME,
+        SUM(FOOD_ALLOWANCE) AS FOOD_ALLOWANCE,
+        SUM(SHIFT_ALLOWANCE) AS SHIFT_ALLOWANCE,
+        SUM(NIGHT_SHIFT_ALLOWANCE) AS NIGHT_SHIFT_ALLOWANCE,
+        SUM(HOLIDAY_COUNT) AS HOLIDAY_COUNT
+FROM 
+(SELECT
+E.EMPLOYEE_ID,
+E.EMPLOYEE_CODE,
+        E.FULL_NAME,
+        C.COMPANY_NAME,
+        B.BRANCH_NAME,
+        D.DEPARTMENT_NAME,
+        DES.DESIGNATION_TITLE,
+        P.POSITION_NAME,
+        CASE WHEN 
+        AD.OT_MINUTES >=0 then ROUND(AD.OT_MINUTES/60,2)
+        ELSE
+        0
+        END AS SYSTEM_OVERTIME,
+        CASE WHEN 
+        OM.OVERTIME_HOUR IS NOT NULL THEN
+        ROUND(OM.OVERTIME_HOUR,2)
+        WHEN AD.OT_MINUTES >=0 then ROUND(AD.OT_MINUTES/60,2)
+        ELSE
+        0
+        END
+        AS MANUAL_OVERTIME,
+        AD.FOOD_ALLOWANCE,
+        AD.SHIFT_ALLOWANCE,
+        AD.NIGHT_SHIFT_ALLOWANCE,
+        AD.HOLIDAY_COUNT
+        FROM HRIS_ATTENDANCE_DETAIL AD
+        LEFT JOIN HRIS_OVERTIME_MANUAL OM ON (OM.EMPLOYEE_ID=AD.EMPLOYEE_ID AND OM.ATTENDANCE_DATE=AD.ATTENDANCE_DT)
+        LEFT JOIN HRIS_EMPLOYEES E ON (AD.EMPLOYEE_ID=E.EMPLOYEE_ID)
+        LEFT JOIN HRIS_COMPANY C ON (C.COMPANY_ID=E.COMPANY_ID)
+        LEFT JOIN HRIS_BRANCHES B ON (B.BRANCH_ID=E.BRANCH_ID)
+        LEFT JOIN HRIS_DEPARTMENTS D ON (D.DEPARTMENT_ID=E.DEPARTMENT_ID)
+        LEFT JOIN HRIS_DESIGNATIONS DES ON (DES.DESIGNATION_ID=E.DESIGNATION_ID)
+        LEFT JOIN HRIS_POSITIONS P ON (P.POSITION_ID=E.POSITION_ID)
+        WHERE AD.Attendance_Dt
+        BETWEEN TO_DATE('{$fromDate}','DD-MON-YYYY') AND TO_DATE('{$toDate}','DD-MON-YYYY') {$searchConditon}
+        ) TAB_A
+        GROUP BY EMPLOYEE_ID,
+EMPLOYEE_CODE,
+FULL_NAME,
+        COMPANY_NAME,
+        BRANCH_NAME, 
+        DEPARTMENT_NAME,
+        DESIGNATION_TITLE,
+        POSITION_NAME ";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return Helper::extractDbData($result);
+    }
+     
+
+public function departmentWiseAttdReport($companyId, $date1, $date2) {
+        if($companyId == 0){
+          $sql = <<<EOT
+          SELECT *
+          FROM (SELECT 
+          DEPARTMENT_NAME,
+          OVERALL_STATUS,
+          COUNT(OVERALL_STATUS) AS TOTAL
+          FROM (select
+          HE.DEPARTMENT_ID,
+          HD.DEPARTMENT_NAME,
+          CASE 
+          WHEN HED.OVERALL_STATUS 
+          IN ('TV','TN','PR','BA','LA','TP','LP','VP')
+          THEN 'PR' 
+          ELSE HED.OVERALL_STATUS END AS OVERALL_STATUS
+          from HRIS_ATTENDANCE_DETAIL HED 
+          JOIN HRIS_EMPLOYEES HE ON (HE.EMPLOYEE_ID=HED.EMPLOYEE_ID)
+          JOIN HRIS_DEPARTMENTS HD ON(HD.DEPARTMENT_ID=HE.DEPARTMENT_ID)
+          FULL OUTER JOIN HRIS_COMPANY HC ON(HC.COMPANY_ID=HD.COMPANY_ID) 
+          WHERE HED.ATTENDANCE_DT BETWEEN '$date1' and '$date2'
+          )
+          GROUP BY OVERALL_STATUS,DEPARTMENT_NAME)
+          PIVOT (
+          MAX(TOTAL) FOR OVERALL_STATUS IN ('PR' as PR,'WD' as WD,'HD' as HD,'LV' as LV,'WH' as WH,'DO' as DO,'AB' as AB)
+          )
+EOT;
+        }
+        else{
+        $sql = <<<EOT
+        SELECT *
+        FROM (SELECT 
+        DEPARTMENT_NAME,
+        OVERALL_STATUS,
+        COUNT(OVERALL_STATUS) AS TOTAL
+        FROM (select
+        HE.DEPARTMENT_ID,
+        HD.DEPARTMENT_NAME,
+        CASE 
+        WHEN HED.OVERALL_STATUS 
+        IN ('TV','TN','PR','BA','LA','TP','LP','VP')
+        THEN 'PR' 
+        ELSE HED.OVERALL_STATUS END AS OVERALL_STATUS
+        from HRIS_ATTENDANCE_DETAIL HED 
+        JOIN HRIS_EMPLOYEES HE ON (HE.EMPLOYEE_ID=HED.EMPLOYEE_ID)
+        JOIN HRIS_DEPARTMENTS HD ON(HD.DEPARTMENT_ID=HE.DEPARTMENT_ID)
+        FULL OUTER JOIN HRIS_COMPANY HC ON(HC.COMPANY_ID=HD.COMPANY_ID) 
+        WHERE HED.ATTENDANCE_DT BETWEEN '$date1' and '$date2' 
+        AND HE.COMPANY_ID = $companyId
+        )
+        GROUP BY OVERALL_STATUS,DEPARTMENT_NAME)
+        PIVOT (
+        MAX(TOTAL) FOR OVERALL_STATUS IN ('PR' as PR,'WD' as WD,'HD' as HD,'LV' as LV,'WH' as WH,'DO' as DO,'AB' as AB)
+        )
+EOT;
+        }
+
+//        echo $sql;
+//        die();
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return Helper::extractDbData($result);
+    }
+    
+    public function getAllCompanies(){
+      $sql = "SELECT COMPANY_ID, COMPANY_NAME FROM HRIS_COMPANY";
+
+      $statement = $this->adapter->query($sql);
+      $result = $statement->execute();
+      return Helper::extractDbData($result);
+    }
     
 }

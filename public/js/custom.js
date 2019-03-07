@@ -1010,8 +1010,8 @@ window.app = (function ($, toastr, App) {
         });
         var rows = [{
                 cells: header
-            }];
-
+            }]; 
+ 
         var data = [];
         if (Array.isArray($table)) {
             data = $table;
@@ -1525,9 +1525,9 @@ window.app = (function ($, toastr, App) {
         }
         var preference = document.preference;
         var list = [];
-        if (preference['includeEmployeeCode'] == 'Y') {
-            list.push({field: "EMPLOYEE_CODE", title: "Code"}, );
-        }
+        // if (preference['includeEmployeeCode'] == 'Y') {
+        //     list.push({field: "EMPLOYEE_CODE", title: "Code"}, );
+        // } 
         if (preference['includeCompany'] == 'Y') {
             list.push({field: "COMPANY_NAME", title: "Company"}, );
         }
@@ -1547,9 +1547,9 @@ window.app = (function ($, toastr, App) {
         }
         var preference = document.preference;
         var finalMap = {};
-        if (preference['includeEmployeeCode'] == 'Y') {
-            finalMap['EMPLOYEE_CODE'] = "Code";
-        }
+        // if (preference['includeEmployeeCode'] == 'Y') {
+        //     finalMap['EMPLOYEE_CODE'] = "Code";
+        // }
         if (preference['includeCompany'] == 'Y') {
             finalMap['COMPANY_NAME'] = "Company";
         }

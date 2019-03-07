@@ -16,6 +16,7 @@
                 template: "<input type='checkbox' id='#:ID#' role-id='#:ROLE#'  class='k-checkbox row-checkbox'><label class='k-checkbox-label' for='#:ID#'></label>",
                 width: 40
             },
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
             {field: "LEAVE_ENAME", title: "Leave Name"},
             {title: "Applied Date",
@@ -69,8 +70,9 @@
             app.showMessage(error, 'error');
         });
 
-        app.searchTable($table, ['EMPLOYEE_NAME']);
+        app.searchTable($table, ['EMPLOYEE_NAME', 'EMPLOYEE_CODE']);
         var exportMap = {
+            'EMPLOYEE_CODE': 'Code',
             'EMPLOYEE_NAME': 'Employee Name',
             'LEAVE_ENAME': 'Leave',
             'REQUESTED_DT_AD': 'Requested Date(AD)',

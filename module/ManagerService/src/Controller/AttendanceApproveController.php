@@ -90,7 +90,11 @@ class AttendanceApproveController extends HrisController {
 
         $request = $this->getRequest();
         $model = new AttendanceRequestModel();
-        $detail = $attendanceRequestRepository->fetchById($id);
+        $detail = $attendanceRequestRepository->fetchByIdWithEmployeeId($id,$this->employeeId);
+        
+        if ($this->employeeId!=$detail['RECOMMENDER_ID'] && $this->employeeId!=$detail['APPROVER_ID']) {
+            return $this->redirect()->toRoute("leaveapprove");
+        }
 
         $employeeId = $detail['EMPLOYEE_ID'];
         $employeeName = $detail['FULL_NAME'];
@@ -116,7 +120,7 @@ class AttendanceApproveController extends HrisController {
                     'id' => $id,
                     'status' => $detail['STATUS'],
                     'employeeName' => $employeeName,
-                    'employeeId' => $employeeId,
+                    'employeeId' => $this->employeeId,
                     'approver' => $authApprover,
                     'requestedDt' => $detail['REQUESTED_DT'],
                     'role' => $role,

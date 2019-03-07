@@ -176,7 +176,7 @@ class LeaveBalanceRepository {
         $leaveArrayDb = $this->fetchLeaveAsDbArray($isMonthly);
 
         $sql = "
-           SELECT LA.*,E.FULL_NAME FROM (SELECT *
+           SELECT LA.*,E.FULL_NAME, E.EMPLOYEE_CODE AS EMPLOYEE_CODE FROM (SELECT *
             FROM
               (SELECT EMPLOYEE_ID,
               PREVIOUS_YEAR_BAL,
@@ -186,7 +186,7 @@ class LeaveBalanceRepository {
                 (TOTAL_DAYS+PREVIOUS_YEAR_BAL-BALANCE) AS TAKEN
               FROM HRIS_EMPLOYEE_LEAVE_ASSIGN
               WHERE EMPLOYEE_ID IN
-                ( SELECT E.EMPLOYEE_ID FROM HRIS_EMPLOYEES E WHERE 1=1 {$searchConditon}
+                ( SELECT E.EMPLOYEE_ID FROM HRIS_EMPLOYEES E WHERE 1=1 AND E.STATUS='E' {$searchConditon}
                 ){$monthlyCondition}
               ) PIVOT (MAX(PREVIOUS_YEAR_BAL) AS PREVIOUS_YEAR_BAL,MAX(BALANCE) AS BALANCE,MAX(TOTAL) AS TOTAL,MAX(TAKEN) AS TAKEN FOR LEAVE_ID IN ({$leaveArrayDb}) )
             ) LA LEFT JOIN HRIS_EMPLOYEES E ON (LA.EMPLOYEE_ID=E.EMPLOYEE_ID) 

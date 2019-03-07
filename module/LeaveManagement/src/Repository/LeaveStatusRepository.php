@@ -6,7 +6,7 @@ use Application\Repository\HrisRepository;
 use LeaveManagement\Model\LeaveApply;
 use Setup\Model\HrEmployees;
 use Zend\Db\Sql\Expression;
-use Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Sql; 
 
 class LeaveStatusRepository extends HrisRepository {
 
@@ -123,8 +123,14 @@ class LeaveStatusRepository extends HrisRepository {
                   INITCAP(TO_CHAR(LA.REQUESTED_DT, 'DD-MON-YYYY'))                AS APPLIED_DATE_AD,
                   BS_DATE(TO_CHAR(LA.REQUESTED_DT, 'DD-MON-YYYY'))                AS APPLIED_DATE_BS,
                   LEAVE_STATUS_DESC(LA.STATUS)                                    AS STATUS,
-                  REC_APP_ROLE(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY)      AS ROLE,
-                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE,
+                  REC_APP_ROLE(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  )      AS ROLE,
+                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  ) AS YOUR_ROLE,
                   LA.ID                                                           AS ID,
                   LA.EMPLOYEE_ID                                                  AS EMPLOYEE_ID,
                   INITCAP(TO_CHAR(LA.RECOMMENDED_DT, 'DD-MON-YYYY'))              AS RECOMMENDED_DT,
@@ -133,10 +139,10 @@ class LeaveStatusRepository extends HrisRepository {
                     INITCAP(E.FULL_NAME)                                            AS FULL_NAME,
                   INITCAP(E1.FULL_NAME)                                           AS RECOMMENDED_BY_NAME,
                   INITCAP(E2.FULL_NAME)                                           AS APPROVED_BY_NAME,
-                  RA.RECOMMEND_BY                                                 AS RECOMMENDER_ID,
-                  RA.APPROVED_BY                                                  AS APPROVER_ID,
-                  INITCAP(RECM.FULL_NAME)                                         AS RECOMMENDER_NAME,
-                  INITCAP(APRV.FULL_NAME)                                         AS APPROVER_NAME,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE  RA.RECOMMEND_BY END AS RECOMMENDER_ID,
+                CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE  RA.APPROVED_BY END AS APPROVER_ID,
+                CASE WHEN ALR_E.FULL_NAME IS NOT NULL THEN ALR_E.FULL_NAME ELSE  INITCAP(RECM.FULL_NAME) END AS RECOMMENDER_NAME,
+                CASE WHEN ALA_E.FULL_NAME IS NOT NULL THEN ALA_E.FULL_NAME ELSE  INITCAP(APRV.FULL_NAME) END AS APPROVER_NAME,
                   LA.RECOMMENDED_BY                                               AS RECOMMENDED_BY,
                   LA.APPROVED_BY                                                  AS APPROVED_BY,
                   LA.RECOMMENDED_REMARKS                                          AS RECOMMENDED_REMARKS,
@@ -161,9 +167,18 @@ class LeaveStatusRepository extends HrisRepository {
                 ON APRV.EMPLOYEE_ID = RA.APPROVED_BY
                 LEFT OUTER JOIN HRIS_LEAVE_SUBSTITUTE LS
                 ON LA.ID = LS.LEAVE_REQUEST_ID
+                LEFT OUTER JOIN HRIS_ALTERNATE_R_A ALR
+                ON(ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=LA.EMPLOYEE_ID AND ALR.R_A_ID={$recomApproveId})
+                LEFT OUTER JOIN HRIS_ALTERNATE_R_A ALA
+                ON(ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=LA.EMPLOYEE_ID AND ALA.R_A_ID={$recomApproveId})
+                LEFT JOIN HRIS_EMPLOYEES ALR_E ON(ALR.R_A_ID=ALR_E.EMPLOYEE_ID)
+                LEFT JOIN HRIS_EMPLOYEES ALA_E ON(ALA.R_A_ID=ALA_E.EMPLOYEE_ID)
                 LEFT OUTER JOIN HRIS_EMPLOYEES U
                 ON (U.EMPLOYEE_ID=RA.RECOMMEND_BY
-                OR U.EMPLOYEE_ID =RA.APPROVED_BY)
+                OR U.EMPLOYEE_ID =RA.APPROVED_BY
+                OR U.EMPLOYEE_ID   =ALR.R_A_ID
+                OR U.EMPLOYEE_ID   =ALA.R_A_ID
+                )
                 WHERE L.STATUS   ='E'
                 AND E.STATUS     ='E'
                 AND (E1.STATUS   =
@@ -198,7 +213,7 @@ class LeaveStatusRepository extends HrisRepository {
                 OR LS.EMPLOYEE_ID IS NULL)
                 AND U.EMPLOYEE_ID  ={$recomApproveId} {$searchCondition} {$statusCondition} {$leaveCondition} {$fromDateCondition} {$toDateCondition}
                 ORDER BY LA.REQUESTED_DT DESC";
-
+                
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result;

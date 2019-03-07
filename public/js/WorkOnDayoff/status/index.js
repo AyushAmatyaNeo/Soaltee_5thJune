@@ -8,6 +8,7 @@
         var $bulkActionDiv = $('#bulkActionDiv');
         var $bulkBtns = $(".btnApproveReject");
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
             {title: "Requested Date",
                 columns: [{
@@ -42,6 +43,7 @@
             </span>`}];
 
         var map = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name',
             'REQUESTED_DATE_AD': 'Request Date(AD)',
             'REQUESTED_DATE_BS': 'Request Date(BS)',
@@ -68,7 +70,7 @@
                     $bulkActionDiv.hide();
                 }
             }});
-        app.searchTable('dayoffWorkRequestStatusTable', ['FULL_NAME', 'REQUESTED_DATE_AD', 'FROM_DATE_AD', 'TO_DATE_AD', 'REQUESTED_DATE_BS', 'FROM_DATE_BS', 'TO_DATE_BS', 'DURATION', 'STATUS']);
+        app.searchTable('dayoffWorkRequestStatusTable', ['FULL_NAME', 'EMPLOYEE_CODE', 'REQUESTED_DATE_AD', 'FROM_DATE_AD', 'TO_DATE_AD', 'REQUESTED_DATE_BS', 'FROM_DATE_BS', 'TO_DATE_BS', 'DURATION', 'STATUS']);
 
         $search.on('click', function () {
             var q = document.searchManager.getSearchValues();

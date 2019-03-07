@@ -40,40 +40,51 @@ class LeaveApply extends HrisController {
                 $leaveRequest->endDate = Helper::getExpressionDate($leaveRequest->endDate);
                 $leaveRequest->requestedDt = Helper::getcurrentExpressionDate();
                 $leaveRequest->status = "RQ";
+                $leaveRequest->status = ($postedData['applyStatus'] == 'AP') ? 'AP' : 'RQ';
                 $this->repository->add($leaveRequest);
                 $this->flashmessenger()->addMessage("Leave Request Successfully added!!!");
+                if ($leaveRequest->status == 'RQ') {
 
-                if ($leaveSubstitute !== null && $leaveSubstitute !== "") {
-                    $leaveSubstituteModel = new LeaveSubstitute();
-                    $leaveSubstituteRepo = new LeaveSubstituteRepository($this->adapter);
+                    if ($leaveSubstitute !== null && $leaveSubstitute !== "") {
+                        $leaveSubstituteModel = new LeaveSubstitute();
+                        $leaveSubstituteRepo = new LeaveSubstituteRepository($this->adapter);
 
 
-                    $leaveSubstituteModel->leaveRequestId = $leaveRequest->id;
-                    $leaveSubstituteModel->employeeId = $leaveSubstitute;
-                    $leaveSubstituteModel->createdBy = $this->employeeId;
-                    $leaveSubstituteModel->createdDate = Helper::getcurrentExpressionDate();
-                    $leaveSubstituteModel->status = 'E';
+                        $leaveSubstituteModel->leaveRequestId = $leaveRequest->id;
+                        $leaveSubstituteModel->employeeId = $leaveSubstitute;
+                        $leaveSubstituteModel->createdBy = $this->employeeId;
+                        $leaveSubstituteModel->createdDate = Helper::getcurrentExpressionDate();
+                        $leaveSubstituteModel->status = 'E';
 
-                    $leaveSubstituteRepo->add($leaveSubstituteModel);
-                    try {
-                        HeadNotification::pushNotification(NotificationEvents::LEAVE_SUBSTITUTE_APPLIED, $leaveRequest, $this->adapter, $this);
-                    } catch (Exception $e) {
-                        $this->flashmessenger()->addMessage($e->getMessage());
-                    }
-                } else {
-                    try {
-                        HeadNotification::pushNotification(NotificationEvents::LEAVE_APPLIED, $leaveRequest, $this->adapter, $this);
-                    } catch (Exception $e) {
-                        $this->flashmessenger()->addMessage($e->getMessage());
+                        $leaveSubstituteRepo->add($leaveSubstituteModel);
+                        try {
+                            HeadNotification::pushNotification(NotificationEvents::LEAVE_SUBSTITUTE_APPLIED, $leaveRequest, $this->adapter, $this);
+                        } catch (Exception $e) {
+                            $this->flashmessenger()->addMessage($e->getMessage());
+                        }
+                    } else {
+                        try {
+                            HeadNotification::pushNotification(NotificationEvents::LEAVE_APPLIED, $leaveRequest, $this->adapter, $this);
+                        } catch (Exception $e) {
+                            $this->flashmessenger()->addMessage($e->getMessage());
+                        }
                     }
                 }
                 return $this->redirect()->toRoute("leavestatus");
             }
         }
+
+        $applyOptionValues = [
+            'RQ' => 'Pending',
+            'AP' => 'Approved'
+        ];
+        $applyOption = $this->getSelectElement(['name' => 'applyStatus', 'id' => 'applyStatus', 'class' => 'form-control', 'label' => 'Type'], $applyOptionValues);
+
         return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
-                    'employees' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["FULL_NAME"], ["STATUS" => 'E', 'RETIRED_FLAG' => 'N', 'IS_ADMIN' => "N"], "FULL_NAME", "ASC", null, FALSE, TRUE),
-                    'customRenderer' => Helper::renderCustomView()
+                    'employees' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["EMPLOYEE_CODE","FULL_NAME"], ["STATUS" => 'E', 'RETIRED_FLAG' => 'N', 'IS_ADMIN' => "N"], "FULL_NAME", "ASC", "-", FALSE, TRUE),
+                    'customRenderer' => Helper::renderCustomView(),
+                    'applyOption' => $applyOption
         ]);
     }
 

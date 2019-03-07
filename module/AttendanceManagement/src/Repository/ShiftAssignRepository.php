@@ -4,19 +4,14 @@ namespace AttendanceManagement\Repository;
 
 use Application\Helper\Helper;
 use Application\Model\Model;
-use Application\Repository\RepositoryInterface;
+use Application\Repository\HrisRepository;
 use AttendanceManagement\Model\ShiftAssign;
 use Zend\Db\Adapter\AdapterInterface;
-use Zend\Db\TableGateway\TableGateway;
 
-class ShiftAssignRepository implements RepositoryInterface {
+class ShiftAssignRepository extends HrisRepository {
 
-    private $tableGateway;
-    private $adapter;
-
-    public function __construct(AdapterInterface $adapter) {
-        $this->tableGateway = new TableGateway(ShiftAssign::TABLE_NAME, $adapter);
-        $this->adapter = $adapter;
+     public function __construct(AdapterInterface $adapter) {
+         parent::__construct($adapter, ShiftAssign::TABLE_NAME);
     }
 
     public function add(Model $model) {
@@ -45,46 +40,71 @@ class ShiftAssignRepository implements RepositoryInterface {
     }
 
     public function fetchShiftAssignWithDetail($data) {
-        $companyCondition = "";
-        $branchCondition = "";
-        $departmentCondition = "";
-        $designationCondition = "";
-        $positionCondition = "";
-        $serviceTypeCondition = "";
-        $serviceEventTypeConditon = "";
-        $employeeCondition = "";
-        $employeeTypeCondition = "";
+        
+        $employeeId = $data['employeeId'];
+        $companyId = $data['companyId'];
+        $branchId = $data['branchId'];
+        $departmentId = $data['departmentId'];
+        $designationId = $data['designationId'];
+        $positionId = $data['positionId'];
+        $serviceTypeId = $data['serviceTypeId'];
+        $serviceEventTypeId = $data['serviceEventTypeId'];
+        $employeeTypeId = $data['employeeTypeId'];
 
-        if (isset($data['companyId']) && $data['companyId'] != null && $data['companyId'] != -1) {
-            $companyCondition = "AND E.COMPANY_ID = {$data['companyId']}";
-        }
-        if (isset($data['branchId']) && $data['branchId'] != null && $data['branchId'] != -1) {
-            $branchCondition = "AND E.BRANCH_ID = {$data['branchId']}";
-        }
-        if (isset($data['departmentId']) && $data['departmentId'] != null && $data['departmentId'] != -1) {
-            $departmentCondition = "AND E.DEPARTMENT_ID = {$data['departmentId']}";
-        }
-        if (isset($data['designationId']) && $data['designationId'] != null && $data['designationId'] != -1) {
-            $designationCondition = "AND E.DESIGNATION_ID = {$data['designationId']}";
-        }
-        if (isset($data['positionId']) && $data['positionId'] != null && $data['positionId'] != -1) {
-            $positionCondition = "AND E.POSITION_ID = {$data['positionId']}";
-        }
-        if (isset($data['serviceTypeId']) && $data['serviceTypeId'] != null && $data['serviceTypeId'] != -1) {
-            $serviceTypeCondition = "AND E.SERVICE_TYPE_ID = {$data['serviceTypeId']}";
-        }
-        if (isset($data['serviceEventTypeId']) && $data['serviceEventTypeId'] != null && $data['serviceEventTypeId'] != -1) {
-            $serviceEventTypeConditon = "AND E.SERVICE_EVENT_TYPE_ID = {$data['serviceEventTypeId']}";
-        }
-        if (isset($data['employeeId']) && $data['employeeId'] != null && $data['employeeId'] != -1) {
-            $employeeCondition = "AND E.EMPLOYEE_ID = {$data['employeeId']}";
-        }
-        if (isset($data['employeeTypeId']) && $data['employeeTypeId'] != null && $data['employeeTypeId'] != -1) {
-            $employeeTypeCondition = "AND E.EMPLOYEE_TYPE = '{$data['employeeTypeId']}'";
-        }
-        $condition = $companyCondition . $branchCondition . $departmentCondition . $designationCondition . $positionCondition . $serviceTypeCondition . $serviceEventTypeConditon . $employeeCondition . $employeeTypeCondition;
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        
+        
+//        $companyCondition = "";
+//        $branchCondition = "";
+//        $departmentCondition = "";
+//        $designationCondition = "";
+//        $positionCondition = "";
+//        $serviceTypeCondition = "";
+//        $serviceEventTypeConditon = "";
+//        $employeeCondition = "";
+//        $employeeTypeCondition = "";
+
+//        if (isset($data['companyId']) && $data['companyId'] != null && $data['companyId'] != -1) {
+//            $companyCondition = "AND E.COMPANY_ID = {$data['companyId']}";
+//        }
+//        if (isset($data['branchId']) && $data['branchId'] != null && $data['branchId'] != -1) {
+//            $branchCondition = "AND E.BRANCH_ID = {$data['branchId']}";
+//        }
+//        if (isset($data['departmentId']) && $data['departmentId'] != null && $data['departmentId'] != -1) {
+//            $departmentCondition = "AND E.DEPARTMENT_ID in (SELECT DEPARTMENT_ID FROM
+//                         HRIS_DEPARTMENTS 
+//                        START WITH PARENT_DEPARTMENT in ({$data['departmentId']})
+//                        CONNECT BY PARENT_DEPARTMENT= PRIOR DEPARTMENT_ID
+//                        UNION 
+//                        SELECT DEPARTMENT_ID FROM HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN ({$data['departmentId']})
+//                        UNION
+//                        SELECT  TO_NUMBER(TRIM(REGEXP_SUBSTR(EXCEPTIONAL,'[^,]+', 1, LEVEL) )) DEPARTMENT_ID
+//  FROM (SELECT EXCEPTIONAL  FROM  HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN  ({$data['departmentId']}))
+//   CONNECT BY  REGEXP_SUBSTR(EXCEPTIONAL, '[^,]+', 1, LEVEL) IS NOT NULL
+//                        )";
+//        }
+//        if (isset($data['designationId']) && $data['designationId'] != null && $data['designationId'] != -1) {
+//            $designationCondition = "AND E.DESIGNATION_ID = {$data['designationId']}";
+//        }
+//        if (isset($data['positionId']) && $data['positionId'] != null && $data['positionId'] != -1) {
+//            $positionCondition = "AND E.POSITION_ID = {$data['positionId']}";
+//        }
+//        if (isset($data['serviceTypeId']) && $data['serviceTypeId'] != null && $data['serviceTypeId'] != -1) {
+//            $serviceTypeCondition = "AND E.SERVICE_TYPE_ID = {$data['serviceTypeId']}";
+//        }
+//        if (isset($data['serviceEventTypeId']) && $data['serviceEventTypeId'] != null && $data['serviceEventTypeId'] != -1) {
+//            $serviceEventTypeConditon = "AND E.SERVICE_EVENT_TYPE_ID = {$data['serviceEventTypeId']}";
+//        }
+//        if (isset($data['employeeId']) && $data['employeeId'] != null && $data['employeeId'] != -1) {
+//            $employeeCondition = "AND E.EMPLOYEE_ID = {$data['employeeId']}";
+//        }
+//        if (isset($data['employeeTypeId']) && $data['employeeTypeId'] != null && $data['employeeTypeId'] != -1) {
+//            $employeeTypeCondition = "AND E.EMPLOYEE_TYPE = '{$data['employeeTypeId']}'";
+//        }
+//        $condition = $companyCondition . $branchCondition . $departmentCondition . $designationCondition . $positionCondition . $serviceTypeCondition . $serviceEventTypeConditon . $employeeCondition . $employeeTypeCondition;
         $sql = <<<EOT
                 SELECT C.COMPANY_NAME,
+                  E.EMPLOYEE_CODE AS EMPLOYEE_CODE,
                   B.BRANCH_NAME,
                   DEP.DEPARTMENT_NAME,
                   P.POSITION_NAME,
@@ -116,7 +136,7 @@ class ShiftAssignRepository implements RepositoryInterface {
                 LEFT JOIN HRIS_SHIFTS S
                 ON (SA.SHIFT_ID=S.SHIFT_ID)
                 WHERE 1        =1
-                {$condition}
+                {$searchCondition}
                 ORDER BY E.FULL_NAME,
                   SA.START_DATE
 EOT;
@@ -157,44 +177,57 @@ EOT;
     }
 
     public function fetchEmployeeList($data) {
-        $companyCondition = "";
-        $branchCondition = "";
-        $departmentCondition = "";
-        $designationCondition = "";
-        $positionCondition = "";
-        $serviceTypeCondition = "";
-        $serviceEventTypeConditon = "";
-        $employeeCondition = "";
-        $employeeTypeCondition = "";
+        
+        $employeeId = $data['employeeId'];
+        $companyId = $data['companyId'];
+        $branchId = $data['branchId'];
+        $departmentId = $data['departmentId'];
+        $designationId = $data['designationId'];
+        $positionId = $data['positionId'];
+        $serviceTypeId = $data['serviceTypeId'];
+        $serviceEventTypeId = $data['serviceEventTypeId'];
+        $employeeTypeId = $data['employeeTypeId'];
 
-        if (isset($data['companyId']) && $data['companyId'] != null && $data['companyId'] != -1) {
-            $companyCondition = "AND E.COMPANY_ID = {$data['companyId']}";
-        }
-        if (isset($data['branchId']) && $data['branchId'] != null && $data['branchId'] != -1) {
-            $branchCondition = "AND E.BRANCH_ID = {$data['branchId']}";
-        }
-        if (isset($data['departmentId']) && $data['departmentId'] != null && $data['departmentId'] != -1) {
-            $departmentCondition = "AND E.DEPARTMENT_ID = {$data['departmentId']}";
-        }
-        if (isset($data['designationId']) && $data['designationId'] != null && $data['designationId'] != -1) {
-            $designationCondition = "AND E.DESIGNATION_ID = {$data['designationId']}";
-        }
-        if (isset($data['positionId']) && $data['positionId'] != null && $data['positionId'] != -1) {
-            $positionCondition = "AND E.POSITION_ID = {$data['positionId']}";
-        }
-        if (isset($data['serviceTypeId']) && $data['serviceTypeId'] != null && $data['serviceTypeId'] != -1) {
-            $serviceTypeCondition = "AND E.SERVICE_TYPE_ID = {$data['serviceTypeId']}";
-        }
-        if (isset($data['serviceEventTypeId']) && $data['serviceEventTypeId'] != null && $data['serviceEventTypeId'] != -1) {
-            $serviceEventTypeConditon = "AND E.SERVICE_EVENT_TYPE_ID = {$data['serviceEventTypeId']}";
-        }
-        if (isset($data['employeeId']) && $data['employeeId'] != null && $data['employeeId'] != -1) {
-            $employeeCondition = "AND E.EMPLOYEE_ID = {$data['employeeId']}";
-        }
-        if (isset($data['employeeTypeId']) && $data['employeeTypeId'] != null && $data['employeeTypeId'] != -1) {
-            $employeeTypeCondition = "AND E.EMPLOYEE_TYPE = '{$data['employeeTypeId']}'";
-        }
-        $condition = $companyCondition . $branchCondition . $departmentCondition . $designationCondition . $positionCondition . $serviceTypeCondition . $serviceEventTypeConditon . $employeeCondition . $employeeTypeCondition;
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        
+//        $companyCondition = "";
+//        $branchCondition = "";
+//        $departmentCondition = "";
+//        $designationCondition = "";
+//        $positionCondition = "";
+//        $serviceTypeCondition = "";
+//        $serviceEventTypeConditon = "";
+//        $employeeCondition = "";
+//        $employeeTypeCondition = "";
+//
+//        if (isset($data['companyId']) && $data['companyId'] != null && $data['companyId'] != -1) {
+//            $companyCondition = "AND E.COMPANY_ID = {$data['companyId']}";
+//        }
+//        if (isset($data['branchId']) && $data['branchId'] != null && $data['branchId'] != -1) {
+//            $branchCondition = "AND E.BRANCH_ID = {$data['branchId']}";
+//        }
+//        if (isset($data['departmentId']) && $data['departmentId'] != null && $data['departmentId'] != -1) {
+//            $departmentCondition = "AND E.DEPARTMENT_ID = {$data['departmentId']}";
+//        }
+//        if (isset($data['designationId']) && $data['designationId'] != null && $data['designationId'] != -1) {
+//            $designationCondition = "AND E.DESIGNATION_ID = {$data['designationId']}";
+//        }
+//        if (isset($data['positionId']) && $data['positionId'] != null && $data['positionId'] != -1) {
+//            $positionCondition = "AND E.POSITION_ID = {$data['positionId']}";
+//        }
+//        if (isset($data['serviceTypeId']) && $data['serviceTypeId'] != null && $data['serviceTypeId'] != -1) {
+//            $serviceTypeCondition = "AND E.SERVICE_TYPE_ID = {$data['serviceTypeId']}";
+//        }
+//        if (isset($data['serviceEventTypeId']) && $data['serviceEventTypeId'] != null && $data['serviceEventTypeId'] != -1) {
+//            $serviceEventTypeConditon = "AND E.SERVICE_EVENT_TYPE_ID = {$data['serviceEventTypeId']}";
+//        }
+//        if (isset($data['employeeId']) && $data['employeeId'] != null && $data['employeeId'] != -1) {
+//            $employeeCondition = "AND E.EMPLOYEE_ID = {$data['employeeId']}";
+//        }
+//        if (isset($data['employeeTypeId']) && $data['employeeTypeId'] != null && $data['employeeTypeId'] != -1) {
+//            $employeeTypeCondition = "AND E.EMPLOYEE_TYPE = '{$data['employeeTypeId']}'";
+//        }
+//        $condition = $companyCondition . $branchCondition . $departmentCondition . $designationCondition . $positionCondition . $serviceTypeCondition . $serviceEventTypeConditon . $employeeCondition . $employeeTypeCondition;
         $sql = <<<EOT
                 SELECT C.COMPANY_NAME,
                   B.BRANCH_NAME,
@@ -223,8 +256,8 @@ EOT;
                 ON (E.DESIGNATION_ID=DES.DESIGNATION_ID)
                 LEFT JOIN HRIS_SERVICE_TYPES ST
                 ON (ST.SERVICE_TYPE_ID=E.SERVICE_TYPE_ID)
-                WHERE 1               =1
-                {$condition}
+                WHERE 1               =1 AND E.STATUS='E' 
+                {$searchCondition}
                 ORDER BY E.FULL_NAME               
 EOT;
 

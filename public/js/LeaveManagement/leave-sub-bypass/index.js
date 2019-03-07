@@ -23,6 +23,7 @@
                 value.DEPARTMENT_NAME=(value.DEPARTMENT_NAME!==null)?value.DEPARTMENT_NAME:' ';
                 value.POSITION_NAME=(value.POSITION_NAME!==null)?value.POSITION_NAME:' ';
                     var appendData = `<tr >
+                            <td>` + value.EMPLOYEE_CODE + `</td>
                             <td>` + value.FULL_NAME + `</td>
                             <td>
                     ` + value.BRANCH_NAME + `

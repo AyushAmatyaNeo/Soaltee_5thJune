@@ -33,6 +33,10 @@ if ($this->messages) {
 $form->prepare();
 ?>
 
+<script>
+    document.selectedAlternateRecommneder = <?php echo json_encode($alternateRecommendor); ?>;
+    document.selectedAlternateApprover = <?php echo json_encode($alternateApprover); ?>;
+</script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\recommendapprove')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
 </div>
@@ -74,6 +78,29 @@ $form->prepare();
                                 <?php print $this->formLabel($approvedBy); ?>
                                 <?php print $this->formElement($approvedBy); ?>
                                 <?php print $this->formElementErrors()->render($approvedBy, ['class' => 'help-block']); ?>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class='col-sm-4'>
+                            <div class="form-group">
+                                <label for="alternateRecomender">Alternate Recommender</label>
+                                <select multiple class="form-control" name="alternateRecomender[]" id="alternateRecomender">
+                                    <?php foreach($employeeList as $key => $value ){?>
+                                    <option value='<?=$key?>'><?=$value?></option>
+                                    <?php  }?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class='col-sm-4'>
+                            <div class="form-group">
+                                <label for="alternateApprover">Alternate Approver</label>
+                                <select multiple class="form-control" name="alternateApprover[]" id="alternateApprover">
+                                    <?php foreach($employeeList as $key => $value ){?>
+                                    <option value='<?=$key?>'><?=$value?></option>
+                                    <?php  }?>
+                                </select>
                             </div>
                         </div>
 

@@ -27,6 +27,9 @@ class Preference extends Model {
     public $orderByDesignation='N';
     public $orderByJoinDate='N';
     public $orderBySeniority='N';
+    public $calendarView='N';
+    public $attAppShiftChangeable='N';
+    public $attAppTimeChangeable='N';
 
     CONST ALLOW_SYSTEM_ATTENANCE = "ALLOW_SYSTEM_ATTENDANCE";
     CONST NEED_APPROVAL_FOR_LATE_CHECK_IN = "NEED_APPROVAL_FOR_LATE_CHECK";
@@ -51,7 +54,9 @@ class Preference extends Model {
     CONST ORDER_BY_DESIGNATION="ORDER_BY_DESIGNATION";
     CONST ORDER_BY_JOIN_DATE="ORDER_BY_JOIN_DATE";
     CONST ORDER_BY_SENIORITY="ORDER_BY_SENIORITY";
-    
+    CONST CALENDAR_VIEW="CALENDAR_VIEW";
+    CONST ATT_APP_SHIFT_CHANGEABLE="ATT_APP_SHIFT_CHANGEABLE";
+    CONST ATT_APP_TIME_CHANGEABLE="ATT_APP_TIME_CHANGEABLE";
 
     public $mappings = [
         'allowSystemAttendance' => self::ALLOW_SYSTEM_ATTENANCE,
@@ -76,7 +81,10 @@ class Preference extends Model {
         'orderByPosition' =>self::ORDER_BY_POSITION,
         'orderByDesignation' =>self::ORDER_BY_DESIGNATION,
         'orderByJoinDate' =>self::ORDER_BY_JOIN_DATE,
-        'orderBySeniority' =>self::ORDER_BY_SENIORITY
+        'orderBySeniority' =>self::ORDER_BY_SENIORITY,
+        'calendarView' =>self::CALENDAR_VIEW,
+        'attAppShiftChangeable' =>self::ATT_APP_SHIFT_CHANGEABLE,
+        'attAppTimeChangeable' =>self::ATT_APP_TIME_CHANGEABLE
     ];
 
 }

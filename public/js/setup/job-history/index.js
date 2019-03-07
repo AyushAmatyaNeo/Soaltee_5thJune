@@ -10,6 +10,7 @@
 
         var data = [];
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code", width: 100, locked: true},
             {field: "FULL_NAME", title: "Name", width: 100, locked: true},
             {field: "SERVICE_EVENT_TYPE_NAME", title: "Event", width: 100, locked: true},
             {title: "Event Date", columns: [
@@ -40,9 +41,10 @@
                         </a>`}
         ];
         app.initializeKendoGrid($table, columns);
-        app.searchTable('jobHistoryTable', ['FULL_NAME', 'START_DATE', 'SERVICE_EVENT_TYPE_NAME', 'TO_SERVICE_NAME', 'TO_BRANCH_NAME', 'TO_DEPARTMENT_NAME', 'TO_DESIGNATION_TITLE', 'TO_POSITION_NAME']);
+        app.searchTable('jobHistoryTable', ['FULL_NAME', 'EMPLOYEE_CODE', 'START_DATE', 'SERVICE_EVENT_TYPE_NAME', 'TO_SERVICE_NAME', 'TO_BRANCH_NAME', 'TO_DEPARTMENT_NAME', 'TO_DESIGNATION_TITLE', 'TO_POSITION_NAME']);
 
         var exportKV = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Employee Name',
             'SERVICE_EVENT_TYPE_NAME': 'Service Event Type',
             'EVENT_DATE_AD': 'Event Date(AD)',

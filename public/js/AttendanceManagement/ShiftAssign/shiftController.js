@@ -21,6 +21,7 @@
             {field: "DEPARTMENT_NAME", title: "Department", width: 150},
             {field: "POSITION_NAME", title: "Position", width: 150},
             {field: "DESIGNATION_TITLE", title: "Designation", width: 150},
+            {field: "EMPLOYEE_CODE", title: "Code", width: 150},
             {field: "FULL_NAME", title: "Name", width: 150},
             {field: "SHIFT_ENAME", title: "Shift", width: 150},
             {title: "From", columns: [
@@ -39,7 +40,7 @@
                 }
             }});
 
-        app.searchTable('shiftAssignTable', ['COMPANY_NAME', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'POSITION_NAME', 'DESIGNATION_TITLE', 'FULL_NAME', 'SHIFT_ENAME', 'FROM_DATE_AD', 'FROM_DATE_BS', 'TO_DATE_AD', 'TO_DATE_BS'], true);
+        app.searchTable('shiftAssignTable', ['COMPANY_NAME', 'EMPLOYEE_CODE', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'POSITION_NAME', 'DESIGNATION_TITLE', 'FULL_NAME', 'SHIFT_ENAME', 'FROM_DATE_AD', 'FROM_DATE_BS', 'TO_DATE_AD', 'TO_DATE_BS'], true);
         app.pdfExport(
                 'shiftAssignTable',
                 {
@@ -48,6 +49,7 @@
                     'DEPARTMENT_NAME': 'Department',
                     'POSITION_NAME': 'Position',
                     'DESIGNATION_TITLE': 'Designation',
+                    'EMPLOYEE_CODE': 'Code',
                     'FULL_NAME': 'Name',
                     'SHIFT_ENAME': 'Shift',
                     'FROM_DATE_AD': 'From(AD)',

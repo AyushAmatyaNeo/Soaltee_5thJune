@@ -360,7 +360,7 @@ print $this->form()->openTag($form);
                 <?php } ?>
                 <div class="form-group">
                     <?php
-                    if (($status == 'RQ' && $employeeId == $recommendedBy) || ($status == 'RC' && $employeeId != $recommendedBy) || ($status == 'CP' && $employeeId == $recommendedBy) || ($status == 'CR' && $employeeId != $recommendedBy) ) {
+                    if (($role==2 && $status == 'RQ' && $employeeId == $recommendedBy) || (($role==3||$role==4)  && $status == 'RC' && $employeeId != $recommendedBy) || ($status == 'CP' && $employeeId == $recommendedBy) || ($status == 'CR' && $employeeId != $recommendedBy) ) {
                         print $this->formSubmit($submit);
                         ?>
                         <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">

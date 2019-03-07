@@ -16,6 +16,7 @@
         $status.select2();
 
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee", template: "<span>#: (FULL_NAME == null) ? '-' : FULL_NAME #</span>"},
             {title: "Requested Date",
                 columns: [{
@@ -45,6 +46,7 @@
 `}];
         columns = app.prependPrefColumns(columns);
         var map = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name',
             'REQUESTED_DT_AD': 'Req.Date(AD)',
             'REQUESTED_DT_BS': 'Req.Date(BS)',
@@ -69,7 +71,7 @@
                     $bulkActionDiv.hide();
                 }
             }});
-        app.searchTable('attendanceRequestStatusTable', ['FULL_NAME', 'REQUESTED_DT_AD', 'ATTENDANCE_DT_AD', 'REQUESTED_DT_BS', 'ATTENDANCE_DT_BS', 'IN_TIME', 'OUT_TIME', 'YOUR_ROLE', 'STATUS']);
+        app.searchTable('attendanceRequestStatusTable', ['FULL_NAME', 'EMPLOYEE_CODE', 'REQUESTED_DT_AD', 'ATTENDANCE_DT_AD', 'REQUESTED_DT_BS', 'ATTENDANCE_DT_BS', 'IN_TIME', 'OUT_TIME', 'YOUR_ROLE', 'STATUS']);
 
 
         $search.on("click", function () {

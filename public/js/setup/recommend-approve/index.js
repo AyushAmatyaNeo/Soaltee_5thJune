@@ -1,6 +1,7 @@
 (function ($) {
     'use strict';
     $(document).ready(function () {
+        $('select').select2();
         var $table = $('#table');
         var actiontemplateConfig = {
             update: {
@@ -17,20 +18,26 @@
         };
         var columns = [
             {field: "COMPANY_NAME", title: "Company"},
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "EMPLOYEE_NAME", title: "Name"},
             {field: "RECOMMENDER_NAME", title: "Recommender"},
             {field: "APPROVER_NAME", title: "Approver"},
+            {field: "A_R_NAME", title: "Alt Recm"},
+            {field: "A_A_NAME", title: "Alt App"},
             {field: ["EMPLOYEE_ID"], title: "Action", template: app.genKendoActionTemplate(actiontemplateConfig)}
         ];
         var map = {
             'COMPANY_NAME': 'Company',
+            'EMPLOYEE_CODE': 'Code',
             'EMPLOYEE_NAME': 'Name',
             'RECOMMENDER_NAME': 'Recommender',
             'APPROVER_NAME': 'Approver',
+            'A_R_NAME': 'Alternate Recommender',
+            'A_A_NAME': 'Alternate Approver',
         }
         app.initializeKendoGrid($table, columns);
 
-        app.searchTable($table, ['EMPLOYEE_NAME']);
+        app.searchTable($table, ['EMPLOYEE_NAME', 'EMPLOYEE_CODE']);
 
         $('#excelExport').on('click', function () {
             app.excelExport($table, map, 'Recommender Approver List.xlsx');

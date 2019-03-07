@@ -38,7 +38,9 @@ class WorkOnHolidayStatus extends HrisController {
                 'holidays' => $holidaySE,
                 'status' => $statusSE,
                 'searchValues' => EntityHelper::getSearchData($this->adapter),
-                'preference'=>$this->preference
+                'preference'=>$this->preference,
+                'employeeDetail' => $this->storageData['employee_detail'],
+                'acl' => $this->acl,
         ]);
     }
 

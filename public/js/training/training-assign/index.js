@@ -1,6 +1,7 @@
 (function ($, app) {
     'use strict';
     $(document).ready(function () {
+        $('select').select2();
         app.startEndDatePickerWithNepali('nepaliFromDate', 'fromDate', 'nepaliToDate', 'toDate', null, true);
         var $table = $('#table');
         var $search = $('#search');
@@ -41,6 +42,7 @@
                     {field: "END_DATE_BS",
                         title: "Nepali",
                     }]},
+            {field: "EMPLOYEE_CODE", title: "Code"},  
             {field: "EMPLOYEE_NAME", title: "Employee"},
             {field: ["ALLOW_VIEW", 'ALLOW_DELETE', "TRAINING_ID", "EMPLOYEE_ID"], title: "Action", template: action}
         ]);
@@ -59,7 +61,7 @@
                 app.showMessage(error, 'error');
             });
         });
-        app.searchTable($table, ['EMPLOYEE_NAME']);
+        app.searchTable($table, ['EMPLOYEE_NAME', 'EMPLOYEE_CODE']);
         var exportMap = {
             'TRAINING_CODE': 'Code',
             'TRAINING_NAME': 'Name',
@@ -68,6 +70,7 @@
             'START_DATE_BS': 'From Date(BS)',
             'END_DATE_AD': 'To Date(AD)',
             'END_DATE_BS': 'To Date(BS)',
+            'EMPLOYEE_CODE': 'Code',
             'EMPLOYEE_NAME': 'Employee Name',
         };
         $('#excelExport').on('click', function () {

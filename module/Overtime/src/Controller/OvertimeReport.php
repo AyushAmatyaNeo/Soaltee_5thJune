@@ -31,7 +31,11 @@ class OvertimeReport extends HrisController {
         $data['gridReadLink'] = $this->url()->fromRoute('overtime-report', ['action' => 'pvmRead']);
         $data['gridUpdateLink'] = $this->url()->fromRoute('overtime-report', ['action' => 'pvmUpdate']);
 
-        return ['data' => json_encode($data)];
+        return [
+            'data' => json_encode($data),
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail']
+            ];
     }
 
     public function pvmReadAction() {

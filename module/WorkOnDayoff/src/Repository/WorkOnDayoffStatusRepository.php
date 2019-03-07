@@ -49,6 +49,7 @@ class WorkOnDayoffStatusRepository extends HrisRepository {
                   WD.REMARKS                                                      AS REMARKS,
                   WD.DURATION                                                     AS DURATION,
                   WD.EMPLOYEE_ID                                                  AS EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE                                                  AS EMPLOYEE_CODE,
                   WD.ID                                                           AS ID,
                   WD.MODIFIED_DATE                                                AS MODIFIED_DATE,
                   INITCAP(TO_CHAR(WD.RECOMMENDED_DATE, 'DD-MON-YYYY'))            AS RECOMMENDED_DATE,

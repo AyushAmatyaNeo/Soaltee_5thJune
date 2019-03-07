@@ -70,7 +70,7 @@ class LeaveAssignRepository extends HrisRepository {
                 ON (E.BRANCH_ID=B.BRANCH_ID)
                 LEFT JOIN HRIS_DEPARTMENTS DEP
                 ON (E.DEPARTMENT_ID=DEP.DEPARTMENT_ID)
-                WHERE 1            =1 
+                WHERE 1            =1 AND E.STATUS='E'
                 {$searchCondition}
                     AND (CASE 
            WHEN ELA.FISCAL_YEAR_MONTH_NO IS NOT NULL THEN 

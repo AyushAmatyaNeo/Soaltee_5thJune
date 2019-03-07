@@ -47,12 +47,13 @@
             app.serverRequest('', q).then(function (response) {
                 var columnList = response.data;
                 columns = [
+                    {field: 'EMPLOYEE_CODE', title: 'Code', width: 150, locked: true},
                     {field: 'FULL_NAME', title: 'Employee', width: 150, locked: true}
                 ];
-                exportMap = {'FULL_NAME': "Employee"};
+                exportMap = [{'EMPLOYEE_CODE': "Code"}, {'FULL_NAME': "Employee"}];
                 fields = {
                     'FULL_NAME': {editable: false},
-                };
+                }; 
                 $.each(columnList, function (k, v) {
                     columns.push({field: v['MONTH_DAY_FIELD'], title: v['MONTH_DAY_TITLE'], width: 50});
                     fields[v['MONTH_DAY_FIELD']] = {type: "number"};

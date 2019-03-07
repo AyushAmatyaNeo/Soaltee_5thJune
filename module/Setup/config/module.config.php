@@ -12,6 +12,7 @@ use Setup\Controller\DepartmentController;
 use Setup\Controller\DesignationController;
 use Setup\Controller\EmployeeController;
 use Setup\Controller\ExperienceController;
+use Setup\Controller\FileTypeController;
 use Setup\Controller\FunctionalLevelsController;
 use Setup\Controller\FunctionalTypesController;
 use Setup\Controller\InstituteController;
@@ -313,6 +314,16 @@ return [
                     'route' => '/setup/functionalLevels[/:action[/:id]]',
                     'defaults' => [
                         'controller' => FunctionalLevelsController::class,
+                        'action' => 'index'
+                    ]
+                ]
+            ],
+            'fileType' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/setup/fileType[/:action[/:id]]',
+                    'defaults' => [
+                        'controller' => FileTypeController::class,
                         'action' => 'index'
                     ]
                 ]
@@ -919,6 +930,33 @@ return [
                 ]
             ]
         ],
+        'fileType' => [
+            [
+                'label' => 'File Type',
+                'route' => 'fileType',
+            ],
+            [
+                'label' => 'File Type',
+                'route' => 'fileType',
+                'pages' => [
+                    [
+                        'label' => 'List',
+                        'route' => 'fileType',
+                        'action' => 'index',
+                    ],
+                    [
+                        'label' => 'Add',
+                        'route' => 'fileType',
+                        'action' => 'add',
+                    ],
+                    [
+                        'label' => 'Edit',
+                        'route' => 'fileType',
+                        'action' => 'edit',
+                    ],
+                ]
+            ]
+        ],
     ],
     'controllers' => [
         'factories' => [
@@ -943,7 +981,8 @@ return [
             ServiceQuestionController::class => ControllerFactory::class,
             LocationController::class => ControllerFactory::class,
             FunctionalTypesController::class => ControllerFactory::class,
-            FunctionalLevelsController::class => ControllerFactory::class
+            FunctionalLevelsController::class => ControllerFactory::class,
+            FileTypeController::class => ControllerFactory::class
         ],
     ],
     'view_manager' => [

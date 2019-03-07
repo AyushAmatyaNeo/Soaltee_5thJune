@@ -170,7 +170,27 @@ class SystemSettingForm {
      * @Annotation\Attributes({ "id":"orderBySeniority","value":"N"})
      */
     public $orderBySeniority;
-
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Options({"value_options":{"N":"Nepali","E":"English"},"label":"Calendar View"})
+     * @Annotation\Attributes({ "id":"calendarView","value":"N"})
+     */
+    public $calendarView;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Options({"value_options":{"N":"No","Y":"Yes"},"label":"Att App Shift changeable"})
+     * @Annotation\Attributes({ "id":"attAppShiftChangeable","value":"N"})
+     */
+    public $attAppShiftChangeable;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Options({"value_options":{"N":"No","Y":"Yes"},"label":"Att App Time changeable"})
+     * @Annotation\Attributes({ "id":"attAppTimeChangeable","value":"N"})
+     */
+    public $attAppTimeChangeable;
 
     /**
      * @Annotation\Type("Zend\Form\Element\Submit")

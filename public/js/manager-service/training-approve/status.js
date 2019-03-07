@@ -15,6 +15,7 @@
             </div>
         `;
         app.initializeKendoGrid($table, [
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
             {field: "TITLE", title: "Training"},
             {field: "TRAINING_TYPE", title: "Type"},
@@ -68,8 +69,9 @@
                 app.showMessage(error, 'error');
             });
         });
-        app.searchTable($table, ['EMPLOYEE_NAME']);
+        app.searchTable($table, ['EMPLOYEE_NAME', 'EMPLOYEE_CODE']);
         var exportMap = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Employee Name',
             'TITLE': 'Training Name',
             'TRAINING_TYPE': 'Training Type',

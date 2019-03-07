@@ -15,7 +15,7 @@ $this->headScript()
 ?>
 <script>
     document.searchValues =<?php echo json_encode($searchValues); ?>;
-    document.getFiscalYearMonthLink = '<?php echo $this->url('penalty', ['action' => 'getFiscalYearMonth']); ?>';
+    document.getFiscalYearMonthLink = '<?php echo $this->url('allreport', ['action' => 'getFiscalYearMonth']); ?>';
     document.linkToEmpower =<?php echo $linkToEmpower; ?>;
     document.withOvertimeWs = '<?php echo $this->url('allreport', ['action' => 'withOvertime']); ?>';
     document.toEmpowerLink = '<?php echo $this->url('allreport', ['action' => 'toEmpower']); ?>';

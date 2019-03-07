@@ -92,6 +92,12 @@ function setTemplate(temp) {
         };
             var cols = [];
             cols.push({
+                field: 'EMPLOYEE_CODE',
+                title: "Code",
+                locked: true,
+                width: 150
+            })
+            cols.push({
                 field: 'FULL_NAME',
                 title: "Name",
                 locked: true,

@@ -96,6 +96,8 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                                                 echo "Pending";
                                             } else if ($status == "R") {
                                                 echo "Rejected";
+                                            } else if ($status == "RC") {
+                                                echo "Recommended";
                                             } else if ($status == "AP") {
                                                 echo "Approved";
                                             } else if ($status == "C") {
@@ -227,7 +229,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <?php print $this->formElementErrors()->render($approvedRemarks, ['class' => 'help-block error']); ?>
 
                 <div class="">
-                    <?php if ($status == 'RQ') { ?>
+                    <?php if ($status == 'RQ' || $status == 'RC') { ?>
                         <?php print $this->formSubmit($submit); ?>
                         <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">
                         <?php

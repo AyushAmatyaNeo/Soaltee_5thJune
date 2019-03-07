@@ -24,6 +24,7 @@
             </div>
         `;
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code", width: 100},
             {field: "EMPLOYEE_NAME", title: "Employee", width: 100},
             {title: "Start Date",
                 columns: [{
@@ -88,8 +89,9 @@
                 app.showMessage(error, 'error');
             });
         });
-        app.searchTable($table, ['EMPLOYEE_NAME']);
+        app.searchTable($table, ['EMPLOYEE_NAME', 'EMPLOYEE_CODE']);
         var exportMap = {
+            'EMPLOYEE_CODE': 'Code',
             'EMPLOYEE_NAME': 'Employee Name',
             'REQUESTED_DATE_AD': 'Request Date(AD)',
             'REQUESTED_DATE_BS': 'Request Date(BS)',

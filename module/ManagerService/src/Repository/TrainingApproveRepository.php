@@ -209,6 +209,7 @@ class TrainingApproveRepository extends HrisRepository {
         $sql = "SELECT TR.REQUEST_ID,
                   TR.EMPLOYEE_ID,
                   E.FULL_NAME                                            AS FULL_NAME,
+                  E.EMPLOYEE_CODE                                            AS EMPLOYEE_CODE,
                   INITCAP(TO_CHAR(TR.REQUESTED_DATE, 'DD-MON-YYYY')) AS REQUESTED_DATE,
                   BS_DATE(TO_CHAR(TR.REQUESTED_DATE, 'DD-MON-YYYY')) AS REQUESTED_DATE_BS,
                   TR.APPROVED_BY,
@@ -326,7 +327,7 @@ class TrainingApproveRepository extends HrisRepository {
             }
         }
 
-        $sql = "SELECT TR.REQUEST_ID,
+        $sql = "SELECT TR.REQUEST_ID,E.EMPLOYEE_CODE,
                   TR.EMPLOYEE_ID,
                   E.FULL_NAME                                            AS FULL_NAME,
                   INITCAP(TO_CHAR(TR.REQUESTED_DATE, 'DD-MON-YYYY')) AS REQUESTED_DATE,

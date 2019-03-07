@@ -26,6 +26,7 @@
                     headerTemplate: "<input type='checkbox' id='header-chb' class='k-checkbox header-checkbox'><label class='k-checkbox-label' for='header-chb'></label>",
                     template: "<input type='checkbox' id='#:ADVANCE_REQUEST_ID#' role-id='#:ROLE#'  class='k-checkbox row-checkbox'><label class='k-checkbox-label' for='#:ADVANCE_REQUEST_ID#'></label>"
                 },
+                {field: "EMPLOEE_CODE", title: "Code"},
                 {field: "FULL_NAME", title: "Employee"},
                 {field: "ADVANCE_NAME", title: "Advance"},
                 {title: "Requested Date",
@@ -139,11 +140,12 @@
 
 
 
-        app.searchTable('advanceApproveTable', ['FULL_NAME', 'ADVANCE_NAME', 'REQUESTED_DATE', 'REQUESTED_DATE_N', 'ADVANCE_DATE', 'ADVANCE_DATE_N', 'REQUESTED_AMOUNT', 'TERMS', 'YOUR_ROLE']);
+        app.searchTable('advanceApproveTable', ['FULL_NAME', 'EMPLOEE_CODE', 'ADVANCE_NAME', 'REQUESTED_DATE', 'REQUESTED_DATE_N', 'ADVANCE_DATE', 'ADVANCE_DATE_N', 'REQUESTED_AMOUNT', 'TERMS', 'YOUR_ROLE']);
 
         app.pdfExport(
                 'advanceApproveTable',
                 {
+                    'EMPLOEE_CODE': 'Code',
                     'FULL_NAME': 'Name',
                     'ADVANCE_NAME': 'Advance',
                     'REQUESTED_DATE': 'Request Date(AD)',

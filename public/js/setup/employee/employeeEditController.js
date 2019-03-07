@@ -244,6 +244,7 @@
                                     return;
                                 }
                                 document.fileTypeCode = $scope.fileTypeCode;
+                                document.fileTypeName = $scope.fileTypeName;
                                 document.myDropzone.processQueue();
                             };
                             $scope.cancel = function () {
@@ -251,6 +252,7 @@
                             };
                             $scope.valid = true;
                             $scope.fileTypes = fileTypes;
+                            $scope.fileTypeName = '';
                             $scope.fileTypeCode = Object.keys($scope.fileTypes)[0];
                         }
                     });
@@ -266,16 +268,19 @@
                             console.log("File Upload Response", success);
                             $scope.$apply(function () {
                                 var uploadResponse = success.data;
+                                var toInsertFileName = uploadResponse.oldFileName;
+                                if (document.fileTypeName != '') {
+                                    toInsertFileName = document.fileTypeName;
+                                }
                                 modalInstance.close({
                                     fileTypeCode: document.fileTypeCode,
                                     fileName: uploadResponse.fileName,
-                                    oldFileName: uploadResponse.oldFileName
+                                    oldFileName: toInsertFileName
                                 });
                             });
                         });
                     });
                     modalInstance.result.then(function (selectedItem) {
-                        console.log("Angular Modal close response", selectedItem);
                         window.app.pullDataById(document.pushEmployeeDocumentLink, {
                             'fileTypeCode': selectedItem.fileTypeCode,
                             'filePath': selectedItem.fileName,
@@ -284,11 +289,13 @@
                         }).then(function (success) {
                             $scope.$apply(function () {
                                 if (success.data != null) {
+                                    var fileTypeDesc = $scope.fileTypes[selectedItem.fileTypeCode];
                                     $scope.employeeDocuments.push({
                                         FILE_CODE: success.data.fileCode,
                                         FILE_PATH: selectedItem.fileName,
                                         FILE_NAME: selectedItem.oldFileName,
-                                        FILETYPE_CODE: selectedItem.fileTypeCode
+                                        FILETYPE_CODE: selectedItem.fileTypeCode,
+                                        FILE_TYPE: fileTypeDesc
                                     });
                                 }
                             });
@@ -303,6 +310,7 @@
                 }).then(function (success) {
                     $scope.$apply(function () {
                         $scope.employeeDocuments = success.data;
+                        console.log($scope.employeeDocuments);
                     });
                 }, function (failure) {
                 });

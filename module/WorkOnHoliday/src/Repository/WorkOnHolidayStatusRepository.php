@@ -56,6 +56,7 @@ class WorkOnHolidayStatusRepository extends HrisRepository {
                   REC_APP_ROLE(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY)      AS ROLE,
                   REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE,
                   WH.EMPLOYEE_ID                                                  AS EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE                                                 AS EMPLOYEE_CODE,
                   WH.ID                                                           AS ID,
                   WH.REMARKS                                                      AS REMARKS,
                   INITCAP(TO_CHAR(WH.RECOMMENDED_DATE, 'DD-MON-YYYY'))            AS RECOMMENDED_DATE,

@@ -1,6 +1,6 @@
-create or replace TRIGGER HRIS_BEFORE_LEAVE_REQUEST BEFORE
-  UPDATE ON HRIS_EMPLOYEE_LEAVE_REQUEST
-  FOR EACH ROW
+CREATE OR REPLACE TRIGGER HRIS_BEFORE_LEAVE_REQUEST BEFORE
+    INSERT OR UPDATE ON hris_employee_leave_request
+    FOR EACH ROW
 DECLARE
   V_BALANCE                     NUMBER(3,1);
   V_IS_MONTHLY                  HRIS_LEAVE_MASTER_SETUP.IS_MONTHLY%TYPE;
@@ -22,7 +22,10 @@ BEGIN
     LEAVE_ID =:NEW.LEAVE_ID;
     --
 
-  IF
+    IF
+        updating
+    THEN  -- start condition if updateing
+        IF
     V_IS_MONTHLY = 'N'
   THEN
     IF
@@ -91,7 +94,7 @@ BEGIN
       AND
         FISCAL_YEAR_MONTH_NO = V_FISCAL_YEAR_MONTH_NO;
 
-    IF
+            IF
       ( V_CARRY_FORWARD = 'N' )
     THEN
       --
@@ -127,10 +130,10 @@ BEGIN
 
       END IF;
 
-      NULL;
-    END IF;
+                NULL;
+            END IF;
 
-    IF
+            IF
       ( V_CARRY_FORWARD = 'Y' )
     THEN
 
@@ -216,6 +219,163 @@ BEGIN
       END IF;
     END IF;
 
-  END IF;
+        END IF;
+
+    END IF; -- end condition if updateing
+
+    IF
+        inserting
+    THEN  -- START CONDITION IF INSERTING
+        IF
+            :new.status = 'AP'
+        THEN -- IF INSERT IS AP
+            IF
+                v_is_monthly = 'N'
+            THEN
+                IF
+                    (
+                        :new.half_day IN (
+                            'F','S'
+                        )
+                    )
+                THEN
+                    v_balance :=:new.no_of_days / 2;
+                ELSE
+                    v_balance :=:new.no_of_days;
+                END IF;
+
+                UPDATE hris_employee_leave_assign
+                    SET
+                        balance = balance - v_balance
+                WHERE
+                        employee_id =:new.employee_id
+                    AND
+                        leave_id =:new.leave_id;
+
+            END IF;
+            
+            
+            -- MONTHLY LEAVE START HERE
+                  IF
+            v_is_monthly = 'Y'
+        THEN
+            SELECT
+                leave_year_month_no
+            INTO
+                v_fiscal_year_month_no
+            FROM
+                hris_leave_month_code
+            WHERE
+                trunc(:new.start_date) BETWEEN from_date AND TO_DATE;
+
+            SELECT
+                total_days - balance
+            INTO
+                v_old_leave_taken
+            FROM
+                hris_employee_leave_assign
+            WHERE
+                    employee_id =:new.employee_id
+                AND
+                    leave_id =:new.leave_id
+                AND
+                    fiscal_year_month_no = v_fiscal_year_month_no;
+
+            IF
+                ( v_carry_forward = 'N' )
+            THEN
+      --
+                v_balance :=:new.no_of_days;
+      --
+                IF
+                    :old.status != 'AP' AND :new.status = 'AP'
+                THEN
+                    UPDATE hris_employee_leave_assign
+                        SET
+                            balance = balance - v_balance
+                    WHERE
+                            employee_id =:new.employee_id
+                        AND
+                            leave_id =:new.leave_id
+                        AND
+                            fiscal_year_month_no = v_fiscal_year_month_no;
+
+                ELSIF :old.status = 'AP' AND
+                    :new.status IN (
+                        'C','R'
+                    )
+                THEN
+                    UPDATE hris_employee_leave_assign
+                        SET
+                            balance = balance + v_balance
+                    WHERE
+                            employee_id =:new.employee_id
+                        AND
+                            leave_id =:new.leave_id
+                        AND
+                            fiscal_year_month_no = v_fiscal_year_month_no;
+
+                END IF;
+
+                NULL;
+            END IF;
+
+            IF
+                ( v_carry_forward = 'Y' )
+            THEN
+                IF
+                    (
+                        :new.half_day IN (
+                            'F','S'
+                        )
+                    )
+                THEN
+                    v_leave_divide := 2;
+                END IF;
+
+                    FOR leave_assign_dtl IN (
+                        SELECT
+                            *
+                        FROM
+                            hris_employee_leave_assign
+                        WHERE
+                                employee_id =:new.employee_id
+                            AND
+                                leave_id =:new.leave_id
+                        ORDER BY fiscal_year_month_no
+                    ) LOOP
+                        IF
+                            ( ( v_old_leave_taken + (:new.no_of_days / v_leave_divide ) ) >= leave_assign_dtl.total_days )
+                        THEN
+                            v_balance := 0;
+                        ELSE
+                            v_balance := leave_assign_dtl.balance - (:new.no_of_days / v_leave_divide );
+                        END IF;
+
+                        UPDATE hris_employee_leave_assign
+                            SET
+                                balance = v_balance
+                        WHERE
+                                employee_id = leave_assign_dtl.employee_id
+                            AND
+                                leave_id = leave_assign_dtl.leave_id
+                            AND
+                                fiscal_year_month_no = leave_assign_dtl.fiscal_year_month_no;
+
+                    END LOOP;
+
+
+            END IF;
+
+        END IF;
+            
+            
+            -- MONTHLY LEAVE END HERE
+            
+            
+            
+
+        END IF; -- END ID INSERT AP
+    END IF; -- END CONDITION IF INSERTING
 
 END;

@@ -103,6 +103,7 @@ class AttendanceStatusRepository extends HrisRepository {
 
         $sql = "SELECT DISTINCT AR.ID                                             AS ID,
                   AR.EMPLOYEE_ID                                                  AS EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE                                                  AS EMPLOYEE_CODE,
                   INITCAP(TO_CHAR(AR.ATTENDANCE_DT, 'DD-MON-YYYY'))               AS ATTENDANCE_DT_AD,
                   BS_DATE(TO_CHAR(AR.ATTENDANCE_DT, 'DD-MON-YYYY'))               AS ATTENDANCE_DT_BS,
                   INITCAP(TO_CHAR(AR.IN_TIME, 'HH:MI AM'))                        AS IN_TIME,
@@ -111,8 +112,14 @@ class AttendanceStatusRepository extends HrisRepository {
                   AR.OUT_REMARKS                                                  AS OUT_REMARKS,
                   AR.TOTAL_HOUR                                                   AS TOTAL_HOUR,
                   LEAVE_STATUS_DESC(AR.STATUS)                                    AS STATUS,
-                  REC_APP_ROLE(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY)      AS ROLE,
-                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE,
+                  REC_APP_ROLE(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  )      AS ROLE,
+                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  ) AS YOUR_ROLE,
                   AR.APPROVED_BY                                                  AS APPROVED_BY,
                   INITCAP(TO_CHAR(AR.APPROVED_DT, 'DD-MON-YYYY'))                 AS APPROVED_DT,
                   INITCAP(TO_CHAR(AR.REQUESTED_DT, 'DD-MON-YYYY'))                AS REQUESTED_DT_AD,
@@ -124,10 +131,10 @@ class AttendanceStatusRepository extends HrisRepository {
                   INITCAP(E.FULL_NAME)                                            AS FULL_NAME,
                   INITCAP(E1.FULL_NAME)                                           AS RECOMMENDED_BY_NAME,
                   INITCAP(E2.FULL_NAME)                                           AS APPROVED_BY_NAME,
-                  RA.RECOMMEND_BY                                                 AS RECOMMENDER_ID,
-                  RA.APPROVED_BY                                                  AS APPROVER_ID,
-                  INITCAP(RECM.FULL_NAME)                                         AS RECOMMENDER_NAME,
-                  INITCAP(APRV.FULL_NAME)                                         AS APPROVER_NAME
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE  RA.RECOMMEND_BY END                                                 AS RECOMMENDER_ID,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE  RA.RECOMMEND_BY END                                                 AS APPROVER_ID,
+                  CASE WHEN ALR_E.FULL_NAME IS NOT NULL THEN ALR_E.FULL_NAME ELSE  INITCAP(RECM.FULL_NAME) END                               AS RECOMMENDER_NAME,
+                  CASE WHEN ALA_E.FULL_NAME IS NOT NULL THEN ALA_E.FULL_NAME ELSE  INITCAP(APRV.FULL_NAME) END                               AS APPROVER_NAME
                 FROM HRIS_ATTENDANCE_REQUEST AR
                 LEFT JOIN HRIS_EMPLOYEES E
                 ON E.EMPLOYEE_ID=AR.EMPLOYEE_ID
@@ -141,9 +148,18 @@ class AttendanceStatusRepository extends HrisRepository {
                 ON RECM.EMPLOYEE_ID = RA.RECOMMEND_BY
                 LEFT JOIN HRIS_EMPLOYEES APRV
                 ON APRV.EMPLOYEE_ID = RA.APPROVED_BY
+                LEFT JOIN HRIS_ALTERNATE_R_A ALR
+                ON(ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=AR.EMPLOYEE_ID AND ALR.R_A_ID={$recomApproveId})
+                LEFT JOIN HRIS_ALTERNATE_R_A ALA
+                ON(ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=AR.EMPLOYEE_ID AND ALA.R_A_ID={$recomApproveId})
+                LEFT JOIN HRIS_EMPLOYEES ALR_E ON(ALR.R_A_ID=ALR_E.EMPLOYEE_ID)
+                LEFT JOIN HRIS_EMPLOYEES ALA_E ON(ALA.R_A_ID=ALA_E.EMPLOYEE_ID)
                 LEFT JOIN HRIS_EMPLOYEES U
                 ON(U.EMPLOYEE_ID   = RA.RECOMMEND_BY
-                OR U.EMPLOYEE_ID   =RA.APPROVED_BY)
+                OR U.EMPLOYEE_ID   =RA.APPROVED_BY
+                OR U.EMPLOYEE_ID   =ALR.R_A_ID
+                OR U.EMPLOYEE_ID   =ALA.R_A_ID
+                )
                 WHERE U.EMPLOYEE_ID={$recomApproveId}
                 AND E.STATUS       ='E'
                 AND E.RETIRED_FLAG ='N'
@@ -171,6 +187,9 @@ class AttendanceStatusRepository extends HrisRepository {
                     THEN ('E')
                   END
                 OR APRV.STATUS IS NULL) {$searchCondition} {$statusCondition} {$fromDateCondition} {$toDateCondition}";
+                
+//                echo $sql;
+//                die();
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result;

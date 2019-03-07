@@ -6,6 +6,7 @@
         var $tableContainer = $("#holidayWorkRequestStatusTable");
         var $search = $('#search');
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
             {field: "HOLIDAY_ENAME", title: "Holiday"},
             {title: "Requested Date",
@@ -42,6 +43,7 @@
         ];
 
         var map = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name',
             'HOLIDAY_ENAME': 'Holiday',
             'REQUESTED_DATE_AD': 'Request Date(AD)',
@@ -61,7 +63,7 @@
 
         };
         app.initializeKendoGrid($tableContainer, columns);
-        app.searchTable('holidayWorkRequestStatusTable', ['FULL_NAME', 'HOLIDAY_ENAME', 'REQUESTED_DATE_AD', 'FROM_DATE_AD', 'TO_DATE_AD', 'REQUESTED_DATE_BS', 'FROM_DATE_BS', 'TO_DATE_BS', 'DURATION', 'YOUR_ROLE', 'STATUS']);
+        app.searchTable('holidayWorkRequestStatusTable', ['FULL_NAME', 'EMPLOYEE_CODE', 'HOLIDAY_ENAME', 'REQUESTED_DATE_AD', 'FROM_DATE_AD', 'TO_DATE_AD', 'REQUESTED_DATE_BS', 'FROM_DATE_BS', 'TO_DATE_BS', 'DURATION', 'YOUR_ROLE', 'STATUS']);
 
         $search.on('click', function () {
             var q = document.searchManager.getSearchValues();

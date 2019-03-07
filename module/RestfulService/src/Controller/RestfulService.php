@@ -123,6 +123,9 @@ class RestfulService extends AbstractRestfulController {
                     case "pullTravelRequestStatusList":
                         $responseData = $this->pullTravelRequestStatusList($postedData->data);
                         break;
+                    case "getServerDateForCalender":
+                        $responseData = $this->getServerDateForCalender($postedData->data);
+                        break;
                     default:
                         throw new Exception("action not found");
                         break;
@@ -707,6 +710,10 @@ class RestfulService extends AbstractRestfulController {
             "num" => count($recordList),
             "recomApproveId" => $recomApproveId
         ];
+    }
+    
+    public function getServerDateForCalender($data) {
+        return ["success" => true, "data" => ["serverDate" => date('Y-m-d')]];
     }
 
 }

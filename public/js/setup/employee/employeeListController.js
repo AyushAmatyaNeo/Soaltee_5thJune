@@ -47,10 +47,11 @@
             {field: "EMPLOYEE_ID", title: "Action", width: 120, locked: true, template: app.genKendoActionTemplate(actiontemplateConfig)}
         ]);
         app.searchTable('employeeTable', ['EMPLOYEE_CODE', 'FULL_NAME', 'MOBILE_NO', 'BIRTH_DATE', 'COMPANY_NAME', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'DESIGNATION_TITLE'], false);
-
+  
         var map = {
             'EMPLOYEE_ID': 'Employee Id',
             'EMPLOYEE_CODE': 'Employee Code',
+            'TITLE': 'Title',
             'FULL_NAME': 'Employee',
             'GENDER_NAME': 'Gender',
             'BIRTH_DATE_AD': 'Birth Date(AD)',
@@ -98,13 +99,46 @@
             'EMERG_CONTACT_ADDRESS': 'Emergency Contact Address',
             'EMERG_CONTACT_NO': 'Emergency Contact No',
             'ID_ACCOUNT_NO': 'Account No',
-            'BANK_ACCOUNT': 'BANK',
-        };
+            'BANK_ACCOUNT': 'BANK'
+        }; 
+
+        var exportColumnParameters = [];
+        for(var key in map){
+            exportColumnParameters.push({'VALUES' : key, 'COLUMNS' : map[key]});
+        }
+
+        var $exparams = $('#exparamsId');
+        app.populateSelect($exparams, exportColumnParameters, 'VALUES', 'COLUMNS');
+ 
         $('#excelExport').on('click', function () {
+            var exportColumns = [];
+            var map_bk = map;
+            exportColumns = $('#exparamsId').val();
+            if(exportColumns != null){
+                if(exportColumns.length > 0){
+                    map = {};
+                    for(var i = 0; i < exportColumns.length; i++){
+                        map[exportColumns[i]] = map_bk[exportColumns[i]];
+                    }
+                }
+            }
             app.excelExport($employeeTable, map, 'Employee List.xlsx');
+            map = map_bk;
         });
         $('#pdfExport').on('click', function () {
+            var exportColumns = [];
+            var map_bk = map;
+            exportColumns = $('#exparamsId').val();
+            if(exportColumns != null){
+                if(exportColumns.length > 0){
+                    map = {};
+                    for(var i = 0; i < exportColumns.length; i++){
+                        map[exportColumns[i]] = map_bk[exportColumns[i]];
+                    }
+                }
+            }
             app.exportToPDF($employeeTable, map, 'Employee List.pdf');
+            map = map_bk;
         });
 
         $search.on('click', function () {
@@ -118,8 +152,7 @@
                 }
             }, function (error) {
                 app.showMessage(error, 'error');
-            });
+            }); 
         });
-
-    });
+    }); 
 })(window.jQuery, window.app);

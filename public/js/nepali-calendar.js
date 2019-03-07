@@ -1,36 +1,55 @@
 window.nepaliCalendar = (function ($) {
     "use strict";
+    console.log('Calender Type',document.calendarType);
     var bsadMap = {
-        "2074":
-                {
-                    '01': {from: "2017-04-14", to: "2017-05-14"},
-                    '02': {from: "2017-05-15", to: "2017-06-14"},
-                    '03': {from: "2017-06-15", to: "2017-07-15"},
-                    '04': {from: "2017-07-16", to: "2017-08-16"},
-                    '05': {from: "2017-08-17", to: "2017-09-16"},
-                    '06': {from: "2017-09-17", to: "2017-10-17"},
-                    '07': {from: "2017-10-18", to: "2017-11-16"},
-                    '08': {from: "2017-11-17", to: "2017-12-15"},
-                    '09': {from: "2017-12-16", to: "2018-01-14"},
-                    '10': {from: "2018-01-15", to: "2018-02-12"},
-                    '11': {from: "2018-02-13", to: "2018-03-14"},
-                    '12': {from: "2018-03-15", to: "2018-04-13"}
-                },
-        "2075":
-                {
-                    '01': {from: "2018-04-14", to: "2018-05-14"},
-                    '02': {from: "2018-05-15", to: "2018-06-14"},
-                    '03': {from: "2018-06-15", to: "2018-07-16"},
-                    '04': {from: "2018-07-17", to: "2018-08-16"},
-                    '05': {from: "2018-08-17", to: "2018-09-16"},
-                    '06': {from: "2018-09-17", to: "2018-10-17"},
-                    '07': {from: "2018-10-18", to: "2018-11-16"},
-                    '08': {from: "2018-11-17", to: "2018-12-15"},
-                    '09': {from: "2018-12-16", to: "2019-01-14"},
-                    '10': {from: "2019-01-15", to: "2019-02-12"},
-                    '11': {from: "2019-02-13", to: "2019-03-14"},
-                    '12': {from: "2019-03-15", to: "2019-04-13"}
-                }
+        "N": {"2074":
+                    {
+                        '01': {from: "2017-04-14", to: "2017-05-14"},
+                        '02': {from: "2017-05-15", to: "2017-06-14"},
+                        '03': {from: "2017-06-15", to: "2017-07-15"},
+                        '04': {from: "2017-07-16", to: "2017-08-16"},
+                        '05': {from: "2017-08-17", to: "2017-09-16"},
+                        '06': {from: "2017-09-17", to: "2017-10-17"},
+                        '07': {from: "2017-10-18", to: "2017-11-16"},
+                        '08': {from: "2017-11-17", to: "2017-12-15"},
+                        '09': {from: "2017-12-16", to: "2018-01-14"},
+                        '10': {from: "2018-01-15", to: "2018-02-12"},
+                        '11': {from: "2018-02-13", to: "2018-03-14"},
+                        '12': {from: "2018-03-15", to: "2018-04-13"}
+                    },
+            "2075":
+                    {
+                        '01': {from: "2018-04-14", to: "2018-05-14"},
+                        '02': {from: "2018-05-15", to: "2018-06-14"},
+                        '03': {from: "2018-06-15", to: "2018-07-16"},
+                        '04': {from: "2018-07-17", to: "2018-08-16"},
+                        '05': {from: "2018-08-17", to: "2018-09-16"},
+                        '06': {from: "2018-09-17", to: "2018-10-17"},
+                        '07': {from: "2018-10-18", to: "2018-11-16"},
+                        '08': {from: "2018-11-17", to: "2018-12-15"},
+                        '09': {from: "2018-12-16", to: "2019-01-14"},
+                        '10': {from: "2019-01-15", to: "2019-02-12"},
+                        '11': {from: "2019-02-13", to: "2019-03-14"},
+                        '12': {from: "2019-03-15", to: "2019-04-13"}
+                    }},
+        "E": {
+            "2019":
+                    {
+                        '01': {from: "2019-01-01", to: "2019-01-31"},
+                        '02': {from: "2019-02-01", to: "2019-02-28"},
+                        '03': {from: "2019-03-01", to: "2019-03-31"},
+                        '04': {from: "2019-04-01", to: "2019-04-30"},
+                        '05': {from: "2018-05-01", to: "2019-05-31"},
+                        '06': {from: "2019-06-01", to: "2019-06-30"},
+                        '07': {from: "2019-07-01", to: "2019-07-31"},
+                        '08': {from: "2019-08-01", to: "2019-08-31"},
+                        '09': {from: "2019-09-01", to: "2019-09-30"},
+                        '10': {from: "2019-10-01", to: "2019-10-31"},
+                        '11': {from: "2019-11-01", to: "2019-11-30"},
+                        '12': {from: "2019-12-01", to: "2019-12-31"}
+                    }
+
+        }
     };
     var weekdaytemplate = {
         1: [],
@@ -44,18 +63,31 @@ window.nepaliCalendar = (function ($) {
 
     var weekday = null;
     var months = {
-        '01': 'Baishakh',
-        '02': 'Jestha',
-        '03': 'Asar',
-        '04': 'Shrawan',
-        '05': 'Bhadra',
-        '06': 'Aswin',
-        '07': 'Kartik',
-        '08': 'Mansir',
-        '09': 'Poush',
-        '10': 'Magh',
-        '11': 'Falgun',
-        '12': 'Chaitra',
+        "N": {'01': 'Baishakh',
+            '02': 'Jestha',
+            '03': 'Asar',
+            '04': 'Shrawan',
+            '05': 'Bhadra',
+            '06': 'Aswin',
+            '07': 'Kartik',
+            '08': 'Mansir',
+            '09': 'Poush',
+            '10': 'Magh',
+            '11': 'Falgun',
+            '12': 'Chaitra', },
+        "E": {'01': 'January',
+            '02': 'February',
+            '03': 'March',
+            '04': 'April',
+            '05': 'May',
+            '06': 'June',
+            '07': 'July',
+            '08': 'August',
+            '09': 'September',
+            '10': 'October',
+            '11': 'November',
+            '12': 'December', }
+
     }
     var formatDate = function (date) {
         var d = new Date(date),
@@ -70,15 +102,16 @@ window.nepaliCalendar = (function ($) {
     }
 
     var getYears = function () {
-        return Object.keys(bsadMap);
+        return (document.calendarType == 'E') ? Object.keys(bsadMap.E) : Object.keys(bsadMap.N);
     };
     var getMonths = function () {
-        return months;
+        return (document.calendarType == 'E') ? months.E : months.N;
     };
 
     var getCalendar = function (year, month) {
+        var bsadMapType = (document.calendarType == 'E') ? bsadMap.E : bsadMap.N;
         var weekday = $.extend(true, {}, weekdaytemplate);
-        var monthData = bsadMap[year][month];
+        var monthData = bsadMapType[year][month];
         var fromDate = new Date(monthData['from']);
         var toDate = new Date(monthData['to']);
         var timeDiff = Math.abs(toDate.getTime() - fromDate.getTime()) + 3600;
@@ -157,10 +190,10 @@ window.nepaliCalendar = (function ($) {
             loadCalendar($year.val(), $month.val());
         });
 
-
-
-        app.pullDataById(document.restfulUrl, {action: 'getServerDateBS'}).then(function (response) {
-            var currentDate = response.data.CURRENT_DATE;
+        var serverDate = (document.calendarType == 'E') ? 'getServerDateForCalender' : 'getServerDateBS';
+        
+        app.pullDataById(document.restfulUrl, {action: serverDate}).then(function (response) {
+            var currentDate = (document.calendarType == 'E') ? response.data.serverDate : response.data.CURRENT_DATE;
             var currentYear = currentDate.split('-')[0];
             var currentMonth = currentDate.split('-')[1];
             $year.html('');
@@ -183,6 +216,7 @@ window.nepaliCalendar = (function ($) {
         });
 
         var loadCalendar = function (year, month) {
+
             var monthData = nc.getCalendar(year, month);
             $sunday.html('');
             $monday.html('');
@@ -241,7 +275,7 @@ window.nepaliCalendar = (function ($) {
                 $template.find('.day').append(saturdayData[i].day || " - ");
                 $saturday.append($template);
             }
-            var m = nc.bsadMap[year][month];
+            var m = (document.calendarType == 'E') ? nc.bsadMap['E'][year][month] : nc.bsadMap['N'][year][month];
             app.pullDataById(document.calendarJsonFeedUrl, {'startDate': m.from, 'endDate': m.to}).then(function (response) {
                 $.each(response, function (key, value) {
                     var $date = $nepaliCalendar.find('[date=' + value.ATTENDANCE_DT + ']');

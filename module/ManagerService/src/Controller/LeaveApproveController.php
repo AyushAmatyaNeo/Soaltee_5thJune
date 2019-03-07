@@ -57,7 +57,7 @@ class LeaveApproveController extends HrisController {
         $leaveApply = new LeaveApply();
         $request = $this->getRequest();
 
-        $detail = $this->repository->fetchById($id);
+        $detail = $this->repository->fetchByIdWithEmployeeId($id,$this->employeeId);
         $leaveId = $detail['LEAVE_ID'];
         $leaveRepository = new LeaveMasterRepository($this->adapter);
         $leaveDtl = $leaveRepository->fetchById($leaveId);

@@ -15,7 +15,8 @@
         $leave.select2();
         $status.select2();
 
-        var columns = [
+        var columns = [ 
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
             {field: "LEAVE_ENAME", title: "Leave"},
             {title: "Requested Date",
@@ -60,9 +61,10 @@
                     $bulkActionDiv.hide();
                 }
             }});
-        app.searchTable($tableContainer, ["FULL_NAME"]);
-
+        app.searchTable($tableContainer, ["FULL_NAME", "EMPLOYEE_CODE"]);
+  
         var map = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name',
             'LEAVE_ENAME': 'Leave',
             'APPLIED_DATE_AD': 'Applied Date(AD)',

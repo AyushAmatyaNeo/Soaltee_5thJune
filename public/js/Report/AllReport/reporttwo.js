@@ -25,8 +25,9 @@
             'WH': {field: 'WOH', class: 'yellow-soft'},
             'WD': {field: 'WOD', class: 'purple-soft'}
         };
-        var exportMap = {"FULL_NAME": "Employee"};
+        var exportMap = [{"EMPLOYEE_CODE": "Code"}, {"FULL_NAME": "Employee"}];
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code", width: 150, locked: true},
             {field: "FULL_NAME", title: "Employee", width: 150, locked: true}
         ];
         for (var i in months) {
@@ -48,7 +49,7 @@
         }
         app.initializeKendoGrid($table, columns);
 
-        app.searchTable($table, ['FULL_NAME']);
+        app.searchTable($table, ['FULL_NAME', 'EMPLOYEE_CODE']);
         $('#excelExport').on('click', function () {
             app.excelExport($table, exportMap, 'Employee_Wise_Attendance_Report');
         });

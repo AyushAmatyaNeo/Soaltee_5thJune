@@ -64,6 +64,7 @@ $graceEndTime = $form->get('graceEndTime');
 $halfDayInTime = $form->get('halfDayInTime');
 $halfDayOutTime = $form->get('halfDayOutTime');
 
+$nightShift = $form->get('nightShift');
 
 $submit = $form->get('submit');
 $submit->setAttribute('value', 'SUBMIT');
@@ -406,6 +407,16 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                             </div>
                         </div>
                         <?php print $this->formElementErrors()->render($twoDayShift, ['class' => 'help-block error']); ?>
+
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group padding-0 ">
+                            <?php print $this->formLabel($nightShift); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($nightShift); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($nightShift, ['class' => 'help-block error']); ?>
 
                     </div>
                 </div>

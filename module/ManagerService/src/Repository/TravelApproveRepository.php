@@ -4,6 +4,7 @@ namespace ManagerService\Repository;
 use Application\Helper\EntityHelper;
 use Application\Model\Model;
 use Application\Repository\RepositoryInterface;
+use Exception;
 use SelfService\Model\TravelRequest;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Sql\Expression;
@@ -37,10 +38,14 @@ class TravelApproveRepository implements RepositoryInterface {
         $this->tableGateway->update($temp, [TravelRequest::TRAVEL_ID => $id]);
         $link = $model->status == 'AP' ? 'Y' : 'N';
         if ($link == 'Y') {
-            EntityHelper::rawQueryResult($this->adapter, "
+            try {
+                EntityHelper::rawQueryResult($this->adapter, "
                 BEGIN
                     HRIS_TRAVEL_REQUEST_PROC({$id},'{$link}');
                 END;");
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
         }
     }
 
@@ -211,6 +216,7 @@ class TravelApproveRepository implements RepositoryInterface {
                   TR.TRAVEL_CODE                           AS TRAVEL_CODE,
                   TR.EMPLOYEE_ID                           AS EMPLOYEE_ID,
                   E.FULL_NAME                              AS EMPLOYEE_NAME,
+                  E.EMPLOYEE_CODE                             AS EMPLOYEE_CODE,
                   TO_CHAR(TR.REQUESTED_DATE,'DD-MON-YYYY') AS REQUESTED_DATE_AD,
                   BS_DATE(TR.REQUESTED_DATE)               AS REQUESTED_DATE_BS,
                   TO_CHAR(TR.FROM_DATE,'DD-MON-YYYY')      AS FROM_DATE_AD,

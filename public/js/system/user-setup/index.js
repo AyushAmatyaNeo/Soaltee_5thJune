@@ -17,6 +17,7 @@
         var columns = [
             {field: "COMPANY_NAME", title: "Company", width: 150},
             {field: "ROLE_NAME", title: "Role", width: 150},
+            {field: "EMPLOYEE_CODE", title: "Code", width: 150},
             {field: "FULL_NAME", title: "Employee Name", width: 150},
             {field: "USER_NAME", title: "User Name", width: 150},
             {field: "STATUS", title: "Status", width: 150},
@@ -25,13 +26,14 @@
         var map = {
             'COMPANY_NAME': 'Company',
             'ROLE_NAME': 'Role',
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Employee Name',
             'USER_NAME': 'User Name',
             'STATUS': 'Status',
         }
         app.initializeKendoGrid($table, columns);
 
-        app.searchTable($table, ['COMPANY_NAME', 'ROLE_NAME', 'FULL_NAME','USER_NAME']);
+        app.searchTable($table, ['COMPANY_NAME', 'ROLE_NAME', 'FULL_NAME','USER_NAME','EMPLOYEE_CODE']);
 
         $('#excelExport').on('click', function () {
             app.excelExport($table, map, 'User List.xlsx');

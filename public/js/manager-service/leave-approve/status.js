@@ -7,6 +7,7 @@
         var $search = $('#search');
 
         var columns = [
+            {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
             {field: "LEAVE_ENAME", title: "Leave"},
             {title: "Requested Date",
@@ -47,6 +48,7 @@
         app.searchTable($tableContainer, ["FULL_NAME"]);
 
         var map = {
+            'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name',
             'LEAVE_ENAME': 'Leave',
             'APPLIED_DATE_AD': 'Applied Date(AD)',

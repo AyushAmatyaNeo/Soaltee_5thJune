@@ -11,6 +11,8 @@ $this->headScript()->appendFile($this->basePath('js/overtime/report/index.js'));
 
 ?>
 <script>
+    document.acl =<?php echo json_encode($acl); ?>;
+    document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
     window.data =<?php echo $data; ?>;
     document.getSearchDataLink = data.getSearchDataLink;
 </script>

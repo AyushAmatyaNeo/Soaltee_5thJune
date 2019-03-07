@@ -11,7 +11,7 @@ class TrainingStatusRepository extends HrisRepository {
     }
 
     public function getTrainingRequestList($data) {
-        $employeeId = $data['employeeId'];
+        $employeeId = $data['employeeId']; 
         $companyId = $data['companyId'];
         $branchId = $data['branchId'];
         $departmentId = $data['departmentId'];

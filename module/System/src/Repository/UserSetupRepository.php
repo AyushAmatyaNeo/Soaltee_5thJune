@@ -67,7 +67,7 @@ class UserSetupRepository implements RepositoryInterface {
 
         $select->from(['US' => UserSetup::TABLE_NAME])
                 ->join(['R' => 'HRIS_ROLES'], "R.ROLE_ID=US.ROLE_ID", ['ROLE_NAME'])
-                ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=US.EMPLOYEE_ID", ['FULL_NAME' => new Expression("INITCAP(E.FULL_NAME)")], Select::JOIN_LEFT)
+                ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=US.EMPLOYEE_ID", ['FULL_NAME' => new Expression("INITCAP(E.FULL_NAME)"),'EMPLOYEE_CODE'=>'EMPLOYEE_CODE'], Select::JOIN_LEFT)
                 ->join(['C' => "HRIS_COMPANY"], "C.COMPANY_ID=E.COMPANY_ID", ['COMPANY_NAME' => new Expression("INITCAP(C.COMPANY_NAME)")], Select::JOIN_LEFT);
 
         $select->where(["US.STATUS" =>"E" ]);
@@ -105,7 +105,7 @@ class UserSetupRepository implements RepositoryInterface {
     //to get the employee list for select option
     public function getEmployeeList($employeeId = null) {
 
-        $sql = "SELECT FULL_NAME,EMPLOYEE_ID FROM HRIS_EMPLOYEES WHERE STATUS='E' AND RETIRED_FLAG='N' AND EMPLOYEE_ID NOT IN (SELECT EMPLOYEE_ID FROM HRIS_USERS WHERE STATUS='E'AND EMPLOYEE_ID IS NOT NULL)";
+        $sql = "SELECT EMPLOYEE_CODE||'-'||FULL_NAME  AS FULL_NAME,EMPLOYEE_ID FROM HRIS_EMPLOYEES WHERE STATUS='E' AND RETIRED_FLAG='N' AND EMPLOYEE_ID NOT IN (SELECT EMPLOYEE_ID FROM HRIS_USERS WHERE STATUS='E'AND EMPLOYEE_ID IS NOT NULL)";
 
         if ($employeeId != null) {
             $sql = " 

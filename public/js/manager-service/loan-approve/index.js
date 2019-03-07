@@ -28,6 +28,7 @@
                     template: "<input type='checkbox' id='#:LOAN_REQUEST_ID#' role-id='#:ROLE#'  class='k-checkbox row-checkbox'><label class='k-checkbox-label' for='#:LOAN_REQUEST_ID#'></label>",
                     width: 80
                 },
+                {field: "EMPLOYEE_CODE", title: "Code"},
                 {field: "FULL_NAME", title: "Employee"},
                 {field: "LOAN_NAME", title: "Loan"},
                 {title: "Requested Date",
@@ -141,11 +142,12 @@
 
 
 
-        app.searchTable('loanApproveTable', ['FULL_NAME', 'LOAN_NAME', 'REQUESTED_DATE', 'REQUESTED_DATE_N', 'LOAN_DATE', 'LOAN_DATE_N', 'REQUESTED_AMOUNT', 'YOUR_ROLE']);
+        app.searchTable('loanApproveTable', ['FULL_NAME', 'EMPLOYEE_CODE', 'LOAN_NAME', 'REQUESTED_DATE', 'REQUESTED_DATE_N', 'LOAN_DATE', 'LOAN_DATE_N', 'REQUESTED_AMOUNT', 'YOUR_ROLE']);
 
         app.pdfExport(
                 'loanApproveTable',
                 {
+                    'EMPLOYEE_CODE': 'Code',
                     'FULL_NAME': 'Name',
                     'LOAN_NAME': 'Loan',
                     'REQUESTED_DATE': 'Requested Date(AD)',
