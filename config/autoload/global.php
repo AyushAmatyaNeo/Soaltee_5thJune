@@ -4,18 +4,18 @@ return [
     'db' => [
         'driver' => 'oci8',
         'connection_string' => '(DESCRIPTION =
-        (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521))
+        (ADDRESS = (PROTOCOL = TCP)(HOST =10.153.64.21)(PORT = 1521))
         (CONNECT_DATA =
         (SERVER = DEDICATED)
-        (SERVICE_NAME = XE)
-        )
+        (SERVICE_NAME = HRIS)
+	)
         )',
         
 //    'username' => 'HRIS',
 //    'password' => 'NEO_HRIS',
           
-   'username' => 'LC_FROM_LC',
-    'password' => 'LC_FROM_LC',
+   'username' => 'HRIS_7576',
+    'password' => 'HRIS_7576',
 //         'username' => 'JGI7475_HM',
 //         'password' => 'JGI7475_HM',
         
