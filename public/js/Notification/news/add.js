@@ -14,7 +14,7 @@
                 maxFiles: 1,
                 addRemoveLinks: true,
                 init: function () {
-                this.on("success", function (file, success) {
+                this.on("success", function (file, success) { 
                     if (success.success) {
                         imageUpload(success.data);
                     }
@@ -30,7 +30,7 @@
             $('#documentUploadModel').modal('show');
         });
 
-
+ 
 
         $('#uploadSubmitBtn').on('click', function () {
             if (myDropzone.files.length == 0) {
@@ -43,7 +43,7 @@
             myDropzone.processQueue();
         });
 
-
+ 
         $('#uploadCancelBtn').on('click', function () {
             $('#documentUploadModel').modal('hide');
         });
@@ -56,7 +56,7 @@
                 'filePath': data.fileName,
                 'fileName': data.oldFileName
             }).then(function (success) {
-                if (success.success) {console.log(success);
+                if (success.success) {
                     $('#fileDetailsTbl').append('<tr>'
                     +'<input  type="hidden" name="fileUploadList[]" value="'+success.data.newsFileId+'"><td>' + data.oldFileName + '</td>'
                     +'<td><a href="'+document.basePath+'/uploads/news/'+success.data.filePath+'"><i class="fa fa-download"></i></a></td>'

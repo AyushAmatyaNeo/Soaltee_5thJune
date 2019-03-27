@@ -2,7 +2,7 @@
 
 namespace SelfService\Repository;
 
-use Application\Helper\Helper;
+use Application\Helper\EntityHelper;
 use Application\Model\Model;
 use Application\Repository\RepositoryInterface;
 use HolidayManagement\Model\Holiday;
@@ -27,8 +27,14 @@ class WorkOnHolidayRepository implements RepositoryInterface {
     }
 
     public function delete($id) {
-        $currentDate = Helper::getcurrentExpressionDate();
-        $this->tableGateway->update([WorkOnHoliday::STATUS => 'C', WorkOnHoliday::MODIFIED_DATE => $currentDate], [WorkOnHoliday::ID => $id]);
+        $sql="BEGIN
+UPDATE HRIS_EMPLOYEE_WORK_HOLIDAY SET STATUS='C',MODIFIED_DATE=TRUNC(SYSDATE) WHERE ID={$id};
+DELETE FROM HRIS_EMPLOYEE_LEAVE_ADDITION WHERE WOH_ID={$id};
+DELETE FROM HRIS_OVERTIME_DETAIL WHERE WOH_ID= {$id};
+DELETE FROM HRIS_OVERTIME WHERE WOH_ID = {$id};
+END;";
+
+EntityHelper::rawQueryResult($this->adapter, $sql);
     }
 
     public function edit(Model $model, $id) {

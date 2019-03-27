@@ -23,7 +23,7 @@ class NewsModel extends Model {
     const STATUS = 'STATUS';
     const NEWS_EXPIRY_DT = 'NEWS_EXPIRY_DT';
 
-    public $newsId;
+    public $newsId; 
     public $newsDate;
     public $newsType;
     public $newsTitle;

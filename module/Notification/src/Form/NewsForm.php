@@ -4,7 +4,7 @@ namespace Notification\Form;
 
 use Zend\Form\Annotation;
 
-class NewsForm {
+class NewsForm { 
 
     /**
      * @Annotation\Type("Zend\Form\Element\Text")

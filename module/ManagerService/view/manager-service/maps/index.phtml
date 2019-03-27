@@ -11,7 +11,7 @@ $this->headScript()
     ->appendFile($this->basePath('jszip/dist/jszip.min.js'))
     ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
     ->appendFile($this->basePath('js/nepali-datepicker-ext.js'))
-    ->appendFile($this->basePath('js/AttendanceManagement/by-hr/index.js'))
+    ->appendFile($this->basePath('js/maps/index.js'))
     ->appendFile($this->basePath('js/angular.min.js'));
 ?>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -58,7 +58,7 @@ $(function(){
                 if(data.data.checkInLocation.length != 0){
                     locationData = data;
                     $("#map").removeClass('hidden');
-                    initializeMap(locationData,9);
+                    initializeMap(data,9);
                 }  
                 else{
                     locationData = null;
@@ -161,6 +161,7 @@ function changeView(){
 }
 
 function initializeMap(data,view) {
+
     var marker;
     var markerLocation;
     var bounds = new google.maps.LatLngBounds();
@@ -172,11 +173,10 @@ function initializeMap(data,view) {
 
     var myOptions =
     {
-        maxZoom: 14,
         zoom: view,
         center: center,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
-        disableDefaultUI: true
+        disableDefaultUI: false
     };
 
     var map = new google.maps.Map(document.getElementById("map"), myOptions);
@@ -185,7 +185,7 @@ function initializeMap(data,view) {
     for(var i = 0; i < data.data.checkInLocation.length; i++){ 
         if(data.data.checkInLocation[i] == null){ console.log("Skipped"); continue; }
         xy = data.data.checkInLocation[i].split(",");
-        xy[0] = parseInt(xy[0]); xy[1] = parseInt(xy[1]);
+        xy[0] = parseFloat(xy[0]); xy[1] = parseFloat(xy[1]);
         markerLocation = new google.maps.LatLng(xy[0],xy[1]);
         marker = new google.maps.Marker({
             map: map,
@@ -201,7 +201,7 @@ function initializeMap(data,view) {
     for(var i = 0; i < data.data.checkOutLocation.length; i++){ 
         if(data.data.checkOutLocation[i] == null){ console.log("Skipped"); continue; }
         xy = data.data.checkOutLocation[i].split(",");
-        xy[0] = parseInt(xy[0]); xy[1] = parseInt(xy[1]);
+        xy[0] = parseFloat(xy[0]); xy[1] = parseFloat(xy[1]);
         markerLocation = new google.maps.LatLng(xy[0],xy[1]);
         marker = new google.maps.Marker({
             map: map,

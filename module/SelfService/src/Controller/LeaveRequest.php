@@ -52,10 +52,49 @@ class LeaveRequest extends HrisController {
         ]);
     }
 
-    public function addAction() {
+    public function fileUploadAction() {
         $request = $this->getRequest();
-        if ($request->isPost()) {
-            $postData = $request->getPost();
+        $responseData = []; 
+        $files = $request->getFiles()->toArray();  
+        try {
+            if (sizeof($files) > 0) {
+                $ext = pathinfo($files['file']['name'], PATHINFO_EXTENSION);
+                $fileName = pathinfo($files['file']['name'], PATHINFO_FILENAME);
+                $unique = Helper::generateUniqueName();
+                $newFileName = $unique . "." . $ext;
+                $success = move_uploaded_file($files['file']['tmp_name'], Helper::UPLOAD_DIR . "/leave_documents/" . $newFileName);
+                if (!$success) {
+                    throw new Exception("Upload unsuccessful.");
+                }
+                $responseData = ["success" => true, "data" => ["fileName" => $newFileName, "oldFileName" => $fileName . "." . $ext]];
+            }
+        } catch (Exception $e) {
+            $responseData = [
+                "success" => false,
+                "message" => $e->getMessage(),
+                "traceAsString" => $e->getTraceAsString(),
+                "line" => $e->getLine()
+            ];
+        }        
+        return new JsonModel($responseData);
+    }
+ 
+    public function pushLeaveFileLinkAction() {
+        try {
+            $newsId = $this->params()->fromRoute('id');
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $returnData = $this->repository->pushFileLink($data);
+            return new JsonModel(['success' => true, 'data' => $returnData[0], 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function addAction() {  
+        $request = $this->getRequest();
+        if ($request->isPost()) { 
+            $postData = $request->getPost(); 
             $this->form->setData($postData);
             $leaveSubstitute = $postData->leaveSubstitute;
             if ($this->form->isValid()) {
@@ -126,31 +165,30 @@ class LeaveRequest extends HrisController {
             } catch (Exception $e) {
                 $this->flashmessenger()->addMessage($e->getMessage());
             }
-        }
+        } 
         return $this->redirect()->toRoute('leaverequest');
     }
 
     public function viewAction() {
         $id = (int) $this->params()->fromRoute('id', 0);
         if ($id === 0) {
-            return $this->redirect()->toRoute("leaveapprove");
+            return $this->redirect()->toRoute("leaveapprove"); 
         }
         $leaveApproveRepository = new LeaveApproveRepository($this->adapter);
 
         $detail = $leaveApproveRepository->fetchById($id);
-
-
+        $fileDetails = $leaveApproveRepository->fetchAttachmentsById($id);
         $authRecommender = $detail['RECOMMENDED_BY_NAME'] == null ? $detail['RECOMMENDER_NAME'] : $detail['RECOMMENDED_BY_NAME'];
         $authApprover = $detail['APPROVED_BY_NAME'] == null ? $detail['APPROVER_NAME'] : $detail['APPROVED_BY_NAME'];
 
         //to get the previous balance of selected leave from assigned leave detail
         $result = $leaveApproveRepository->assignedLeaveDetail($detail['LEAVE_ID'], $detail['EMPLOYEE_ID']);
         $preBalance = $result['BALANCE'];
-
+ 
         $leaveApply = new LeaveApply();
         $leaveApply->exchangeArrayFromDB($detail);
         $this->form->bind($leaveApply);
-
+        
         return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
                     'id' => $id,
@@ -171,7 +209,8 @@ class LeaveRequest extends HrisController {
                     'subRemarks' => $detail['SUB_REMARKS'],
                     'subApprovedFlag' => $detail['SUB_APPROVED_FLAG'],
                     'employeeList' => EntityHelper::getTableKVListWithSortOption($this->adapter, HrEmployees::TABLE_NAME, HrEmployees::EMPLOYEE_ID, [HrEmployees::FIRST_NAME, HrEmployees::MIDDLE_NAME, HrEmployees::LAST_NAME], [HrEmployees::STATUS => "E", HrEmployees::RETIRED_FLAG => "N"], HrEmployees::FIRST_NAME, "ASC", " ", false, true),
-                    'gp' => $detail['GRACE_PERIOD']
+                    'gp' => $detail['GRACE_PERIOD'],
+                    'files' => $fileDetails
         ]);
     }
 

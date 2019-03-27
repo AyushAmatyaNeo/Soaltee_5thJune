@@ -12,6 +12,7 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reporttwo.j
 ?>
 <script>
     document.getSearchDataLink = '<?php echo $this->url('allreport', ['action' => 'getSearchData']); ?>';
+    document.calenderType ='<?php echo $calenderType; ?>';
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\allreport')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>

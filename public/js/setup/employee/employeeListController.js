@@ -75,7 +75,7 @@
             'POSITION_NAME': 'Position',
             'LEVEL_NO': 'Level',
             'SERVICE_TYPE_NAME': 'Service Type',
-            'EMPLOYEE_TYPE': 'Employee',
+            'EMPLOYEE_TYPE': 'Employee Type',
             'LOCATION_EDESC': 'Location',
             'FUNCTIONAL_TYPE_EDESC': 'Functional Type',
             'FUNCTIONAL_LEVEL_NO': 'Functional Level No',
@@ -99,7 +99,8 @@
             'EMERG_CONTACT_ADDRESS': 'Emergency Contact Address',
             'EMERG_CONTACT_NO': 'Emergency Contact No',
             'ID_ACCOUNT_NO': 'Account No',
-            'BANK_ACCOUNT': 'BANK'
+            'BANK_ACCOUNT': 'BANK',
+            'ID_THUMB_ID': 'THUMB ID'
         }; 
 
         var exportColumnParameters = [];

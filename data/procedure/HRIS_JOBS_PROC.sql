@@ -20,5 +20,6 @@ BEGIN
         EXECUTED_AT =SYSDATE
       WHERE JOB_ID  = jobs.JOB_ID;
     END;
+COMMIT;
   END LOOP;
 END;

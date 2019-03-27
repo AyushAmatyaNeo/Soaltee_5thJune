@@ -31,7 +31,7 @@ class TravelStatus extends HrisController {
 
     public function indexAction() {
         $request = $this->getRequest();
-        if ($request->isPost()) {
+        if ($request->isPost()) { 
             try {
                 $search = $request->getPost();
                 $list = $this->travelStatusRepository->getFilteredRecord($search);
@@ -83,9 +83,10 @@ class TravelStatus extends HrisController {
         $id = (int) $this->params()->fromRoute('id');
         if ($id === 0) {
             return $this->redirect()->toRoute("travelStatus");
-        }
+        } 
         $travelRequestModel = new TravelRequest();
         $detail = $this->travelApproveRepository->fetchById($id);
+        $fileDetails = $this->travelApproveRepository->fetchAttachmentsById($id);
         $travelRequestModel->exchangeArrayFromDB($detail);
         $this->form->bind($travelRequestModel);
 
@@ -99,6 +100,7 @@ class TravelStatus extends HrisController {
                 'detail' => $detail,
                 'todayDate' => date('d-M-Y'),
                 'advanceAmount' => $advanceAmount,
+                'files' => $fileDetails
         ]);
     }
 

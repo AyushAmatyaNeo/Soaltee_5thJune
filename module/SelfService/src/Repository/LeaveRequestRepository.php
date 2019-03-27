@@ -9,7 +9,7 @@ use Application\Repository\RepositoryInterface;
 use LeaveManagement\Model\LeaveApply;
 use LeaveManagement\Model\LeaveAssign;
 use Zend\Db\Adapter\AdapterInterface;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Expression; 
 use Zend\Db\Sql\Sql;
 use Zend\Db\TableGateway\TableGateway;
 
@@ -24,8 +24,32 @@ class LeaveRequestRepository implements RepositoryInterface {
         $this->adapter = $adapter;
     }
 
+    public function pushFileLink($data){ 
+        $fileName = $data['fileName'];
+        $fileInDir = $data['filePath'];
+        $sql = "INSERT INTO HRIS_LEAVE_FILES(FILE_ID, FILE_NAME, FILE_IN_DIR_NAME, LEAVE_ID) VALUES((SELECT MAX(FILE_ID)+1 FROM HRIS_LEAVE_FILES), '$fileName', '$fileInDir', null)";
+        $statement = $this->adapter->query($sql);
+        $statement->execute(); 
+        $sql = "SELECT * FROM HRIS_LEAVE_FILES WHERE FILE_ID IN (SELECT MAX(FILE_ID) AS FILE_ID FROM HRIS_LEAVE_FILES)";
+        $statement = $this->adapter->query($sql);
+        return Helper::extractDbData($statement->execute());
+    }
+
+    public function linkLeaveWithFiles(){
+        if(!empty($_POST['fileUploadList'])){
+            $filesList = $_POST['fileUploadList'];
+            $filesList = implode(',', $filesList);
+
+            $sql = "UPDATE HRIS_LEAVE_FILES SET LEAVE_ID = (SELECT MAX(ID) FROM HRIS_EMPLOYEE_LEAVE_REQUEST) 
+                    WHERE FILE_ID IN($filesList)";
+            $statement = $this->adapter->query($sql);
+            $statement->execute();
+        }
+    }
+
     public function add(Model $model) {
         $this->tableGateway->insert($model->getArrayCopyForDB());
+        $this->linkLeaveWithFiles();
     }
 
     public function edit(Model $model, $id) {

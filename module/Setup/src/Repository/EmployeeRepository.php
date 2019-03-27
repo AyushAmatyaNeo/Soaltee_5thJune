@@ -559,7 +559,7 @@ class EmployeeRepository extends HrisRepository implements RepositoryInterface {
         }
         
         
-        $condition = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId'], $by['genderId'], $by['locationId']);
+        $condition = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId'], $by['genderId'], $by['locationId'],$by['functionalTypeId']);
         $sql = "SELECT 
             {$columIfSynergy}
                 E.ID_ACCOUNT_NO  AS ID_ACCOUNT_NO,

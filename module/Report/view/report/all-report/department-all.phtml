@@ -9,6 +9,10 @@ $this->headScript()
 $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reportone.js'));
 
 ?>
+
+<script>
+    document.calenderType ='<?php echo $calenderType; ?>';
+</script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\allreport')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
 </div>

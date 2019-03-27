@@ -2,7 +2,7 @@
 
 namespace SelfService\Repository;
 
-use Application\Helper\Helper;
+use Application\Helper\EntityHelper;
 use Application\Model\Model;
 use Application\Repository\RepositoryInterface;
 use SelfService\Model\WorkOnDayoff;
@@ -26,8 +26,14 @@ class WorkOnDayoffRepository implements RepositoryInterface {
     }
 
     public function delete($id) {
-        $currentDate = Helper::getcurrentExpressionDate();
-        $this->tableGateway->update([WorkOnDayoff::STATUS => 'C', WorkOnDayoff::MODIFIED_DATE => $currentDate], [WorkOnDayoff::ID => $id]);
+        $sql="BEGIN
+UPDATE HRIS_EMPLOYEE_WORK_DAYOFF SET STATUS='C',MODIFIED_DATE=TRUNC(SYSDATE) WHERE ID={$id};
+DELETE FROM HRIS_EMPLOYEE_LEAVE_ADDITION WHERE WOD_ID={$id};
+DELETE FROM HRIS_OVERTIME_DETAIL WHERE WOD_ID= {$id};
+DELETE FROM HRIS_OVERTIME WHERE WOD_ID = {$id};
+END;";
+
+EntityHelper::rawQueryResult($this->adapter, $sql);
     }
 
     public function edit(Model $model, $id) {

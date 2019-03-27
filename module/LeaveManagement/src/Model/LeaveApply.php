@@ -4,7 +4,7 @@ namespace LeaveManagement\Model;
 
 use Application\Model\Model;
 
-class LeaveApply extends Model {
+class LeaveApply extends Model { 
 
     const TABLE_NAME = "HRIS_EMPLOYEE_LEAVE_REQUEST";
     const EMPLOYEE_ID = "EMPLOYEE_ID";
@@ -35,7 +35,7 @@ class LeaveApply extends Model {
     public $leaveId;
     public $startDate;
     public $endDate;
-    public $noOfDays;
+    public $noOfDays; 
     public $status;
     public $recommendedBy;
     public $recommendedDt;

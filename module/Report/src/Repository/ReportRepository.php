@@ -1,5 +1,5 @@
 <?php
-namespace Report\Repository;
+namespace Report\Repository; 
 
 use Application\Helper\EntityHelper;
 use Application\Helper\Helper;
@@ -1379,6 +1379,274 @@ EOT;
       $statement = $this->adapter->query($sql);
       $result = $statement->execute();
       return Helper::extractDbData($result);
-    }
+    } 
+
+    public function fetchBirthdays($by) {
+      $orderByString=EntityHelper::getOrderBy('E.FULL_NAME ASC',null,'E.SENIORITY_LEVEL','P.LEVEL_NO','E.JOIN_DATE','DES.ORDER_NO','E.FULL_NAME');
+      $columIfSynergy="";
+      $joinIfSyngery="";
+      if ($this->checkIfTableExists("FA_CHART_OF_ACCOUNTS_SETUP")) {
+          $columIfSynergy="FCAS.ACC_EDESC AS BANK_ACCOUNT,";
+          $joinIfSyngery="LEFT JOIN FA_CHART_OF_ACCOUNTS_SETUP FCAS 
+              ON(FCAS.ACC_CODE=E.ID_ACC_CODE AND C.COMPANY_CODE=FCAS.COMPANY_CODE)";
+      }
+      $fromDate = !empty($_POST['fromDate']) ? $_POST['fromDate'] : '01-Jan-2019'; 
+      $toDate = !empty($_POST['toDate']) ? $_POST['toDate'] : '31-Dec-2019'; 
+
+      $condition = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId'], $by['genderId'], $by['locationId']);
+      $sql = "SELECT  
+          {$columIfSynergy}
+              E.ID_ACCOUNT_NO  AS ID_ACCOUNT_NO,
+                E.EMPLOYEE_ID                                                AS EMPLOYEE_ID,
+                E.EMPLOYEE_CODE                                                   AS EMPLOYEE_CODE,
+                INITCAP(E.FULL_NAME)                                              AS FULL_NAME,
+                INITCAP(G.GENDER_NAME)                                            AS GENDER_NAME,
+                TO_CHAR(E.BIRTH_DATE, 'DD-MON-YYYY')                              AS BIRTH_DATE_AD,
+                BS_DATE(E.BIRTH_DATE)                                             AS BIRTH_DATE_BS,
+                TO_CHAR(E.JOIN_DATE, 'DD-MON-YYYY')                               AS JOIN_DATE_AD,
+                BS_DATE(E.JOIN_DATE)                                              AS JOIN_DATE_BS,
+                INITCAP(CN.COUNTRY_NAME)                                          AS COUNTRY_NAME,
+                RG.RELIGION_NAME                                                  AS RELIGION_NAME,
+                BG.BLOOD_GROUP_CODE                                               AS BLOOD_GROUP_CODE,
+                E.MOBILE_NO                                                       AS MOBILE_NO,
+                E.TELEPHONE_NO                                                    AS TELEPHONE_NO,
+                E.SOCIAL_ACTIVITY                                                 AS SOCIAL_ACTIVITY,
+                E.EXTENSION_NO                                                    AS EXTENSION_NO,
+                E.EMAIL_OFFICIAL                                                  AS EMAIL_OFFICIAL,
+                E.EMAIL_PERSONAL                                                  AS EMAIL_PERSONAL,
+                E.SOCIAL_NETWORK                                                  AS SOCIAL_NETWORK,
+                E.ADDR_PERM_HOUSE_NO                                              AS ADDR_PERM_HOUSE_NO,
+                E.ADDR_PERM_WARD_NO                                               AS ADDR_PERM_WARD_NO,
+                E.ADDR_PERM_STREET_ADDRESS                                        AS ADDR_PERM_STREET_ADDRESS,
+                CNP.COUNTRY_NAME                                                  AS ADDR_PERM_COUNTRY_NAME,
+                ZP.ZONE_NAME                                                      AS ADDR_PERM_ZONE_NAME,
+                DP.DISTRICT_NAME                                                  AS ADDR_PERM_DISTRICT_NAME,
+                INITCAP(VMP.VDC_MUNICIPALITY_NAME)                                AS VDC_MUNICIPALITY_NAME_PERM,
+                E.ADDR_TEMP_HOUSE_NO                                              AS ADDR_TEMP_HOUSE_NO,
+                E.ADDR_TEMP_WARD_NO                                               AS ADDR_TEMP_WARD_NO,
+                E.ADDR_TEMP_STREET_ADDRESS                                        AS ADDR_TEMP_STREET_ADDRESS,
+                CNT.COUNTRY_NAME                                                  AS ADDR_TEMP_COUNTRY_NAME,
+                ZT.ZONE_NAME                                                      AS ADDR_TEMP_ZONE_NAME,
+                DT.DISTRICT_NAME                                                  AS ADDR_TEMP_DISTRICT_NAME,
+                VMT.VDC_MUNICIPALITY_NAME                                         AS VDC_MUNICIPALITY_NAME_TEMP,
+                E.EMRG_CONTACT_NAME                                               AS EMRG_CONTACT_NAME,
+                E.EMERG_CONTACT_RELATIONSHIP                                      AS EMERG_CONTACT_RELATIONSHIP,
+                E.EMERG_CONTACT_ADDRESS                                           AS EMERG_CONTACT_ADDRESS,
+                E.EMERG_CONTACT_NO                                                AS EMERG_CONTACT_NO,
+                E.FAM_FATHER_NAME                                                 AS FAM_FATHER_NAME,
+                E.FAM_FATHER_OCCUPATION                                           AS FAM_FATHER_OCCUPATION,
+                E.FAM_MOTHER_NAME                                                 AS FAM_MOTHER_NAME,
+                E.FAM_MOTHER_OCCUPATION                                           AS FAM_MOTHER_OCCUPATION,
+                E.FAM_GRAND_FATHER_NAME                                           AS FAM_GRAND_FATHER_NAME,
+                E.FAM_GRAND_MOTHER_NAME                                           AS FAM_GRAND_MOTHER_NAME,
+                E.MARITAL_STATUS                                                  AS MARITAL_STATUS,
+                E.FAM_SPOUSE_NAME                                                 AS FAM_SPOUSE_NAME,
+                E.FAM_SPOUSE_OCCUPATION                                           AS FAM_SPOUSE_OCCUPATION,
+                INITCAP(TO_CHAR(E.FAM_SPOUSE_BIRTH_DATE, 'DD-MON-YYYY'))          AS FAM_SPOUSE_BIRTH_DATE,
+                INITCAP(TO_CHAR(E.FAM_SPOUSE_WEDDING_ANNIVERSARY, 'DD-MON-YYYY')) AS FAM_SPOUSE_WEDDING_ANNIVERSARY,
+                E.ID_CARD_NO                                                      AS ID_CARD_NO,
+                E.ID_LBRF                                                         AS ID_LBRF,
+                E.ID_BAR_CODE                                                     AS ID_BAR_CODE,
+                E.ID_PROVIDENT_FUND_NO                                            AS ID_PROVIDENT_FUND_NO,
+                E.ID_DRIVING_LICENCE_NO                                           AS ID_DRIVING_LICENCE_NO,
+                E.ID_DRIVING_LICENCE_TYPE                                         AS ID_DRIVING_LICENCE_TYPE,
+                INITCAP(TO_CHAR(E.ID_DRIVING_LICENCE_EXPIRY, 'DD-MON-YYYY'))      AS ID_DRIVING_LICENCE_EXPIRY,
+                E.ID_THUMB_ID                                                     AS ID_THUMB_ID,
+                E.ID_PAN_NO                                                       AS ID_PAN_NO,
+                E.ID_ACCOUNT_NO                                                   AS ID_ACCOUNT_NO,
+                E.ID_RETIREMENT_NO                                                AS ID_RETIREMENT_NO,
+                E.ID_CITIZENSHIP_NO                                               AS ID_CITIZENSHIP_NO,
+                INITCAP(TO_CHAR(E.ID_CITIZENSHIP_ISSUE_DATE, 'DD-MON-YYYY'))      AS ID_CITIZENSHIP_ISSUE_DATE,
+                E.ID_CITIZENSHIP_ISSUE_PLACE                                      AS ID_CITIZENSHIP_ISSUE_PLACE,
+                E.ID_PASSPORT_NO                                                  AS ID_PASSPORT_NO,
+                INITCAP(TO_CHAR(E.ID_PASSPORT_EXPIRY, 'DD-MON-YYYY'))             AS ID_PASSPORT_EXPIRY,
+                INITCAP(C.COMPANY_NAME)                                           AS COMPANY_NAME,
+                INITCAP(B.BRANCH_NAME)                                            AS BRANCH_NAME,
+                INITCAP(D.DEPARTMENT_NAME)                                        AS DEPARTMENT_NAME,
+                INITCAP(DES.DESIGNATION_TITLE)                                    AS DESIGNATION_TITLE,
+                INITCAP(P.POSITION_NAME)                                          AS POSITION_NAME,
+                P.LEVEL_NO                                                        AS LEVEL_NO,
+                INITCAP(ST.SERVICE_TYPE_NAME)                                     AS SERVICE_TYPE_NAME,
+                (CASE WHEN E.EMPLOYEE_TYPE='R' THEN 'REGULAR' ELSE 'WORKER' END)  AS EMPLOYEE_TYPE,
+                LOC.LOCATION_EDESC                                                AS LOCATION_EDESC,
+                FUNT.FUNCTIONAL_TYPE_EDESC                                        AS FUNCTIONAL_TYPE_EDESC,
+                FUNL.FUNCTIONAL_LEVEL_NO                                          AS FUNCTIONAL_LEVEL_NO,
+                FUNL.FUNCTIONAL_LEVEL_EDESC                                       AS FUNCTIONAL_LEVEL_EDESC,
+                E.SALARY                                                          AS SALARY,
+                E.SALARY_PF                                                       AS SALARY_PF,
+                E.REMARKS                                                         AS REMARKS
+              FROM HRIS_EMPLOYEES E
+              LEFT JOIN HRIS_COMPANY C
+              ON E.COMPANY_ID=C.COMPANY_ID
+              LEFT JOIN HRIS_BRANCHES B
+              ON E.BRANCH_ID=B.BRANCH_ID
+              LEFT JOIN HRIS_DEPARTMENTS D
+              ON E.DEPARTMENT_ID=D.DEPARTMENT_ID
+              LEFT JOIN HRIS_DESIGNATIONS DES
+              ON E.DESIGNATION_ID=DES.DESIGNATION_ID
+              LEFT JOIN HRIS_POSITIONS P
+              ON E.POSITION_ID=P.POSITION_ID
+              LEFT JOIN HRIS_SERVICE_TYPES ST
+              ON E.SERVICE_TYPE_ID=ST.SERVICE_TYPE_ID
+              LEFT JOIN HRIS_GENDERS G
+              ON E.GENDER_ID=G.GENDER_ID
+              LEFT JOIN HRIS_BLOOD_GROUPS BG
+              ON E.BLOOD_GROUP_ID=BG.BLOOD_GROUP_ID
+              LEFT JOIN HRIS_RELIGIONS RG
+              ON E.RELIGION_ID=RG.RELIGION_ID
+              LEFT JOIN HRIS_COUNTRIES CN
+              ON E.COUNTRY_ID=CN.COUNTRY_ID
+              LEFT JOIN HRIS_COUNTRIES CNP
+              ON (E.ADDR_PERM_COUNTRY_ID=CNP.COUNTRY_ID)
+              LEFT JOIN HRIS_ZONES ZP
+              ON (E.ADDR_PERM_ZONE_ID=ZP.ZONE_ID)
+              LEFT JOIN HRIS_DISTRICTS DP
+              ON (E.ADDR_PERM_DISTRICT_ID=DP.DISTRICT_ID)
+              LEFT JOIN HRIS_VDC_MUNICIPALITIES VMP
+              ON E.ADDR_PERM_VDC_MUNICIPALITY_ID=VMP.VDC_MUNICIPALITY_ID
+              LEFT JOIN HRIS_COUNTRIES CNT
+              ON (E.ADDR_TEMP_COUNTRY_ID=CNT.COUNTRY_ID)
+              LEFT JOIN HRIS_ZONES ZT
+              ON (E.ADDR_TEMP_ZONE_ID=ZT.ZONE_ID)
+              LEFT JOIN HRIS_DISTRICTS DT
+              ON (E.ADDR_TEMP_DISTRICT_ID=DT.DISTRICT_ID)
+              LEFT JOIN HRIS_VDC_MUNICIPALITIES VMT
+              ON E.ADDR_TEMP_VDC_MUNICIPALITY_ID=VMT.VDC_MUNICIPALITY_ID
+              LEFT JOIN HRIS_LOCATIONS LOC
+              ON E.LOCATION_ID=LOC.LOCATION_ID
+              LEFT JOIN HRIS_FUNCTIONAL_TYPES FUNT
+              ON E.FUNCTIONAL_TYPE_ID=FUNT.FUNCTIONAL_TYPE_ID
+              LEFT JOIN HRIS_FUNCTIONAL_LEVELS FUNL
+              ON E.FUNCTIONAL_LEVEL_ID=FUNL.FUNCTIONAL_LEVEL_ID
+              {$joinIfSyngery}
+              WHERE 1=1 AND 
+              to_number(to_char(TO_DATE(E.BIRTH_DATE, 'DD-MON-YY'), 'MMDD')) 
+              BETWEEN to_number(to_char(TO_DATE('{$fromDate}', 'DD-MON-YY') , 'MMDD'))
+              AND to_number(to_char(TO_DATE('{$toDate}', 'DD-MON-YY') , 'MMDD'))
+              AND E.STATUS='E' 
+              {$condition}
+              {$orderByString}"; 
+              
+      return $this->rawQuery($sql);
+  }  
+
+  public function fetchJobDurationReport($by) {
+    $orderByString=EntityHelper::getOrderBy('E.FULL_NAME ASC',null,'E.SENIORITY_LEVEL','P.LEVEL_NO','E.JOIN_DATE','DES.ORDER_NO','E.FULL_NAME');
+
+    $condition = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId'], $by['genderId'], $by['locationId']);
+    $sql = "SELECT E.EMPLOYEE_CODE, E.FULL_NAME, E.JOIN_DATE DOJ, E.BIRTH_DATE DOB,
+    TRUNC((SYSDATE-BIRTH_DATE)/365)||' Years '||TRUNC(((SYSDATE-BIRTH_DATE)/365-TRUNC((SYSDATE-BIRTH_DATE)/365))*365)||' Days' AGE ,
+    TRUNC((SYSDATE-JOIN_DATE)/365)||' Years '||TRUNC(((SYSDATE-JOIN_DATE)/365-TRUNC((SYSDATE-JOIN_DATE)/365))*365)||' Days' SERVICE_DURATION
+    FROM HRIS_EMPLOYEES E 
+    LEFT JOIN HRIS_DESIGNATIONS DES
+      ON E.DESIGNATION_ID=DES.DESIGNATION_ID 
+      LEFT JOIN HRIS_POSITIONS P
+      ON E.POSITION_ID=P.POSITION_ID
+      WHERE E.STATUS='E' AND E.RETIRED_FLAG='N' AND E.RESIGNED_FLAG='N'
+    AND 1=1  
+            {$condition}
+            {$orderByString}"; 
+    //echo $sql; die;
+    return $this->rawQuery($sql);
+  }
+
+  public function fetchLeaveReportCard($by){
+    $condition = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId'], $by['genderId'], $by['locationId']);
+
+    $sql = "SELECT LA.ID AS ID, LA.EMPLOYEE_ID AS EMPLOYEE_ID, E.EMPLOYEE_CODE AS 
+    EMPLOYEE_CODE,E.JOIN_DATE AS JOIN_DATE, LA.LEAVE_ID AS LEAVE_ID, 
+    INITCAP(TO_CHAR(LA.START_DATE, 'DD-MON-YYYY')) AS FROM_DATE_AD, BS_DATE(TO_CHAR(LA.START_DATE, 'DD-MON-YYYY')) 
+    AS FROM_DATE_BS, INITCAP(TO_CHAR(LA.END_DATE, 'DD-MON-YYYY')) AS TO_DATE_AD, BS_DATE(TO_CHAR(LA.END_DATE, 'DD-MON-YYYY')) 
+    AS TO_DATE_BS, LA.HALF_DAY AS HALF_DAY, (CASE WHEN (LA.HALF_DAY IS NULL OR LA.HALF_DAY = 'N') THEN 'Full Day' WHEN (LA.HALF_DAY = 'F') 
+    THEN 'First Half' ELSE 'Second Half' END) AS HALF_DAY_DETAIL, LA.GRACE_PERIOD AS GRACE_PERIOD, (CASE WHEN LA.GRACE_PERIOD = 'E' 
+    THEN 'Early' WHEN LA.GRACE_PERIOD = 'L' THEN 'Late' ELSE '-' END) AS GRACE_PERIOD_DETAIL, LA.NO_OF_DAYS AS NO_OF_DAYS, 
+    INITCAP(TO_CHAR(LA.REQUESTED_DT, 'DD-MON-YYYY')) AS REQUESTED_DT_AD, BS_DATE(TO_CHAR(LA.REQUESTED_DT, 'DD-MON-YYYY'))
+    AS REQUESTED_DT_BS, LA.REMARKS AS REMARKS, LA.STATUS AS STATUS, LEAVE_STATUS_DESC(LA.STATUS) AS STATUS_DETAIL, LA.RECOMMENDED_BY 
+    AS RECOMMENDED_BY, INITCAP(TO_CHAR(LA.RECOMMENDED_DT, 'DD-MON-YYYY')) AS RECOMMENDED_DT, LA.RECOMMENDED_REMARKS AS RECOMMENDED_REMARKS, 
+    LA.APPROVED_BY AS APPROVED_BY, INITCAP(TO_CHAR(LA.APPROVED_DT, 'DD-MON-YYYY')) AS APPROVED_DT, LA.APPROVED_REMARKS AS APPROVED_REMARKS, 
+    (CASE WHEN LA.STATUS = 'XX' THEN 'Y' ELSE 'N' END) AS ALLOW_EDIT, (CASE WHEN LA.STATUS IN ('RQ','RC','AP') THEN 'Y' ELSE 'N' END) AS 
+    ALLOW_DELETE, L.LEAVE_CODE AS LEAVE_CODE, INITCAP(L.LEAVE_ENAME) AS LEAVE_ENAME, INITCAP(E.FULL_NAME) AS FULL_NAME, 
+    INITCAP(E2.FULL_NAME) AS RECOMMENDED_BY_NAME, INITCAP(E3.FULL_NAME) AS APPROVED_BY_NAME, RA.RECOMMEND_BY AS RECOMMENDER_ID, 
+    RA.APPROVED_BY AS APPROVER_ID, INITCAP(RECM.FULL_NAME) AS RECOMMENDER_NAME, INITCAP(APRV.FULL_NAME) AS APPROVER_NAME 
+    FROM HRIS_EMPLOYEE_LEAVE_REQUEST LA INNER JOIN HRIS_LEAVE_MASTER_SETUP  L ON L.LEAVE_ID=LA.LEAVE_ID LEFT JOIN 
+    HRIS_EMPLOYEES  E ON LA.EMPLOYEE_ID=E.EMPLOYEE_ID LEFT JOIN HRIS_EMPLOYEES  E2 ON 
+    E2.EMPLOYEE_ID=LA.RECOMMENDED_BY LEFT JOIN HRIS_EMPLOYEES  E3 ON E3.EMPLOYEE_ID=LA.APPROVED_BY LEFT JOIN 
+    HRIS_RECOMMENDER_APPROVER  RA ON RA.EMPLOYEE_ID=LA.EMPLOYEE_ID LEFT JOIN HRIS_EMPLOYEES  RECM ON 
+    RECM.EMPLOYEE_ID=RA.RECOMMEND_BY LEFT JOIN HRIS_EMPLOYEES APRV ON APRV.EMPLOYEE_ID=RA.APPROVED_BY 
+    WHERE L.STATUS='E' {$condition} AND (TRUNC(SYSDATE)- LA.REQUESTED_DT) < (
+                          CASE
+                            WHEN LA.STATUS = 'C'
+                            THEN 20
+                            ELSE 365
+                          END) ORDER BY LA.REQUESTED_DT DESC";  
+ 
+  return $this->rawQuery($sql);    
+  }
+
+  public function fetchWeeklyWorkingHoursReport($by){
+    $condition = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId'], $by['genderId'], $by['locationId']);
+
+    $toDate = !empty($_POST['toDate']) ? $_POST['toDate'] : date('d-M-y', strtotime('now')) ;
+    $toDate = date('d-M-y', strtotime($toDate));
+    $fromDate = strtotime($toDate);
+    $fromDate = strtotime("-6 day", $fromDate);
+    $fromDate = date('d-M-y', $fromDate);
+ 
+    $sql = "select * from (SELECT E.EMPLOYEE_CODE,AD.EMPLOYEE_ID,E.FULL_NAME,
+    TO_CHAR(ATTENDANCE_DT,'DY') AS WEEKNAME,
+    E.DEPARTMENT_ID,
+    D.DEPARTMENT_NAME,
+      CASE WHEN AD.OVERALL_STATUS='DO'
+      THEN
+      0
+      ELSE
+      HS.TOTAL_WORKING_HR/60 
+      END AS ASSIGNED_HOUR ,
+         CASE WHEN AD.TOTAL_HOUR IS NOT NULL THEN
+         ROUND (AD.TOTAL_HOUR / 60)
+         ELSE
+         0
+         END
+         AS WORKED_HOUR,
+         AD.OVERALL_STATUS
+       --  AD.ATTENDANCE_DT
+    FROM HRIS_ATTENDANCE_DETAIL AD
+     LEFT JOIN  HRIS_EMPLOYEES E ON (AD.EMPLOYEE_ID=E.EMPLOYEE_ID)
+     LEFT JOIN  HRIS_SHIFTS HS ON (AD.SHIFT_ID = HS.SHIFT_ID)
+    LEFT JOIN HRIS_DEPARTMENTS D  ON (D.DEPARTMENT_ID=E.DEPARTMENT_ID)
+    LEFT JOIN HRIS_DESIGNATIONS DES ON (E.DESIGNATION_ID=DES.DESIGNATION_ID) 
+      LEFT JOIN HRIS_POSITIONS P ON (E.POSITION_ID=P.POSITION_ID)
+    WHERE 
+     E.STATUS='E'
+    AND E.RETIRED_FLAG='N' {$condition} 
+    AND E.RESIGNED_FLAG='N' 
+    AND ATTENDANCE_DT BETWEEN TO_DATE('{$fromDate}', 'DD-MON-YY') 
+    AND TO_DATE('{$toDate}', 'DD-MON-YY')
+    ORDER BY DEPARTMENT_ID,FULL_NAME, ATTENDANCE_DT)
+    PIVOT ( MAX( ASSIGNED_HOUR ) AS AH, MAX( WORKED_HOUR ) AS WH,MAX( OVERALL_STATUS ) AS OS
+    FOR WEEKNAME 
+    IN ( 'TUE' AS TUE,'WED' AS WED,'THU' AS THU,'FRI' AS FRI,'SAT' AS SAT,'SUN' AS SUN,'MON' AS MON)
+    )";  
     
+    return $this->rawQuery($sql);    
+  }
+
+  public function getDays(){
+    $toDate = !empty($_POST['toDate']) ? $_POST['toDate'] : date('d-M-y', strtotime('now')) ;
+    $toDate="TO_DATE('{$toDate}')";
+    
+    $sql = "SELECT   trunc($toDate-6) + ROWNUM -1  AS DATES,
+    ROWNUM AS DAY_COUNT,
+    trunc($toDate-6) AS FROM_DATE,
+    TO_CHAR(trunc($toDate-6) + ROWNUM -1,'D') AS WEEKDAY,
+    TO_CHAR(trunc($toDate-6) + ROWNUM -1,'DAY') AS WEEKNAME
+    FROM dual d
+    CONNECT BY  rownum <=  $toDate -  trunc($toDate-6) + 1";
+    
+    return $this->rawQuery($sql); 
+  }
 }
+
+
+
+

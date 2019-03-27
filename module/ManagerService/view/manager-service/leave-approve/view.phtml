@@ -273,6 +273,7 @@ print $this->form()->openTag($form);
                             </div>
                         <?php endif;
                         ?>
+
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <?php print $this->formLabel($remarks); ?>
@@ -283,6 +284,22 @@ print $this->form()->openTag($form);
                         <div class="col-sm-4">
                         </div>
                     </div>
+
+                    <?php if(!empty($files)){ ?>
+                        <div class="row">
+                            <div class="col-sm-6"> 
+                                <label>Attachments</label>
+                                    <div style="overflow: scroll; height:100px;" >
+                                        <ul> 
+                                            <?php foreach($files as $file){ ?>
+                                                <a target="_blank" href="<?='../../../../uploads/leave_documents/'.$file['FILE_IN_DIR_NAME']?>">
+                                                    <li><?=$file['FILE_NAME']?></li></a>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                        </div>
+                    <?php } ?>
 
                     <?php
                     if ($subEmployeeId != null) {
@@ -309,8 +326,25 @@ print $this->form()->openTag($form);
                                         <option style="cursor: pointer;" value="<?php echo $key; ?>" <?php echo $selected; ?>><?php echo $value; ?></option>
                                     <?php } ?>
                                 </select>
-                            </div>
+                            </div> 
                         </div>
+
+                        <?php if(!empty($files)){ ?>
+                        <div class="row">
+                            <div class="col-sm-6"> 
+                                <label>Attachments</label>
+                                    <div style="overflow: scroll; height:100px;" >
+                                        <ul> 
+                                            <?php foreach($files as $file){ ?>
+                                                <a target="_blank" href="<?='../../uploads/leave_documents/'.$file['FILE_IN_DIR_NAME']?>">
+                                                    <li><?=$file['FILE_NAME']?></li></a>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                        </div>
+                        <?php } ?>
+
                         <div
                             class="form-group margin-top-10 required">
                             <label>Reason for action [From Substitute Employee] <?php echo $note; ?></label>
@@ -360,7 +394,7 @@ print $this->form()->openTag($form);
                 <?php } ?>
                 <div class="form-group">
                     <?php
-                    if (($role==2 && $status == 'RQ' && $employeeId == $recommendedBy) || (($role==3||$role==4)  && $status == 'RC' && $employeeId != $recommendedBy) || ($status == 'CP' && $employeeId == $recommendedBy) || ($status == 'CR' && $employeeId != $recommendedBy) ) {
+                    if ((($role==2||$role==4) && $status == 'RQ' && $employeeId == $recommendedBy) || (($role==3||$role==4)  && $status == 'RC' && $employeeId != $recommendedBy) || ($status == 'CP' && $employeeId == $recommendedBy) || ($status == 'CR' && $employeeId != $recommendedBy) ) {
                         print $this->formSubmit($submit);
                         ?>
                         <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">

@@ -142,7 +142,7 @@ print $this->form()->openTag($form);
                                             <?php echo $approver; ?>
                                         </td>
                                     </tr>
-                                </table>
+                                </table> 
                             </div>
                             <div class="col-sm-4">
                                 <table>
@@ -233,6 +233,7 @@ print $this->form()->openTag($form);
                             </div>
                             <?php print $this->formElementErrors()->render($noOfDays, ['class' => 'help-block error']); ?>
                         </div>
+
                         <?php
                         if ($gracePeriod->getValue() != ""):
                             ?>
@@ -245,6 +246,7 @@ print $this->form()->openTag($form);
                             </div>
                         <?php endif;
                         ?>
+
                         <div class="col-sm-4">
                             <?php if ($remarksDtl != null) { ?>
                                 <div
@@ -257,6 +259,22 @@ print $this->form()->openTag($form);
                         </div>
 
                     </div>
+
+                    <?php if(!empty($files)){ ?>
+                        <div class="row">
+                            <div class="col-sm-6"> 
+                                <label>Attachments</label>
+                                    <div style="overflow: scroll; height:100px;" >
+                                        <ul> 
+                                            <?php foreach($files as $file){ ?>
+                                                <a target="_blank" href="<?='../../../uploads/leave_documents/'.$file['FILE_IN_DIR_NAME']?>">
+                                                    <li><?=$file['FILE_NAME']?></li></a>
+                                            <?php } ?>
+                                        </ul>
+                                    </div> 
+                                </div>
+                        </div>
+                        <?php } ?>
 
                     <?php
                     if ($subEmployeeId != null) {
@@ -272,7 +290,7 @@ print $this->form()->openTag($form);
                         <div class="form-group padding-0">
                             <label for="noOfDays">
                                 Substitute Employee 
-                            </label>
+                            </label> 
                             <div>
                                 <select disabled="disabled" class="form-control" name="leaveSubstitute">
                                     <?php
@@ -283,7 +301,8 @@ print $this->form()->openTag($form);
                                     <?php } ?>
                                 </select>
                             </div>
-                        </div>
+                        </div>  
+
                         <div
                             class="form-group margin-top-10 required">
                             <label>Reason for action [From Sub. Employee] <?php echo $note; ?></label>
@@ -291,7 +310,7 @@ print $this->form()->openTag($form);
                         </div>
                     <?php } ?>
 
-                </div>
+                </div> 
                 <?php if ($subApprovedFlag != 'N') { ?>
                     <div
                         class="form-group margin-top-10 required <?= empty($recommendedRemarks->getMessages()) ? "" : "error" ?>">

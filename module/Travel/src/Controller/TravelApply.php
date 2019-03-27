@@ -16,6 +16,7 @@ use Zend\Authentication\AuthenticationService;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\JsonModel;
 
 class TravelApply extends AbstractActionController {
 
@@ -30,7 +31,7 @@ class TravelApply extends AbstractActionController {
         $auth = new AuthenticationService();
         $this->employeeId = $auth->getStorage()->read()['employee_id'];
     }
-
+ 
     public function initializeForm() {
         $builder = new AnnotationBuilder();
         $form = new TravelRequestForm();
@@ -40,22 +41,61 @@ class TravelApply extends AbstractActionController {
     public function indexAction() {
         return $this->redirect()->toRoute("travelStatus");
     }
-
+ 
+    public function fileUploadAction() {
+        $request = $this->getRequest();
+        $responseData = []; 
+        $files = $request->getFiles()->toArray();  
+        try {
+            if (sizeof($files) > 0) {
+                $ext = pathinfo($files['file']['name'], PATHINFO_EXTENSION);
+                $fileName = pathinfo($files['file']['name'], PATHINFO_FILENAME);
+                $unique = Helper::generateUniqueName();
+                $newFileName = $unique . "." . $ext;
+                $success = move_uploaded_file($files['file']['tmp_name'], Helper::UPLOAD_DIR . "/travel_documents/" . $newFileName);
+                if (!$success) {
+                    throw new Exception("Upload unsuccessful.");
+                }
+                $responseData = ["success" => true, "data" => ["fileName" => $newFileName, "oldFileName" => $fileName . "." . $ext]];
+            }
+        } catch (Exception $e) {
+            $responseData = [
+                "success" => false,
+                "message" => $e->getMessage(),
+                "traceAsString" => $e->getTraceAsString(),
+                "line" => $e->getLine()
+            ];
+        }         
+        return new JsonModel($responseData);
+    } 
+  
+    public function pushTravelFileLinkAction() {
+        try {
+            $newsId = $this->params()->fromRoute('id');
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $returnData = $this->travelRequesteRepository->pushFileLink($data);
+            return new JsonModel(['success' => true, 'data' => $returnData[0], 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
+ 
     public function addAction() {
         $this->initializeForm();
         $request = $this->getRequest();
 
-        $model = new TravelRequestModel();
+        $model = new TravelRequestModel(); 
         if ($request->isPost()) {
             $postData = $request->getPost();
             $travelSubstitute = $postData->travelSubstitute;
             $this->form->setData($postData);
-            if ($this->form->isValid()) {
+            if ($this->form->isValid()) { 
                 $model->exchangeArrayFromForm($this->form->getData());
                 $model->travelId = ((int) Helper::getMaxId($this->adapter, TravelRequestModel::TABLE_NAME, TravelRequestModel::TRAVEL_ID)) + 1;
                 $model->requestedDate = Helper::getcurrentExpressionDate();
                 $model->status = 'RQ';
-                $model->deductOnSalary = 'Y';
+                $model->deductOnSalary = 'Y'; 
                 $this->travelRequesteRepository->add($model);
                 $this->flashmessenger()->addMessage("Travel Request Successfully added!!!");
 

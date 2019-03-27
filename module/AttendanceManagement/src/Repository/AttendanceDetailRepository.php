@@ -57,8 +57,8 @@ class AttendanceDetailRepository implements RepositoryInterface {
         return $result;
     }
 
-    public function filterRecord($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $locationId, $employeeId, $fromDate = null, $toDate = null, $status = null, $presentStatus = null, $min = null, $max = null) {
-        $searchConditon = EntityHelper::getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId, $locationId);
+    public function filterRecord($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $functionalTypeId, $employeeId, $fromDate = null, $toDate = null, $status = null, $presentStatus = null, $min = null, $max = null) {
+        $searchConditon = EntityHelper::getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId,null, $functionalTypeId);
         $fromDateCondition = "";
         $toDateCondition = "";
         $statusCondition = '';
@@ -214,7 +214,8 @@ class AttendanceDetailRepository implements RepositoryInterface {
                    THEN 
                   MIN_TO_HOUR(A.OM.OVERTIME_HOUR*60)
                    ELSE ''
-                   END AS MANUAL_OVERTIME
+                   END AS MANUAL_OVERTIME,
+               FUNT.FUNCTIONAL_TYPE_EDESC                                        AS FUNCTIONAL_TYPE_EDESC
                 FROM HRIS_ATTENDANCE_DETAIL A
                 LEFT JOIN HRIS_EMPLOYEES E
                 ON A.EMPLOYEE_ID=E.EMPLOYEE_ID
@@ -226,6 +227,8 @@ class AttendanceDetailRepository implements RepositoryInterface {
                 ON E.POSITION_ID=P.POSITION_ID
                 LEFT JOIN HRIS_DESIGNATIONS DES
                 ON E.DESIGNATION_ID=DES.DESIGNATION_ID
+                LEFT JOIN HRIS_FUNCTIONAL_TYPES FUNT
+                ON E.FUNCTIONAL_TYPE_ID=FUNT.FUNCTIONAL_TYPE_ID
                 LEFT JOIN HRIS_HOLIDAY_MASTER_SETUP H
                 ON A.HOLIDAY_ID=H.HOLIDAY_ID
                 LEFT JOIN HRIS_LEAVE_MASTER_SETUP L

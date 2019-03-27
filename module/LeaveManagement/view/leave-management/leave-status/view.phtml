@@ -248,6 +248,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                             </div>
                             <?php print $this->formElementErrors()->render($noOfDays, ['class' => 'help-block error']); ?>
                         </div>
+
                         <?php if (!in_array($halfDay->getValue(), [null, '', 'N'])): ?>
                             <div class="col-sm-4">
                                 <div class="form-group">
@@ -263,9 +264,25 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                                     <?php print $this->formElement($gracePeriod); ?>
                                 </div>
                             </div>
-                        <?php endif; ?>
+                        <?php endif; ?> 
+                    </div>  
 
-                    </div>
+                    <?php if(!empty($files)){ ?>
+                        <div class="row">
+                            <div class="col-sm-6"> 
+                                <label>Attachments</label>
+                                    <div style="overflow: scroll; height:100px;" >
+                                        <ul> 
+                                            <?php foreach($files as $file){ ?>
+                                                <a target="_blank" href="<?='../../uploads/leave_documents/'.$file['FILE_IN_DIR_NAME']?>">
+                                                    <li><?=$file['FILE_NAME']?></li></a>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                        </div>
+                    <?php } ?>
+
                     <div class="form-group padding-0">
                         <?php print $this->formLabel($remarks); ?>
                         <?php print $this->formElement($remarks); ?>

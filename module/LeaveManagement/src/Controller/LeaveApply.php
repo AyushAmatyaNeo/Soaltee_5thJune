@@ -1,13 +1,13 @@
 <?php
-
+ 
 namespace LeaveManagement\Controller;
-
+ 
 use Application\Controller\HrisController;
 use Application\Custom\CustomViewModel;
 use Application\Helper\EntityHelper;
 use Application\Helper\Helper;
 use Exception;
-use LeaveManagement\Form\LeaveApplyForm;
+use LeaveManagement\Form\LeaveApplyForm; 
 use LeaveManagement\Model\LeaveApply as LeaveApplyModel;
 use LeaveManagement\Repository\LeaveApplyRepository;
 use Notification\Controller\HeadNotification;
@@ -17,6 +17,7 @@ use SelfService\Repository\LeaveRequestRepository;
 use SelfService\Repository\LeaveSubstituteRepository;
 use Zend\Authentication\Storage\StorageInterface;
 use Zend\Db\Adapter\AdapterInterface;
+use Zend\View\Model\JsonModel;
 
 class LeaveApply extends HrisController {
 
@@ -24,9 +25,48 @@ class LeaveApply extends HrisController {
         parent::__construct($adapter, $storage);
         $this->initializeRepository(LeaveApplyRepository::class);
         $this->initializeForm(LeaveApplyForm::class);
+    } 
+
+    public function fileUploadAction() {
+        $request = $this->getRequest();
+        $responseData = []; 
+        $files = $request->getFiles()->toArray();  
+        try {
+            if (sizeof($files) > 0) {
+                $ext = pathinfo($files['file']['name'], PATHINFO_EXTENSION);
+                $fileName = pathinfo($files['file']['name'], PATHINFO_FILENAME);
+                $unique = Helper::generateUniqueName();
+                $newFileName = $unique . "." . $ext;
+                $success = move_uploaded_file($files['file']['tmp_name'], Helper::UPLOAD_DIR . "/leave_documents/" . $newFileName);
+                if (!$success) {
+                    throw new Exception("Upload unsuccessful.");
+                }
+                $responseData = ["success" => true, "data" => ["fileName" => $newFileName, "oldFileName" => $fileName . "." . $ext]];
+            }
+        } catch (Exception $e) {
+            $responseData = [
+                "success" => false,
+                "message" => $e->getMessage(),
+                "traceAsString" => $e->getTraceAsString(),
+                "line" => $e->getLine()
+            ];
+        }        
+        return new JsonModel($responseData);
+    }
+ 
+    public function pushLeaveFileLinkAction() {
+        try {
+            $newsId = $this->params()->fromRoute('id');
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $returnData = $this->repository->pushFileLink($data);
+            return new JsonModel(['success' => true, 'data' => $returnData[0], 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
     }
 
-    public function addAction() {
+    public function addAction() { 
         $request = $this->getRequest();
         if ($request->isPost()) {
             $postedData = $request->getPost();
@@ -35,10 +75,10 @@ class LeaveApply extends HrisController {
             if ($this->form->isValid()) {
                 $leaveRequest = new LeaveApplyModel();
                 $leaveRequest->exchangeArrayFromForm($this->form->getData());
-                $leaveRequest->id = (int) Helper::getMaxId($this->adapter, LeaveApplyModel::TABLE_NAME, LeaveApplyModel::ID) + 1;
+                $leaveRequest->id = (int) Helper::getMaxId($this->adapter, LeaveApplyModel::TABLE_NAME, LeaveApplyModel::ID) + 1; 
                 $leaveRequest->startDate = Helper::getExpressionDate($leaveRequest->startDate);
                 $leaveRequest->endDate = Helper::getExpressionDate($leaveRequest->endDate);
-                $leaveRequest->requestedDt = Helper::getcurrentExpressionDate();
+                $leaveRequest->requestedDt = Helper::getcurrentExpressionDate(); 
                 $leaveRequest->status = "RQ";
                 $leaveRequest->status = ($postedData['applyStatus'] == 'AP') ? 'AP' : 'RQ';
                 $this->repository->add($leaveRequest);
@@ -48,7 +88,6 @@ class LeaveApply extends HrisController {
                     if ($leaveSubstitute !== null && $leaveSubstitute !== "") {
                         $leaveSubstituteModel = new LeaveSubstitute();
                         $leaveSubstituteRepo = new LeaveSubstituteRepository($this->adapter);
-
 
                         $leaveSubstituteModel->leaveRequestId = $leaveRequest->id;
                         $leaveSubstituteModel->employeeId = $leaveSubstitute;

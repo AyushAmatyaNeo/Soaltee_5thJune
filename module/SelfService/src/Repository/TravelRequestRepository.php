@@ -6,22 +6,53 @@ use Application\Model\Model;
 use Application\Repository\RepositoryInterface;
 use SelfService\Model\TravelRequest;
 use Zend\Db\Adapter\AdapterInterface;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Expression; 
 use Zend\Db\Sql\Sql;
+use Application\Helper\Helper;
 use Zend\Db\TableGateway\TableGateway;
 
 class TravelRequestRepository implements RepositoryInterface {
 
     private $tableGateway;
     private $adapter;
-
+ 
     public function __construct(AdapterInterface $adapter) {
         $this->adapter = $adapter;
         $this->tableGateway = new TableGateway(TravelRequest::TABLE_NAME, $adapter);
-    }
+    } 
 
+    public function pushFileLink($data){ 
+        $fileName = $data['fileName'];
+        $fileInDir = $data['filePath'];
+        $sql = "INSERT INTO HRIS_TRAVEL_FILES(FILE_ID, FILE_NAME, FILE_IN_DIR_NAME, TRAVEL_ID) VALUES((SELECT MAX(FILE_ID)+1 FROM HRIS_TRAVEL_FILES), '$fileName', '$fileInDir', null)";
+        $statement = $this->adapter->query($sql);
+        $statement->execute(); 
+        $sql = "SELECT * FROM HRIS_TRAVEL_FILES WHERE FILE_ID IN (SELECT MAX(FILE_ID) AS FILE_ID FROM HRIS_TRAVEL_FILES)";
+        $statement = $this->adapter->query($sql);
+        return Helper::extractDbData($statement->execute());
+    }
+  
+    public function linkTravelWithFiles(){
+        if(!empty($_POST['fileUploadList'])){
+            $filesList = $_POST['fileUploadList'];
+            $filesList = implode(',', $filesList);
+
+            $sql = "UPDATE HRIS_TRAVEL_FILES SET TRAVEL_ID = (SELECT MAX(TRAVEL_ID) FROM HRIS_EMPLOYEE_TRAVEL_REQUEST) 
+                    WHERE FILE_ID IN($filesList)";
+            $statement = $this->adapter->query($sql);
+            $statement->execute();
+        }
+    } 
+
+    public function fetchAttachmentsById($id){
+      $sql = "SELECT * FROM HRIS_TRAVEL_FILES WHERE TRAVEL_ID = $id";
+      $result = EntityHelper::rawQueryResult($this->adapter, $sql);
+      return Helper::extractDbData($result);
+    }
+ 
     public function add(Model $model) {
         $this->tableGateway->insert($model->getArrayCopyForDB());
+        $this->linkTravelWithFiles();
     }
 
     public function delete($id) {
@@ -57,7 +88,7 @@ class TravelRequestRepository implements RepositoryInterface {
                 END;
 ");
     }
-
+ 
     public function edit(Model $model, $id) {
         
     }

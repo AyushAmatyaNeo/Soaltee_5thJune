@@ -3,16 +3,18 @@
 </div>
 <?php
 $this->headLink()
-        ->appendStylesheet($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.css'));
+        ->appendStylesheet($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.css'))
+        ->appendStylesheet($this->basePath('dropzone/dropzone.min.css'));
 
 $this->headScript()
         ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
         ->appendFile($this->basePath('js/nepali-datepicker-ext.js'));
 
-$this->headScript()->appendFile($this->basePath('js/LeaveManagement/LeaveRequest/add.js'));
+$this->headScript()->appendFile($this->basePath('js/LeaveManagement/LeaveRequest/add.js'))
+        ->appendFile($this->basePath('dropzone/dropzone.min.js'));
 ?>
-
-
+ 
+ 
 <?php
 $form->setAttribute('leaveApply', 'form');
 $startDate = $form->get('startDate');
@@ -20,7 +22,7 @@ $endDate = $form->get('endDate');
 $noOfDays = $form->get('noOfDays');
 $halfDay = $form->get('halfDay');
 $remarks = $form->get('remarks');
-
+ 
 $employeeId = $form->get('employeeId');
 $employeeId->setValueOptions($employees);
 $submit = $form->get('submit');
@@ -32,10 +34,12 @@ $submit->setAttribute('id', 'request');
 $form->setAttribute('action', $this->url('leaveapply', ['action' => 'add']));
 
 
-$form->prepare();
+$form->prepare(); 
 print $this->form()->openTag($form);
-?>
+?> 
 <script>
+    document.pushLeaveFileLink = '<?php echo $this->url('leaveapply', ['action' => 'pushLeaveFileLink']); ?>';
+    document.uploadUrl = '<?= $this->url('leaveapply', ['action' => 'fileUpload']); ?>';
     document.wsPullLeaveDetailWidEmployeeId = '<?= $this->url("leaveapply", ["action" => "pullLeaveDetailWidEmployeeId"]) ?>';
     document.wsPullLeaveDetail = '<?= $this->url("leaveapply", ["action" => "pullLeaveDetail"]) ?>';
     document.wsFetchAvailableDays = '<?= $this->url("leaveapply", ["action" => "fetchAvailableDays"]) ?>';
@@ -46,7 +50,7 @@ print $this->form()->openTag($form);
     <div class="col-sm-12">
         <div class="portlet box custom-box">
             <div class="portlet-title">
-                <div class="caption">
+                <div class="caption"> 
                     <i class="fa fa-user"></i>
                     Apply For Leave
                 </div>
@@ -84,7 +88,7 @@ print $this->form()->openTag($form);
                             <input type="text" READONLY name="availableDays"  required="required" id="availableDays"  class="form-control"  value="">
                             <?php print $this->formElementErrors()->render($noOfDays, ['class' => 'help-block error']); ?>
                         </div>
-                    </div>
+                    </div> 
                 </div>
 
                 <div class=" row">
@@ -132,7 +136,7 @@ print $this->form()->openTag($form);
                                 </div>
                             </div>     
                         </div>
-
+ 
                     </div>
                     <div class="col-sm-4">
                         <div
@@ -184,8 +188,28 @@ print $this->form()->openTag($form);
                         <label for="applyOption">Apply Status</label>
                         <?php print $this->formElement($applyOption); ?>
                     </div>
+  
+                    
+                    
+                </div> 
 
-                </div>
+                <div class="row">
+                    <div class=" col-md-6 form-group">
+                        <table id="fileDetailsTbl" class="table">
+                            <tr>
+                                <th>Document</th> 
+                                <th>&nbsp;</th>
+                                <th>Action</th>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-3">
+                        <button id="addDocument" type="button" class="btn btn-primary">
+                            Add
+                        </button>
+                    </div>
+                    </div>
+
                 <?php print $this->formSubmit($submit); ?>
 
             </div>
@@ -195,3 +219,36 @@ print $this->form()->openTag($form);
 <?php
 print $this->form()->closeTag();
 ?>
+
+
+<!--bootstrap modal-->
+<div id="documentUploadModel" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Document Upload</h4>
+            </div>
+            <div class="modal-body">
+                <div class="modal-body" id="modal-body">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <!--<div id="dropZoneContainer" >-->
+                            <div id="dropZoneContainer"  class="dropzone">
+                            </div>
+                            <div id="uploadErr">Please upload Image.</div>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button id='uploadSubmitBtn' class="btn btn-primary" type="button" >OK</button>
+            <button id='uploadCancelBtn' class="btn btn-warning" type="button" >Cancel</button>
+            <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
+        </div>
+    </div>
+</div>

@@ -207,7 +207,8 @@
             'STATUS': 'Status',
             'SHIFT_ENAME': 'Shift Name',
             'START_TIME': 'Start Time',
-            'END_TIME': 'End Time'
+            'END_TIME': 'End Time',
+            'FUNCTIONAL_TYPE_EDESC': 'Functional Type'
         };
         $('#excelExport').on('click', function () {
             app.excelExport($table, exportMap, "AttendanceList.xlsx");

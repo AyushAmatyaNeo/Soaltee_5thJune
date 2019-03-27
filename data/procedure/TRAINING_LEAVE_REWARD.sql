@@ -305,7 +305,8 @@ BEGIN
                     trunc(SYSDATE),
                     NULL,
                     NULL,
-                    p_training_id
+                    p_training_id,
+                    NULL
                 );
 
             END IF;

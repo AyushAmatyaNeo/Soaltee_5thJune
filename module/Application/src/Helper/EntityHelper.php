@@ -8,6 +8,7 @@ use Setup\Model\Branch;
 use Setup\Model\Company;
 use Setup\Model\Department;
 use Setup\Model\Designation;
+use Setup\Model\FunctionalTypes;
 use Setup\Model\Gender;
 use Setup\Model\HrEmployees;
 use Setup\Model\Location;
@@ -179,6 +180,7 @@ class EntityHelper {
         $serviceEventTypeList = self::getTableList($adapter, ServiceEventType::TABLE_NAME, [ServiceEventType::SERVICE_EVENT_TYPE_ID, ServiceEventType::SERVICE_EVENT_TYPE_NAME], [ServiceEventType::STATUS => "E"]);
         $genderList = self::getTableList($adapter, Gender::TABLE_NAME, [Gender::GENDER_ID, Gender::GENDER_NAME], [Gender::STATUS => "E"]);
         $locationList = self::getTableList($adapter, Location::TABLE_NAME, [Location::LOCATION_ID, Location::LOCATION_EDESC], [Location::STATUS => "E"]);
+        $functionalTypeList = self::getTableList($adapter, FunctionalTypes::TABLE_NAME, [FunctionalTypes::FUNCTIONAL_TYPE_ID, FunctionalTypes::FUNCTIONAL_TYPE_EDESC], [FunctionalTypes::STATUS=> "E"]);
         $employeeList = self::getTableList($adapter, HrEmployees::TABLE_NAME, [
                     new Expression(HrEmployees::EMPLOYEE_ID." AS ".HrEmployees::EMPLOYEE_ID),
                     new Expression(HrEmployees::EMPLOYEE_CODE." AS ".HrEmployees::EMPLOYEE_CODE),
@@ -193,6 +195,7 @@ class EntityHelper {
                     new Expression(HrEmployees::GENDER_ID." AS ".HrEmployees::GENDER_ID),
                     new Expression(HrEmployees::EMPLOYEE_TYPE." AS ".HrEmployees::EMPLOYEE_TYPE),
                     new Expression(HrEmployees::GROUP_ID." AS ".HrEmployees::GROUP_ID),
+                    new Expression(HrEmployees::FUNCTIONAL_TYPE_ID." AS ".HrEmployees::FUNCTIONAL_TYPE_ID),
 //                    HrEmployees::EMPLOYEE_ID,
 //                    HrEmployees::EMPLOYEE_CODE,
 //                    HrEmployees::FULL_NAME,
@@ -220,6 +223,7 @@ class EntityHelper {
             'employeeType' => [['EMPLOYEE_TYPE_KEY' => 'R', 'EMPLOYEE_TYPE_VALUE' => 'Employee'], ['EMPLOYEE_TYPE_KEY' => 'C', 'EMPLOYEE_TYPE_VALUE' => 'Worker']],
             'employee' => $employeeList,
             'location' => $locationList,
+            'functionalType' => $functionalTypeList,
         ];
         /* end of search values */
 
@@ -303,7 +307,7 @@ class EntityHelper {
         }
     }
 
-    public static function getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId = null, $locationId = null) {
+    public static function getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId = null, $locationId = null, $functionalTypeId = null) {
         $conditon = "";
         if ($companyId != null && $companyId != -1) {
             $conditon .= self::conditionBuilder($companyId, "E.COMPANY_ID", "AND");
@@ -350,6 +354,9 @@ class EntityHelper {
         }
         if ($locationId != null && $locationId != -1) {
             $conditon .= self::conditionBuilder($locationId, "E.LOCATION_ID", "AND");
+        }
+        if ($functionalTypeId != null && $functionalTypeId != -1) {
+            $conditon .= self::conditionBuilder($functionalTypeId, "E.FUNCTIONAL_TYPE_ID", "AND");
         }
         return $conditon;
     }

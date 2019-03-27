@@ -229,12 +229,13 @@ class TravelRequest extends HrisController {
         if ($id === 0) {
             return $this->redirect()->toRoute("travelRequest");
         }
-
+      
         $detail = $this->repository->fetchById($id);
+        $fileDetails = $this->repository->fetchAttachmentsById($id);
         $model = new TravelRequestModel();
         $model->exchangeArrayFromDB($detail);
         $this->form->bind($model);
-
+ 
         $numberInWord = new NumberHelper();
         $advanceAmount = $numberInWord->toText($detail['REQUESTED_AMOUNT']);
 
@@ -245,6 +246,7 @@ class TravelRequest extends HrisController {
                     'detail' => $detail,
                     'todayDate' => date('d-M-Y'),
                     'advanceAmount' => $advanceAmount,
+                    'files' => $fileDetails
         ]);
     }
 

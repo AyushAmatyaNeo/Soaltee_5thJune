@@ -3,6 +3,7 @@
 namespace ManagerService\Repository;
 
 use Application\Helper\EntityHelper;
+use Application\Helper\Helper;
 use Application\Model\Model;
 use Application\Repository\RepositoryInterface;
 use LeaveManagement\Model\LeaveApply;
@@ -218,6 +219,12 @@ class LeaveApproveRepository implements RepositoryInterface {
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result->current();
+    }
+
+    public function fetchAttachmentsById($id){
+      $sql = "SELECT * FROM HRIS_LEAVE_FILES WHERE LEAVE_ID = $id";
+      $result = EntityHelper::rawQueryResult($this->adapter, $sql);
+      return Helper::extractDbData($result);
     }
 
     public function assignedLeaveDetail($leaveId, $employeeId) {

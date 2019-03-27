@@ -18,6 +18,7 @@ use Notification\Controller\HeadNotification;
 use Notification\Model\NotificationEvents;
 use SelfService\Model\AttendanceRequestModel;
 use SelfService\Repository\AttendanceRequestRepository;
+use System\Repository\SystemSettingRepository;
 use System\Repository\UserSetupRepository;
 use Zend\Authentication\AuthenticationService;
 use Zend\Db\Adapter\AdapterInterface;
@@ -32,11 +33,19 @@ class RegisterAttendanceController extends AbstractActionController {
     protected $storage;
     protected $authservice;
     protected $adapter;
+    protected $preference;
 
     public function __construct(AuthenticationService $authService, AdapterInterface $adapter) {
         $this->authservice = $authService;
         $this->storage = $authService->getStorage();
         $this->adapter = $adapter;
+        $preferenceRepo = new SystemSettingRepository($adapter);
+        $this->preference = new Preference();
+        $this->preference->exchangeArrayFromDB($preferenceRepo->fetch());
+        if(!($this->preference->allowSystemAttendance=='Y')){
+            echo '!!!!!!!System Attendance is not Allowed';
+            die();
+        }
     }
 
     public function setEventManager(EventManagerInterface $events) {

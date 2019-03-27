@@ -255,6 +255,22 @@ print $this->form()->openTag($form);
                         </div>
                     </div>
                 </div>
+  
+                <?php if(!empty($files)){ ?>
+                        <div class="row"> 
+                            <div class="col-sm-6"> 
+                                <label>Attachments</label>
+                                    <div style="overflow: scroll; height:100px;" >
+                                        <ul> 
+                                            <?php foreach($files as $file){ ?>
+                                                <a target="_blank" href="<?='../../../../uploads/travel_documents/'.$file['FILE_IN_DIR_NAME']?>">
+                                                    <li><?=$file['FILE_NAME']?></li></a>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                        </div>
+                    <?php } ?>
 
                 <?php if (isset($detail['SUB_EMPLOYEE_ID'])) { ?>
                     <div class="form-group padding-0">
@@ -288,7 +304,7 @@ print $this->form()->openTag($form);
                     <?php print $this->formElement($approvedRemarks); ?>
                 </div>
             <?php } ?>
-
+ 
             <?php if ($role == 2) { ?>
                 <?php $approvedRemarks->setAttributes(['disabled' => 'disabled']); ?>
                 <div

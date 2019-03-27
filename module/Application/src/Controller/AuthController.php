@@ -92,7 +92,7 @@ class AuthController extends AbstractActionController {
             'form' => $form,
             'type' => $type,
             'messages' => $this->flashmessenger()->getMessages(),
-            'preference' => new Preference()
+            'preference' => $this->preference
         ]);
     }
 

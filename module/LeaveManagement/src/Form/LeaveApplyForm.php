@@ -7,9 +7,9 @@ use Zend\Form\Annotation;
 /**
  * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("leaveApply")
- */
+ */ 
 class LeaveApplyForm {
-
+ 
     /**
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(false)
@@ -97,7 +97,7 @@ class LeaveApplyForm {
      * @Annotation\Options({"label":"Reason for action"})
      * @Annotation\Attributes({"id":"form-approvedRemarks","class":"form-reason form-control","style":"    height: 50px; font-size:12px"})
      */
-    public $approvedRemarks;
+    public $approvedRemarks; 
 
     /**
      * @Annotation\Type("Zend\Form\Element\Select")

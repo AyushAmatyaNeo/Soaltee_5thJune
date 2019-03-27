@@ -48,6 +48,7 @@ class TravelApproveController extends HrisController {
             return $this->redirect()->toRoute("travelApprove");
         }
         $request = $this->getRequest();
+        $filesData = $this->repository->fetchAttachmentsById($id);
         $travelRequestModel = new TravelRequest();
         if ($request->isPost()) {
             $postedData = (array) $request->getPost();
@@ -71,6 +72,7 @@ class TravelApproveController extends HrisController {
                     'detail' => $detail,
                     'todayDate' => date('d-M-Y'),
                     'advanceAmount' => $advanceAmount,
+                    'files' => $filesData
         ]);
     }
 
@@ -181,7 +183,7 @@ class TravelApproveController extends HrisController {
                 $message = $approve ? "Travel Request Approved" : "Travel Request Rejected";
                 $notificationEvent = $approve ? NotificationEvents::TRAVEL_APPROVE_ACCEPTED : NotificationEvents::TRAVEL_APPROVE_REJECTED;
                 break;
-        }
+        } 
         $editError=$this->repository->edit($model, $id);
         if ($enableFlashNotification) {
             $this->flashmessenger()->addMessage($message);
@@ -193,5 +195,4 @@ class TravelApproveController extends HrisController {
             $this->flashmessenger()->addMessage($e->getMessage());
         }
     }
-
 }

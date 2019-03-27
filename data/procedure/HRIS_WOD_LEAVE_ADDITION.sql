@@ -108,9 +108,9 @@ BEGIN
     -- check  total working hour  
     --if greater than 2 then add 0.5 leave if  greater tan 4 then 1 day leave 
     IF((V_TOTAL_HOUR /60)     >= 2 AND(V_TOTAL_HOUR /60) < 4) THEN
-      V_INCREMENT_DAY         :=.5;
+      V_INCREMENT_DAY         :=V_INCREMENT_DAY+.5;
     ELSIF ((V_TOTAL_HOUR /60) >=4) THEN
-      V_INCREMENT_DAY         :=1;
+      V_INCREMENT_DAY         :=V_INCREMENT_DAY+1;
     END IF;
   END LOOP;
   --

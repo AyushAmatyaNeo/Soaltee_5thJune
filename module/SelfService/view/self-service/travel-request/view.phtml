@@ -4,7 +4,7 @@
 <?php
 $this->headLink()
         ->appendStylesheet($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.css'));
-
+ 
 $this->headScript()
         ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
         ->appendFile($this->basePath('js/nepali-datepicker-ext.js'));
@@ -219,7 +219,23 @@ print $this->form()->openTag($form);
                             <?php print $this->formElementErrors()->render($remarks, ['class' => 'help-block']); ?>
                         </div>
                     </div>
-                </div>
+                </div>   
+
+                <?php if(!empty($files)){ ?>
+                        <div class="row"> 
+                            <div class="col-sm-6"> 
+                                <label>Attachments</label>
+                                    <div style="overflow: scroll; height:100px;" >
+                                        <ul> 
+                                            <?php foreach($files as $file){ ?>
+                                                <a target="_blank" href="<?='../../../uploads/travel_documents/'.$file['FILE_IN_DIR_NAME']?>">
+                                                    <li><?=$file['FILE_NAME']?></li></a>
+                                            <?php } ?>
+                                        </ul>
+                                    </div>
+                                </div>
+                        </div>
+                    <?php } ?>
 
                 <?php if (isset($detail['SUB_EMPLOYEE_ID'])) { ?>
                     <div class="form-group padding-0">

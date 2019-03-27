@@ -16,6 +16,25 @@
             'ELEVEN': 'Jestha',
             'TWELVE': 'Ashadh',
         };
+        
+        if(document.calenderType=='E'){
+            months = {
+            'ONE': 'July',
+            'TWO': 'August',
+            'THREE': 'September',
+            'FOUR': 'October',
+            'FIVE': 'November',
+            'SIX': 'December',
+            'SEVEN': 'January',
+            'EIGHT': 'February',
+            'NINE': 'March',
+            'TEN': 'April',
+            'ELEVEN': 'May',
+            'TWELVE': 'June',
+        };
+        }
+        
+        
         var reportHeadList = {
             'PR': {field: 'PRESENT', class: 'blue'},
             'AB': {field: 'ABSENT', class: 'red'},

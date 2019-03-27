@@ -175,14 +175,14 @@ class AttendanceByHr extends HrisController {
             $serviceEventTypeId = isset($data['serviceEventTypeId']) ? $data['serviceEventTypeId'] : -1;
             $employeeTypeId = isset($data['employeeTypeId']) ? $data['employeeTypeId'] : -1;
             $genderId = isset($data['genderId']) ? $data['genderId'] : -1;
-            $locationId = isset($data['locationId']) ? $data['locationId'] : -1;
+            $functionalTypeId = isset($data['functionalTypeId']) ? $data['functionalTypeId'] : -1;
             $employeeId = isset($data['employeeId']) ? $data['employeeId'] : -1;
             $fromDate = $data['fromDate'];
             $toDate = $data['toDate'];
             $status = $data['status'];
             $presentStatus = $data['presentStatus'];
-            $results = $this->repository->filterRecord($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $locationId, $employeeId, $fromDate, $toDate, $status, $presentStatus);
-
+            
+            $results = $this->repository->filterRecord($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $functionalTypeId, $employeeId, $fromDate, $toDate, $status, $presentStatus);
             $result = [];
             $result['success'] = true;
             $result['data'] = Helper::extractDbData($results);

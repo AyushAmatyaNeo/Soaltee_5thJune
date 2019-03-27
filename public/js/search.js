@@ -11,6 +11,7 @@
             gender: [],
             employeeType: [],
             location: [],
+            functionalType: [],
             companyListener: null,
             branchListener: null,
             departmentListener: null,
@@ -22,6 +23,7 @@
             genderListener: null,
             employeeTypeListener: null,
             locationListener: null,
+            functionalTypeListener: null,
             ids: []
             , setCompany: function (company) {
                 this.company = company;
@@ -63,6 +65,10 @@
                 this.location = location;
             }, getLocation: function () {
                 return this.location;
+            }, setfunctionalType: function (functionalType) {
+                this.location = functionalType;
+            }, getfunctionalType: function () {
+                return this.functionalType;
             }, getEmployeeById: function (id) {
                 var filteredList = this.employee.filter(function (item) {
                     return item['EMPLOYEE_ID'] == id;
@@ -88,6 +94,8 @@
                 this.employeeTypeListener = listener;
             }, setLocationListener: function (listener) {
                 this.locationListener = listener;
+            }, setfunctionalTypeListener: function (listener) {
+                this.functionalTypeListener = listener;
             }, callCompanyListener: function () {
                 if (this.companyListener !== null) {
                     this.companyListener();
@@ -131,6 +139,10 @@
             }, callLocationListener: function () {
                 if (this.locationListener !== null) {
                     this.locationListener();
+                }
+            }, callfunctionalTypeListener: function () {
+                if (this.functionalTypeListener !== null) {
+                    this.functionalTypeListener();
                 }
             },
             setIds: function (ids) {
@@ -195,7 +207,7 @@
         /*
          * Search javascript code starts here
          */
-        var changeSearchOption = function (companyId, branchId, departmentId, designationId, positionId, serviceTypeId, serviceEventTypeId, employeeId, genderId, employeeTypeId, locationId) {
+        var changeSearchOption = function (companyId, branchId, departmentId, designationId, positionId, serviceTypeId, serviceEventTypeId, employeeId, genderId, employeeTypeId, locationId,functionalTypeId) {
             document.searchManager.setIds(JSON.parse(JSON.stringify(arguments)));
 
             var $company = $('#' + companyId);
@@ -206,10 +218,11 @@
             var $serviceType = $('#' + serviceTypeId);
             var $serviceEventType = $('#' + serviceEventTypeId);
             var $employee = $('#' + employeeId);
-
+            
             var $gender = $('#' + "random-random");
             var $employeeType = $('#' + "random-random");
             var $location = $('#' + "random-random");
+            var $functionalType = $('#' + "random-random");
             if (typeof genderId !== 'undefined' && genderId !== null) {
                 $gender = $('#' + genderId);
             }
@@ -218,6 +231,9 @@
             }
             if (typeof locationId !== 'undefined' && locationId !== null) {
                 $location = $('#' + locationId);
+            }
+            if (typeof functionalTypeId !== 'undefined' && functionalTypeId !== null) {
+                $functionalType = $('#' + functionalTypeId);
             }
 
             /* setup functions */
@@ -311,6 +327,9 @@
                 if ($location.length != 0) {
                     searchParams['LOCATION_ID'] = $location.val();
                 }
+                if ($functionalType.length != 0) {
+                    searchParams['FUNCTIONAL_TYPE_ID'] = $functionalType.val();
+                }
                 var employeeList = search(document.searchValues['employee'], searchParams);
                 document.searchManager.setEmployee(employeeList);
                 populateList($employee, employeeList, 'EMPLOYEE_ID', 'FULL_NAME', 'All Employee');
@@ -334,7 +353,7 @@
             document.searchManager.setServiceType(document.searchValues['serviceType']);
             document.searchManager.setServiceEventType(document.searchValues['serviceEventType']);
             document.searchManager.setEmployee(document.searchValues['employee']);
-
+            
             if ($gender.length != 0) {
                 populateList($gender, document.searchValues['gender'], 'GENDER_ID', 'GENDER_NAME', 'All Gender');
             }
@@ -343,6 +362,10 @@
             }
             if ($location.length != 0) {
                 populateList($location, document.searchValues['location'], 'LOCATION_ID', 'LOCATION_EDESC', 'All Location');
+            }
+            if ($functionalType.length != 0) {
+                populateList($functionalType, document.searchValues['functionalType'], 'FUNCTIONAL_TYPE_ID', 'FUNCTIONAL_TYPE_EDESC', 'All Functional Type');
+//                document.searchManager.setfunctionalType(document.searchValues['functionalType']);
             }
             /* initialize dropdowns */
 
@@ -399,6 +422,12 @@
                     document.searchManager.callLocationListener();
                 });
             }
+            if ($functionalType.length != 0) {
+                onChangeEvent($functionalType, function ($this) {
+                    employeeSearchAndPopulate();
+                    document.searchManager.callfunctionalTypeListener();
+                });
+            }
             var acl = document.acl;
             var employeeDetail = document.employeeDetail;
             if (typeof acl !== 'undefined' && typeof employeeDetail !== 'undefined') {
@@ -443,12 +472,12 @@
         };
 
         if (typeof document.searchValues !== 'undefined') {
-            changeSearchOption("companyId", "branchId", "departmentId", "designationId", "positionId", "serviceTypeId", "serviceEventTypeId", "employeeId", "genderId", "employeeTypeId", "locationId");
+            changeSearchOption("companyId", "branchId", "departmentId", "designationId", "positionId", "serviceTypeId", "serviceEventTypeId", "employeeId", "genderId", "employeeTypeId", "locationId","functionalTypeId");
         } else {
             if (typeof document.getSearchDataLink !== "undefined") {
                 app.serverRequest(document.getSearchDataLink, {}).then(function (response) {
                     document.searchValues = response.data;
-                    changeSearchOption("companyId", "branchId", "departmentId", "designationId", "positionId", "serviceTypeId", "serviceEventTypeId", "employeeId", "genderId", "employeeTypeId", "locationId");
+                    changeSearchOption("companyId", "branchId", "departmentId", "designationId", "positionId", "serviceTypeId", "serviceEventTypeId", "employeeId", "genderId", "employeeTypeId", "locationId","functionalTypeId");
                 });
             } else {
                 throw "No data or url set."

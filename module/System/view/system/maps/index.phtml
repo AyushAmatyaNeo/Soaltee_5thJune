@@ -11,7 +11,7 @@ $this->headScript()
     ->appendFile($this->basePath('jszip/dist/jszip.min.js'))
     ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
     ->appendFile($this->basePath('js/nepali-datepicker-ext.js'))
-    ->appendFile($this->basePath('js/AttendanceManagement/by-hr/index.js'))
+    ->appendFile($this->basePath('js/maps/index.js'))
     ->appendFile($this->basePath('js/angular.min.js'));
 ?>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -47,7 +47,7 @@ $(function(){
             dataType: 'json',
             url: "<?php echo $this->url('showlocation', ['action' => 'showMap']); ?>",
             //async: false,
-
+ 
             // you can use an object here
             data: {
                 employeeId : employeeId,

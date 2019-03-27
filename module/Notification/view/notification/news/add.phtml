@@ -11,13 +11,13 @@ $this->headScript()
 $this->headScript()->appendFile($this->basePath('js/search.js'))
         ->appendFile($this->basePath('js/Notification/news/add.js'))
         ->appendFile($this->basePath('dropzone/dropzone.min.js'));
-
+ 
 
 $form->setAttribute('role', 'form');
 $form->setAttribute('id', 'newsForm');
 $form->setAttribute('action', $this->url('news', ['action' => 'add']));
 
-
+ 
 
 $newsDate = $form->get('newsDate');
 $newsExpiryDate = $form->get('newsExpiryDate');
@@ -212,7 +212,7 @@ $form->prepare();
                     <div class=" col-md-6 form-group">
                         <table id="fileDetailsTbl" class="table">
                             <tr>
-                                <th>Document</th>
+                                <th>Document</th> 
                                 <th>&nbsp;</th>
                                 <th>Action</th>
                             </tr>
@@ -227,7 +227,7 @@ $form->prepare();
 
 
 
-                <div>
+                <div> 
                     <?php
                     print $this->formSubmit($submit);
                     print $this->form()->closeTag();

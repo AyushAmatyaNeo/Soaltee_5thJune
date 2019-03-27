@@ -45,7 +45,7 @@ class NewsController extends AbstractActionController {
                     'news' => $list
         ]);
     }
-
+ 
     public function addAction() {
         $this->initializeForm();
         $request = $this->getRequest();
@@ -53,7 +53,7 @@ class NewsController extends AbstractActionController {
         if ($request->isPost()) {
             $postData = $request->getPost();
             $this->form->setData($postData);
-            
+             
             echo '<Pre>';
             if ($this->form->isValid()) {
                 $newsModel = new NewsModel();
@@ -235,7 +235,7 @@ class NewsController extends AbstractActionController {
             ];
         }
         return new JsonModel($responseData);
-    }
+    } 
 
     public function pushNewsFileAction() {
         try {

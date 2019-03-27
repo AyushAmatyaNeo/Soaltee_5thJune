@@ -45,7 +45,6 @@ class WorkOnHolidayStatus extends HrisController {
     }
 
     public function viewAction() {
-        $this->initializeForm();
         $id = (int) $this->params()->fromRoute('id');
 
         if ($id === 0) {

@@ -1,5 +1,5 @@
 <?php
-
+ 
 namespace Notification\Repository;
 
 use Application\Helper\EntityHelper;
@@ -18,7 +18,7 @@ use Zend\Db\TableGateway\TableGateway;
 class NewsRepository implements RepositoryInterface {
 
     private $tableGateway;
-    private $adapter;
+    private $adapter; 
 
     public function __construct(AdapterInterface $adapter) {
         $this->adapter = $adapter;
