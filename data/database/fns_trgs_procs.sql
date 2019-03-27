@@ -157,7 +157,7 @@ BEGIN
   WHERE (A.ATTENDANCE_TIME >= P_FROM_ATTENDANCE_TIME
   AND A.ATTENDANCE_TIME    <= P_TO_ATTENDANCE_TIME)
   AND A.EMPLOYEE_ID         = P_EMPLOYEE_ID
-  AND ADM.PURPOSE           ='IN';
+  AND (ADM.PURPOSE           ='IN' OR A.ATTENDANCE_FROM='SYSTEM');
   --
   SELECT MAX(TO_DATE(TO_CHAR(A.ATTENDANCE_DT,'DD-MON-YYYY')
     ||' '
@@ -169,7 +169,7 @@ BEGIN
   WHERE (A.ATTENDANCE_TIME >= P_FROM_ATTENDANCE_TIME
   AND A.ATTENDANCE_TIME    <= P_TO_ATTENDANCE_TIME)
   AND A.EMPLOYEE_ID         = P_EMPLOYEE_ID
-  AND ADM.PURPOSE           ='OUT';
+  AND (ADM.PURPOSE           ='OUT' OR A.ATTENDANCE_FROM='SYSTEM');
   --
   IF V_IN_TIME        IS NOT NULL THEN
     P_IN_TIME         :=V_IN_TIME;
@@ -1791,12 +1791,26 @@ END;/
             CREATE OR REPLACE PROCEDURE HRIS_MANUAL_ATTENDANCE(
     P_EMPLOYEE_ID HRIS_ATTENDANCE_DETAIL.EMPLOYEE_ID%TYPE ,
     P_ATTENDANCE_DT HRIS_ATTENDANCE_DETAIL.ATTENDANCE_DT%TYPE,
-    P_STATUS CHAR )
+    P_STATUS CHAR,
+    P_SHIFT_ID NUMBER :=NULL,
+    P_IN_TIME DATE :=NULL,
+    P_OUT_TIME DATE :=NULL
+    )
 AS
   V_WEEK_DAY NUMBER(1);
     V_DYNAMIC_SQL VARCHAR2(1000 BYTE);
     V_TO_TIME TIMESTAMP;
 BEGIN
+ 
+IF(P_SHIFT_ID != '0' AND P_SHIFT_ID IS NOT NULL)
+THEN
+BEGIN
+DELETE  FROM HRIS_EMPLOYEE_SHIFT_ROASTER WHERE EMPLOYEE_ID=P_EMPLOYEE_ID AND FOR_DATE=P_ATTENDANCE_DT;
+
+INSERT INTO HRIS_EMPLOYEE_SHIFT_ROASTER
+VALUES (P_EMPLOYEE_ID,P_SHIFT_ID,P_ATTENDANCE_DT,NULL,NULL,NULL,NULL);
+END;
+END IF;
 
 select to_char(p_attendance_dt, 'd') INTO V_WEEK_DAY from dual;
 
@@ -1847,9 +1861,16 @@ select to_char(p_attendance_dt, 'd') INTO V_WEEK_DAY from dual;
         (
           attendance.EMPLOYEE_ID,
           attendance.ATTENDANCE_DT,
+          CASE WHEN P_IN_TIME IS NOT NULL
+          THEN
           TO_DATE(TO_CHAR(attendance.ATTENDANCE_DT,'DD-MON-YYYY')
           ||' '
-          ||TO_CHAR(attendance.START_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' ),
+          ||TO_CHAR(P_IN_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' )
+          ELSE
+          TO_DATE(TO_CHAR(attendance.ATTENDANCE_DT,'DD-MON-YYYY')
+          ||' '
+          ||TO_CHAR(attendance.START_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' )
+          END,
           'SYSTEM'
         );
       INSERT
@@ -1864,9 +1885,16 @@ select to_char(p_attendance_dt, 'd') INTO V_WEEK_DAY from dual;
         (
           attendance.EMPLOYEE_ID,
           attendance.ATTENDANCE_DT,
+          CASE WHEN P_OUT_TIME IS NOT NULL
+          THEN
           TO_DATE(TO_CHAR(attendance.ATTENDANCE_DT,'DD-MON-YYYY')
           ||' '
-          ||TO_CHAR(V_TO_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' ),
+          ||TO_CHAR(P_OUT_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' )
+          ELSE
+          TO_DATE(TO_CHAR(attendance.ATTENDANCE_DT,'DD-MON-YYYY')
+          ||' '
+          ||TO_CHAR(V_TO_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' )
+          END,
           'SYSTEM'
         );
     END IF;
@@ -1874,7 +1902,8 @@ select to_char(p_attendance_dt, 'd') INTO V_WEEK_DAY from dual;
       DELETE
       FROM HRIS_ATTENDANCE
       WHERE EMPLOYEE_ID=P_EMPLOYEE_ID
-      AND ATTENDANCE_DT= P_ATTENDANCE_DT;
+      AND ATTENDANCE_DT= P_ATTENDANCE_DT
+      AND ATTENDANCE_FROM='SYSTEM';
     END IF ;
     HRIS_REATTENDANCE(attendance.ATTENDANCE_DT,attendance.EMPLOYEE_ID,attendance.ATTENDANCE_DT);
   END LOOP;
@@ -1882,12 +1911,26 @@ END;/
             CREATE OR REPLACE PROCEDURE HRIS_MANUAL_ATTENDANCE_ALL(
     P_EMPLOYEE_ID HRIS_ATTENDANCE_DETAIL.EMPLOYEE_ID%TYPE ,
     P_ATTENDANCE_DT HRIS_ATTENDANCE_DETAIL.ATTENDANCE_DT%TYPE,
-    P_STATUS CHAR )
+    P_STATUS CHAR,
+    P_SHIFT_ID NUMBER :=NULL,
+    P_IN_TIME DATE :=NULL,
+    P_OUT_TIME DATE :=NULL)
 AS
     V_WEEK_DAY NUMBER(1);
     V_DYNAMIC_SQL VARCHAR2(1000 BYTE);
     V_TO_TIME TIMESTAMP;
 BEGIN
+
+IF(P_SHIFT_ID != '0' AND P_SHIFT_ID IS NOT NULL) 
+THEN
+BEGIN
+DELETE  FROM HRIS_EMPLOYEE_SHIFT_ROASTER WHERE EMPLOYEE_ID=P_EMPLOYEE_ID AND FOR_DATE=P_ATTENDANCE_DT;
+
+INSERT INTO HRIS_EMPLOYEE_SHIFT_ROASTER
+VALUES (P_EMPLOYEE_ID,P_SHIFT_ID,P_ATTENDANCE_DT,NULL,NULL,NULL,NULL);
+
+END;
+END IF;
 
 select to_char(P_ATTENDANCE_DT, 'd') INTO V_WEEK_DAY from dual;
 
@@ -1935,9 +1978,16 @@ select to_char(P_ATTENDANCE_DT, 'd') INTO V_WEEK_DAY from dual;
         (
           attendance.EMPLOYEE_ID,
           attendance.ATTENDANCE_DT,
+          CASE WHEN P_IN_TIME IS NOT NULL
+          THEN
           TO_DATE(TO_CHAR(attendance.ATTENDANCE_DT,'DD-MON-YYYY')
           ||' '
-          ||TO_CHAR(attendance.START_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' ),
+          ||TO_CHAR(P_IN_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' )
+          ELSE
+          TO_DATE(TO_CHAR(attendance.ATTENDANCE_DT,'DD-MON-YYYY')
+          ||' '
+          ||TO_CHAR(attendance.START_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' )
+          END,
           'SYSTEM'
         );
       INSERT
@@ -1952,17 +2002,30 @@ select to_char(P_ATTENDANCE_DT, 'd') INTO V_WEEK_DAY from dual;
         (
           attendance.EMPLOYEE_ID,
           attendance.ATTENDANCE_DT,
+          CASE WHEN P_OUT_TIME IS NOT NULL
+          THEN
           TO_DATE(TO_CHAR(attendance.ATTENDANCE_DT,'DD-MON-YYYY')
           ||' '
-          ||TO_CHAR(V_TO_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' ),
+          ||TO_CHAR(P_OUT_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' )
+          ELSE
+          TO_DATE(TO_CHAR(attendance.ATTENDANCE_DT,'DD-MON-YYYY')
+          ||' '
+          ||TO_CHAR(V_TO_TIME,'HH24:MI'),'DD-MON-YYYY HH24:MI' )
+          END,
           'SYSTEM'
         );
     END IF;
     IF P_STATUS ='A' THEN
+    BEGIN
+    DELETE  FROM HRIS_EMPLOYEE_SHIFT_ROASTER WHERE EMPLOYEE_ID=P_EMPLOYEE_ID AND FOR_DATE=P_ATTENDANCE_DT;
+    
+    
       DELETE
       FROM HRIS_ATTENDANCE
       WHERE EMPLOYEE_ID=P_EMPLOYEE_ID
-      AND ATTENDANCE_DT= P_ATTENDANCE_DT;
+      AND ATTENDANCE_DT= P_ATTENDANCE_DT
+      AND ATTENDANCE_FROM='SYSTEM';
+      END;
     END IF ;
     HRIS_REATTENDANCE(attendance.ATTENDANCE_DT,attendance.EMPLOYEE_ID,attendance.ATTENDANCE_DT);
   END LOOP;
@@ -5380,6 +5443,9 @@ BEGIN
     END IF;
   END LOOP;
   --
+BEGIN
+DELETE FROM HRIS_EMPLOYEE_LEAVE_ADDITION  WHERE WOD_ID= P_WOD_ID;
+END;
   INSERT
   INTO HRIS_EMPLOYEE_LEAVE_ADDITION
     (
@@ -6288,9 +6354,9 @@ CREATE OR REPLACE TRIGGER HRIS_APPRAISAL_STAT_TRG AFTER
       :new.APPRAISAL_ID
     );
 END;/
-            create or replace TRIGGER HRIS_BEFORE_LEAVE_REQUEST BEFORE
-  UPDATE ON HRIS_EMPLOYEE_LEAVE_REQUEST
-  FOR EACH ROW
+            CREATE OR REPLACE TRIGGER HRIS_BEFORE_LEAVE_REQUEST BEFORE
+    INSERT OR UPDATE ON hris_employee_leave_request
+    FOR EACH ROW
 DECLARE
   V_BALANCE                     NUMBER(3,1);
   V_IS_MONTHLY                  HRIS_LEAVE_MASTER_SETUP.IS_MONTHLY%TYPE;
@@ -6312,7 +6378,10 @@ BEGIN
     LEAVE_ID =:NEW.LEAVE_ID;
     --
 
-  IF
+    IF
+        updating
+    THEN  -- start condition if updateing
+        IF
     V_IS_MONTHLY = 'N'
   THEN
     IF
@@ -6381,7 +6450,7 @@ BEGIN
       AND
         FISCAL_YEAR_MONTH_NO = V_FISCAL_YEAR_MONTH_NO;
 
-    IF
+            IF
       ( V_CARRY_FORWARD = 'N' )
     THEN
       --
@@ -6417,10 +6486,10 @@ BEGIN
 
       END IF;
 
-      NULL;
-    END IF;
+                NULL;
+            END IF;
 
-    IF
+            IF
       ( V_CARRY_FORWARD = 'Y' )
     THEN
 
@@ -6506,7 +6575,164 @@ BEGIN
       END IF;
     END IF;
 
-  END IF;
+        END IF;
+
+    END IF; -- end condition if updateing
+
+    IF
+        inserting
+    THEN  -- START CONDITION IF INSERTING
+        IF
+            :new.status = 'AP'
+        THEN -- IF INSERT IS AP
+            IF
+                v_is_monthly = 'N'
+            THEN
+                IF
+                    (
+                        :new.half_day IN (
+                            'F','S'
+                        )
+                    )
+                THEN
+                    v_balance :=:new.no_of_days / 2;
+                ELSE
+                    v_balance :=:new.no_of_days;
+                END IF;
+
+                UPDATE hris_employee_leave_assign
+                    SET
+                        balance = balance - v_balance
+                WHERE
+                        employee_id =:new.employee_id
+                    AND
+                        leave_id =:new.leave_id;
+
+            END IF;
+            
+            
+            -- MONTHLY LEAVE START HERE
+                  IF
+            v_is_monthly = 'Y'
+        THEN
+            SELECT
+                leave_year_month_no
+            INTO
+                v_fiscal_year_month_no
+            FROM
+                hris_leave_month_code
+            WHERE
+                trunc(:new.start_date) BETWEEN from_date AND TO_DATE;
+
+            SELECT
+                total_days - balance
+            INTO
+                v_old_leave_taken
+            FROM
+                hris_employee_leave_assign
+            WHERE
+                    employee_id =:new.employee_id
+                AND
+                    leave_id =:new.leave_id
+                AND
+                    fiscal_year_month_no = v_fiscal_year_month_no;
+
+            IF
+                ( v_carry_forward = 'N' )
+            THEN
+      --
+                v_balance :=:new.no_of_days;
+      --
+                IF
+                    :old.status != 'AP' AND :new.status = 'AP'
+                THEN
+                    UPDATE hris_employee_leave_assign
+                        SET
+                            balance = balance - v_balance
+                    WHERE
+                            employee_id =:new.employee_id
+                        AND
+                            leave_id =:new.leave_id
+                        AND
+                            fiscal_year_month_no = v_fiscal_year_month_no;
+
+                ELSIF :old.status = 'AP' AND
+                    :new.status IN (
+                        'C','R'
+                    )
+                THEN
+                    UPDATE hris_employee_leave_assign
+                        SET
+                            balance = balance + v_balance
+                    WHERE
+                            employee_id =:new.employee_id
+                        AND
+                            leave_id =:new.leave_id
+                        AND
+                            fiscal_year_month_no = v_fiscal_year_month_no;
+
+                END IF;
+
+                NULL;
+            END IF;
+
+            IF
+                ( v_carry_forward = 'Y' )
+            THEN
+                IF
+                    (
+                        :new.half_day IN (
+                            'F','S'
+                        )
+                    )
+                THEN
+                    v_leave_divide := 2;
+                END IF;
+
+                    FOR leave_assign_dtl IN (
+                        SELECT
+                            *
+                        FROM
+                            hris_employee_leave_assign
+                        WHERE
+                                employee_id =:new.employee_id
+                            AND
+                                leave_id =:new.leave_id
+                        ORDER BY fiscal_year_month_no
+                    ) LOOP
+                        IF
+                            ( ( v_old_leave_taken + (:new.no_of_days / v_leave_divide ) ) >= leave_assign_dtl.total_days )
+                        THEN
+                            v_balance := 0;
+                        ELSE
+                            v_balance := leave_assign_dtl.balance - (:new.no_of_days / v_leave_divide );
+                        END IF;
+
+                        UPDATE hris_employee_leave_assign
+                            SET
+                                balance = v_balance
+                        WHERE
+                                employee_id = leave_assign_dtl.employee_id
+                            AND
+                                leave_id = leave_assign_dtl.leave_id
+                            AND
+                                fiscal_year_month_no = leave_assign_dtl.fiscal_year_month_no;
+
+                    END LOOP;
+
+
+            END IF;
+
+        END IF;
+            
+            
+            -- MONTHLY LEAVE END HERE
+            
+            
+            
+
+        END IF; -- END ID INSERT AP
+    END IF; -- END CONDITION IF INSERTING
 
 END;/
             create or replace TRIGGER HRIS_CONTRACT_EMP_UPDATE
