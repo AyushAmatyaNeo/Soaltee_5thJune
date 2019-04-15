@@ -69,6 +69,7 @@
             "Report\\": "module/Report/src/",
             "MobileApi\\": "module/MobileApi/src/",
             "Customer\\": "module/Customer/src/",
+            "Medical\\": "module/Medical/src/",
             "PayrollApi\\": "module/PayrollApi/src/"
         }
     },

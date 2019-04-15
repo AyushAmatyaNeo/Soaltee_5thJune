@@ -81,11 +81,37 @@ class OvertimeReportRepo extends HrisRepository {
         return $this->rawQuery($sql)[0]['MONTH_DAY_IN'];
     }
 
-    public function fetchMonthlyForGrid($by): array {
+    public function fetchMonthlyForGrid($by,$calenderType): array {
         $monthId = $by['monthId'];
         $pivotIn = $this->fetchColumnsForPivot($monthId);
         $searchConditon = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId']);
-        $sql = "SELECT *
+        
+        if ($calenderType == 'E') {
+            $sql = "SELECT *
+                FROM
+                  (SELECT AD.EMPLOYEE_ID, E.EMPLOYEE_CODE AS EMPLOYEE_CODE,
+                    E.FULL_NAME,
+                    'D_'
+                    ||to_number(to_char(AD.ATTENDANCE_DATE,'DD')) AS MONTH_DAY,
+                    OM.OVERTIME_HOUR
+                  FROM
+                    (SELECT AD.EMPLOYEE_ID,
+                      AD.ATTENDANCE_DT AS ATTENDANCE_DATE
+                    FROM HRIS_ATTENDANCE_DETAIL AD
+                    JOIN HRIS_MONTH_CODE MC
+                    ON (AD.ATTENDANCE_DT BETWEEN MC.FROM_DATE AND MC.TO_DATE)
+                    WHERE MC.MONTH_ID={$monthId}
+                    ) AD
+                  LEFT JOIN HRIS_OVERTIME_MANUAL OM
+                  ON (AD.EMPLOYEE_ID    =OM.EMPLOYEE_ID
+                  AND AD.ATTENDANCE_DATE=OM.ATTENDANCE_DATE)
+                  JOIN HRIS_EMPLOYEES E
+                  ON (AD.EMPLOYEE_ID                         =E.EMPLOYEE_ID)
+                  WHERE 1=1 
+                  {$searchConditon}
+                  ) PIVOT (MAX(OVERTIME_HOUR) FOR MONTH_DAY IN ({$pivotIn}))";
+        } else {
+            $sql = "SELECT *
                 FROM
                   (SELECT AD.EMPLOYEE_ID, E.EMPLOYEE_CODE AS EMPLOYEE_CODE,
                     E.FULL_NAME,
@@ -108,6 +134,7 @@ class OvertimeReportRepo extends HrisRepository {
                   WHERE 1=1 
                   {$searchConditon}
                   ) PIVOT (MAX(OVERTIME_HOUR) FOR MONTH_DAY IN ({$pivotIn}))";
+        }
         return $this->rawQuery($sql);
     }
 

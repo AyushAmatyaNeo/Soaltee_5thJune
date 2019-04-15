@@ -667,14 +667,43 @@ INTO HRIS_MENUS
   );
 
 
-
-
-Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,CREATED_BY,MODIFIED_BY,IS_VISIBLE) values ('500',369,'Employee Birthhday Report',148,null,'allreport','E',to_date('21-MAR-19','DD-MON-RR'),null,null,'birthdayReport',500,700280,null,'Y');
-
-Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,CREATED_BY,MODIFIED_BY,IS_VISIBLE) values ('607',370,'Job Duration Report',148,null,'allreport','E',to_date('22-MAR-19','DD-MON-RR'),null,null,'jobDurationReport',607,700280,null,'Y');
-
-Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,CREATED_BY,MODIFIED_BY,IS_VISIBLE) values ('709',371,'Weekly Work Report',148,null,'allreport','E',to_date('26-MAR-19','DD-MON-RR'),null,null,'weeklyWorkingHoursReport',809,700280,null,'Y');
-
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Medical Reimbursement',
+    (select menu_id from hris_menus where menu_id=302 and route='javascript::' and Action='javascript::'),
+    NULL,
+    'javascript::',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'javascript::',
+    (select max(Menu_Index)+1 from hris_menus where parent_menu=302),
+    NULL,
+    NULL,
+    'Y'
+  );
 
 
 INSERT
@@ -698,19 +727,244 @@ INTO HRIS_MENUS
   )
   VALUES
   (
-  NULL,
-    (select max(menu_id+1) from HRIS_MENUS),
-    'Department Wise Weekly Attendance',
-    148,
     NULL,
-    'allreport',
+    (select max(menu_id)+1 from hris_menus),
+    'Entry',
+    (select menu_id from hris_menus where menu_name like 'Medical Reimbursement' 
+    and route='javascript::' and action='javascript::'),
+    NULL,
+    'medicalEntry',
     'E',
-      TRUNC(SYSDATE),
+    trunc(sysdate),
     NULL,
-    'fa fa-pencil',
-    'weeklyWorkingHoursReport',
-    (select max(menu_index)+1 from hris_menus where Parent_Menu=148),
+    'fa fa-pencil-square-o',
+    'index',
+    1,
     NULL,
     NULL,
     'Y'
-    );
+  );
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Verify',
+    (select menu_id from hris_menus where menu_name like 'Medical Reimbursement' 
+    and route='javascript::' and action='javascript::'),
+    NULL,
+    'medicalVerify',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'index',
+    2,
+    NULL,
+    NULL,
+    'Y'
+  );
+
+
+
+
+Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,CREATED_BY,MODIFIED_BY,IS_VISIBLE) values
+ (null,(select max(menu_id+1) from HRIS_MENUS),'Employee Birthhday Report',148,null,'allreport','E',trunc(sysdate),null,null,'birthdayReport',
+(select max(menu_index)+1 from hris_menus where Parent_Menu=148),
+null,null,'Y');
+
+Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,CREATED_BY,MODIFIED_BY,IS_VISIBLE) values 
+(null,(select max(menu_id+1) from HRIS_MENUS),'Job Duration Report',148,null,'allreport','E',trunc(sysdate),null,null,'jobDurationReport',
+(select max(menu_index)+1 from hris_menus where Parent_Menu=148),
+null,null,'Y');
+
+Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,CREATED_BY,MODIFIED_BY,IS_VISIBLE) values
+ (null,(select max(menu_id+1) from HRIS_MENUS),'Weekly Work Report',148,null,'allreport','E',trunc(sysdate),null,null,'weeklyWorkingHoursReport',
+(select max(menu_index)+1 from hris_menus where Parent_Menu=148),
+null,null,'Y');
+
+
+ INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Settlement',
+    (select menu_id from hris_menus where menu_name like 'Medical Reimbursement' 
+    and route='javascript::' and action='javascript::'),
+    NULL,
+    'medicalSettlement',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'index',
+    3,
+    NULL,
+    NULL,
+    'Y'
+  );
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Balance',
+    (select menu_id from hris_menus where menu_name like 'Medical Reimbursement' 
+    and route='javascript::' and action='javascript::'),
+    NULL,
+    'medicalReport',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'index',
+    4,
+    NULL,
+    NULL,
+    'Y'
+  );
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Transaction',
+    (select menu_id from hris_menus where menu_name like 'Medical Reimbursement' 
+    and route='javascript::' and action='javascript::'),
+    NULL,
+    'medicalReport',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'transactionRep',
+    5,
+    NULL,
+    NULL,
+    'Y'
+  );
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Voucher',
+    (select menu_id from hris_menus where menu_name like 'Medical Reimbursement' 
+    and route='javascript::' and action='javascript::'),
+    NULL,
+    'medicalReport',
+    'Leave Count Date Wise',
+    2,
+    NULL,
+    'leavebalance',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'voucher',
+    6,
+    'betweenDates',
+    (select max(menu_index)+1 from hris_menus where parent_menu=2),
+    NULL,
+    NULL,
+    'Y'
+  );
+

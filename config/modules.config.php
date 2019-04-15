@@ -47,6 +47,7 @@ return [
     'ServiceQuestion',
     'MobileApi',
     'Customer',
+    'Medical',
     'PayrollApi'
 ];
 

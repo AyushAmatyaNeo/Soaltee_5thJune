@@ -27,7 +27,7 @@
                     });
                     console.log(reportData);
                     for (var i = 0; i < reportData.length; i++) {
-                        reportData[i].total = (parseInt(reportData[i].PR) || 0) + (parseInt(reportData[i].WD) || 0) + (parseInt(reportData[i].HD) || 0) + (parseInt(reportData[i]).LV || 0) + (parseInt(reportData[i].WH) || 0) + (parseInt(reportData[i].DO) || 0) + (parseInt(reportData[i].AB) || 0);
+                        reportData[i].total = (parseInt(reportData[i].PR) || 0) + (parseInt(reportData[i].WD) || 0) + (parseInt(reportData[i].HD) || 0) + (parseInt(reportData[i].LV) || 0) + (parseInt(reportData[i].WH) || 0) + (parseInt(reportData[i].DO) || 0) + (parseInt(reportData[i].AB) || 0);
 
                         reportData[i].absentRate = parseFloat(((parseInt(reportData[i].AB) || 0) / (parseInt(reportData[i].total) || 0)) * 100);
                     }

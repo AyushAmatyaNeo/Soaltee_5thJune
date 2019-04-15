@@ -99,7 +99,7 @@
         }
         reinitializeKendo([]);
         app.initializeKendoGrid($table, columns);
-        app.searchTable($table, ['EMPLOYEE_ID', 'EMPLOYEE_CODE']);
+        app.searchTable($table, ['EMPLOYEE_ID', 'EMPLOYEE_CODE','FULL_NAME']);
 
         $search.on('click', function () {
             var optionalColumns = $options.val();

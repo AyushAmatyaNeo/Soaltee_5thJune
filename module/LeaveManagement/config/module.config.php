@@ -213,6 +213,11 @@ return [
                         'route' => 'leavebalance',
                         'action' => 'view',
                     ],
+                    [
+                        'label' => 'Between Dates',
+                        'route' => 'leavebalance',
+                        'action' => 'betweenDates',
+                    ],
                 ]
             ]
         ],

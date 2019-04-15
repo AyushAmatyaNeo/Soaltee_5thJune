@@ -41,7 +41,11 @@ class OvertimeReport extends HrisController {
     public function pvmReadAction() {
         $request = $this->getRequest();
         $postData = $request->getPost();
-        $data = $this->repository->fetchMonthlyForGrid($postData);
+        $calenderType='N';
+        if(isset($this->preference['calendarView'])){
+        $calenderType=$this->preference['calendarView'];
+        }
+        $data = $this->repository->fetchMonthlyForGrid($postData,$calenderType);
 
         return new JsonModel($data);
     }
@@ -57,7 +61,7 @@ class OvertimeReport extends HrisController {
             $item = (array) $value;
             $common = ['EMPLOYEE_ID' => $item['EMPLOYEE_ID'], 'MONTH_ID' => $monthId];
             foreach ($item as $k => $v) {
-                if (!in_array($k, ['EMPLOYEE_ID', 'FULL_NAME', 'MONTH_ID'])) {
+                if (!in_array($k, ['EMPLOYEE_CODE','EMPLOYEE_ID', 'FULL_NAME', 'MONTH_ID'])) {
 //                    if ($v != null) {
                         $monthDay = str_replace('D_', '', $k);
                         $dataUnit = array_merge($common, []);

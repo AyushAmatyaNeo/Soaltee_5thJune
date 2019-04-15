@@ -51,7 +51,13 @@ $this->headScript()
     document.addUniversityLink = '<?php echo $this->url('employee', ['action' => 'addUniversity']); ?>';
     document.addProgramLink = '<?php echo $this->url('employee', ['action' => 'addProgram']); ?>';
     document.addCourseLink = '<?php echo $this->url('employee', ['action' => 'addCourse']); ?>';
-    document.addDistributionEmp = '<?php echo $this->url('employee', ['action' => 'addDistributionEmp']); ?>';</script>
+    document.addDistributionEmp = '<?php echo $this->url('employee', ['action' => 'addDistributionEmp']); ?>';
+    document.relation=<?php echo json_encode($relation); ?>;
+    document.pullReltionDetailLink = '<?php echo $this->url('employee', ['action' => 'pullRelationDetail']); ?>';
+    document.submitRelationDtlLink = '<?php echo $this->url('employee', ['action' => 'submitRelationDtl']); ?>';
+    document.deleteRelationDtlLink = '<?php echo $this->url('employee', ['action' => 'deleteRelationDtl']); ?>';
+    document.urlSubmitRelation = '<?= $this->url('employee', ['action' => 'edit', 'id' => $id, 'tab' => 10]) ?>';
+</script>
 <div class="page-bar">
 <?= $this->navigation('Zend\Navigation\Employee')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
 </div>
@@ -103,6 +109,12 @@ $this->headScript()
             <li class="">
                 <a data-toggle="tab" href="#tab9">
                     <i class="fa fa-plus-circle ticon" aria-hidden="true"></i>
+                    Employee Relation
+                </a>
+            </li>
+            <li class="">
+                <a data-toggle="tab" href="#tab10">
+                    <i class="fa fa-plus-circle ticon" aria-hidden="true"></i>
                     Add. Information
                 </a>
             </li>
@@ -117,7 +129,8 @@ $this->headScript()
             <?php print $this->partial('tabs/tab_6.phtml'); ?>
             <?php print $this->partial('tabs/tab_7.phtml'); ?>
             <?php print $this->partial('tabs/tab_8.phtml'); ?>
-<?php print $this->partial('tabs/tab_9.phtml'); ?>
+            <?php print $this->partial('tabs/tab_9.phtml'); ?>
+            <?php print $this->partial('tabs/tab_10.phtml'); ?>
 
             <div class="padding-20">
                 <ul class="pager wizard">

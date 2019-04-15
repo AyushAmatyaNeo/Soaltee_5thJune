@@ -102,7 +102,7 @@ class RoasterRepo extends HrisRepository implements RepositoryInterface {
 
 
         $sql = "SELECT
-TRIM(LEADING '0' FROM TO_CHAR(DATES,'DD'))||TO_CHAR(DATES,'-MON-YYYY') AS DATES,
+TO_CHAR(DATES,'DD')||TO_CHAR(DATES,'-MON-YYYY') AS DATES,
 WEEK_NO,
 DAY_OFF,
 DAY,

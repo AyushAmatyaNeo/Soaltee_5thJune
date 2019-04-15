@@ -320,8 +320,14 @@ window.app = (function ($, toastr, App) {
     };
 
     var datePickerWithNepali = function (englishDate, nepaliDate) {
-        var $nepaliDate = $('#' + nepaliDate);
-        var $englishDate = $('#' + englishDate);
+        var $englishDate = englishDate;
+        if (!(englishDate instanceof jQuery)) {
+            var $englishDate = $('#' + englishDate);
+        }
+        var $nepaliDate = nepaliDate;
+        if (!(nepaliDate instanceof jQuery)) {
+            $nepaliDate = $('#' + nepaliDate);
+        }
         var oldNepali = null;
 
         $nepaliDate.nepaliDatePicker({
@@ -998,7 +1004,7 @@ window.app = (function ($, toastr, App) {
         pdfMake.createPdf(docDefinition).download(fileName);
     };
 
-    var excelExport = function ($table, col, fileName) {
+    var excelExport = function ($table, col, fileName, exportType = {}) {
         if (!checkForFileExt(fileName)) {
             fileName = fileName + ".xlsx";
         }
@@ -1010,8 +1016,8 @@ window.app = (function ($, toastr, App) {
         });
         var rows = [{
                 cells: header
-            }]; 
- 
+            }];
+
         var data = [];
         if (Array.isArray($table)) {
             data = $table;
@@ -1030,10 +1036,16 @@ window.app = (function ($, toastr, App) {
             var row = [];
             $.each(col, function (key, value) {
                 if (dataItem[key] != null && dataItem[key] != '') {
-                    if (isNaN(dataItem[key])) {
-                        row.push({value: dataItem[key]});
+                    if (exportType[key]) {
+                        if (exportType[key] == 'STRING') {
+                            row.push({value: dataItem[key]});
+                        }
                     } else {
-                        row.push({value: parseFloat(dataItem[key])});
+                        if (isNaN(dataItem[key])) {
+                            row.push({value: dataItem[key]});
+                        } else {
+                            row.push({value: parseFloat(dataItem[key])});
+                        }
                     }
                 } else {
                     row.push({value: dataItem[key]});
@@ -1043,6 +1055,7 @@ window.app = (function ($, toastr, App) {
                 cells: row
             });
         }
+        console.log(rows);
         var workbook = new kendo.ooxml.Workbook({
             sheets: [
                 {

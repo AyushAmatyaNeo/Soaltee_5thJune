@@ -52,6 +52,7 @@
                 ];
                 exportMap = [{'EMPLOYEE_CODE': "Code"}, {'FULL_NAME': "Employee"}];
                 fields = {
+                    'EMPLOYEE_CODE': {editable: false},
                     'FULL_NAME': {editable: false},
                 }; 
                 $.each(columnList, function (k, v) {

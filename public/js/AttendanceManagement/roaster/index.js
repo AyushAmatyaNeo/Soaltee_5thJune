@@ -5,11 +5,12 @@
         app.startEndDatePickerWithNepali('nepaliFromDate', 'fromDate', 'nepaliToDate', 'toDate', null, false);
 //        
         var $table = $('#table');
+        app.searchTable($table, ['FULL_NAME', 'EMPLOYEE_CODE']);
         var $fromDate = $('#fromDate');
         var $toDate = $('#toDate');
         var $search = $('#search');
         var columns = [{title: "Code", field: "EMPLOYEE_CODE", width: 80},
-        {title: "Employee", field: "FULL_NAME", width: 100}];
+            {title: "Employee", field: "FULL_NAME", width: 100}];
 
         var selectedFromDate;
         var selectedToDate;
@@ -38,7 +39,9 @@
             },
             pageable: {
                 input: true,
-                numeric: false
+                numeric: false,
+//                 refresh: true,
+                pageSizes: true,
             },
             columns: columns,
             selectable: "multiple cell",
@@ -69,29 +72,21 @@
             var fromDate = $fromDate.val();
             var toDate = $toDate.val();
             var dateRange = app.getDateRangeBetween(nepaliDatePickerExt.getDate(fromDate), nepaliDatePickerExt.getDate(toDate));
-            
-            
-            
+
+
+
             columns.splice(2);
             for (var i in dateRange) {
                 var columnTitle = dateRange[i].getFullYear() + "-" + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + "-" + ("0" + dateRange[i].getDate()).slice(-2);
 //                var forDate = "f" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2);
 //                var shiftId = "s" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2);
-                var forDate = "F" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2)+"_D";
-                var shiftId = "F" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2)+"_S";
-             console.log('columTitle',columnTitle);
-            console.log('forDate',forDate);
-            console.log('shiftId',shiftId);
-            console.log(dateRange[i].getMonth());
-            
-                
-                
+                var forDate = "F" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2) + "_D";
+                var shiftId = "F" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2) + "_S";
                 columns.push({title: columnTitle, width: 130, field: [forDate, "EMPLOYEE_ID", shiftId], template: cellTemplate(forDate, shiftId)});
             }
-            
+
             initialize($table, kendoConfig);
             getRoaster(function (rData) {
-                console.log('aaaa',rData);
 //                var employees = document.searchManager.getSelectedEmployee();
 //
 //                var data = [];
@@ -160,7 +155,7 @@
                     });
                 }
             });
-            app.pullDataById(document.assignRoasterLink, {'data': data}).then(function (response) {
+            app.serverRequest(document.assignRoasterLink, {'data': data}).then(function (response) {
                 app.showMessage('Roaster assigned successfully.');
             }, function (error) {
 
@@ -172,13 +167,14 @@
 
         $table.on("click", ".r-cell", function () {
             var $this = $(this);
-            console.log('focus');
-            console.log($this.selectedIndex);
-
+            let row = $(this).closest("tr"),
+                    grid = $('#table').data("kendoGrid"),
+                    dataItem = grid.dataItem(row);
+            var ds = grid.dataSource;
+            var selectedRow = ds.getByUid(dataItem.uid);
             var selectedShiftId = $this.val();
             var selectedDate = $this.attr('for-date');
-
-
+            
             app.serverRequest(document.getShiftDetails, {
                 shiftId: selectedShiftId,
                 fromDate: selectedFromDate,
@@ -188,17 +184,23 @@
                 if (response.success == true) {
                     console.log(response);
                     $.each(response.data, function (key, value) {
+                        var tempDate = new Date(value.DATES);
+                        var tempDateVal = "F" + tempDate.getFullYear() + ("0" + (tempDate.getMonth() + 1)).slice(-2) + ("0" + tempDate.getDate()).slice(-2) + "_S";
                         if (key > 0) {
                             if (value.DAY_OFF == 'DAY_OFF' && value.DAY == value.WEEK_NO) {
                                 var currentSelectElement = $this.closest('tr').find('[for-date=' + value.DATES + ']');
                                 app.populateSelect(currentSelectElement, document.shifts, 'SHIFT_ID', 'SHIFT_ENAME', 'Select Shift', -1, value.SHIFT_ID);
+                                selectedRow.set(tempDateVal, value.SHIFT_ID);
                             }
 
                             if (value.DAY_OFF != 'DAY_OFF') {
                                 var currentSelectElement = $this.closest('tr').find('[for-date=' + value.DATES + ']');
                                 app.populateSelect(currentSelectElement, document.shifts, 'SHIFT_ID', 'SHIFT_ENAME', 'Select Shift', -1, value.SHIFT_ID);
+                                selectedRow.set(tempDateVal, value.SHIFT_ID);
                             }
 
+                        } else {
+                            selectedRow.set(tempDateVal, value.SHIFT_ID);
                         }
                     });
                 }

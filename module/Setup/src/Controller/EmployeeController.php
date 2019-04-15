@@ -14,6 +14,7 @@ use LeaveManagement\Model\LeaveMaster;
 use Setup\Form\HrEmployeesFormTabEight;
 use Setup\Form\HrEmployeesFormTabFive;
 use Setup\Form\HrEmployeesFormTabFour;
+use Setup\Form\HrEmployeesFormTabNine;
 use Setup\Form\HrEmployeesFormTabOne;
 use Setup\Form\HrEmployeesFormTabSeven;
 use Setup\Form\HrEmployeesFormTabSix;
@@ -57,6 +58,7 @@ class EmployeeController extends HrisController {
     private $formSix;
     private $formSeven;
     private $formEight;
+    private $formNine;
     private $countryList;
     private $erpCompanyCode;
 
@@ -101,6 +103,7 @@ class EmployeeController extends HrisController {
         $formTabSix = new HrEmployeesFormTabSix();
         $formTabSeven = new HrEmployeesFormTabSeven();
         $formTabEight = new HrEmployeesFormTabEight();
+        $formTabNine = new HrEmployeesFormTabNine();
 
         if (!$this->formOne) {
             $this->formOne = $builder->createForm($formTabOne);
@@ -160,13 +163,16 @@ class EmployeeController extends HrisController {
         if (!$this->formEight) {
             $this->formEight = $builder->createForm($formTabEight);
         }
+        if (!$this->formNine) {
+            $this->formNine = $builder->createForm($formTabNine);
+        }
     }
 
     public function editAction() {
         $id = (int) $this->params()->fromRoute('id', 0);
         $tab = (int) $this->params()->fromRoute('tab', 1);
 
-        if (10 === $tab) {
+        if (11 === $tab) {
             $this->flashmessenger()->addMessage("Employee Successfully Submitted!!!");
             return $this->redirect()->toRoute('employee', ['action' => 'index']);
         }
@@ -293,6 +299,8 @@ class EmployeeController extends HrisController {
                     break;
                 case 9:
                     break;
+                case 10:
+                    break;
             }
         }
         if ($employeeData != null) {
@@ -358,6 +366,7 @@ class EmployeeController extends HrisController {
                 'formSix' => $this->formSix,
                 'formSeven' => $this->formSeven,
                 'formEight' => $this->formEight,
+                'formNine' => $this->formNine,
                 'filetypes' => ApplicationHelper::getTableKVList($this->adapter, 'HRIS_FILE_TYPE', 'FILETYPE_CODE', ['NAME'],"Status='E'"),
                 'serviceTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SERVICE_TYPES", "SERVICE_TYPE_ID", ["SERVICE_TYPE_NAME"], ["STATUS" => 'E'], "SERVICE_TYPE_NAME", "ASC", null, true, true),
                 'positions' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_POSITIONS", "POSITION_ID", ["POSITION_NAME"], ["STATUS" => 'E'], "POSITION_NAME", "ASC", null, true, true),
@@ -385,7 +394,9 @@ class EmployeeController extends HrisController {
                 'countries' => $this->getCountryList(),
                 'allDistricts' =>ApplicationHelper::getTableKVList($this->adapter, 'HRIS_DISTRICTS', 'DISTRICT_ID', ['DISTRICT_NAME'], null, null, true),
                 'syngergyTable' =>$syngergyTable,
-                'distributionTable' =>$distributionTable
+                'distributionTable' =>$distributionTable,
+//                'relation' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_RELATIONS", "RELATION_ID", ["RELATION_NAME"], ["STATUS" => 'E'], "RELATION_NAME", "ASC", null, false, true),
+            'relation' => ApplicationHelper::getTableList($this->adapter, "HRIS_RELATIONS", ["RELATION_ID","RELATION_NAME"], ["STATUS" => 'E']),
         ]);
     }
 
@@ -1056,5 +1067,96 @@ class EmployeeController extends HrisController {
         }
         
     }
+    
+    
+    public function pullRelationDetailAction() {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+
+
+            $repository = new \Setup\Repository\EmployeeRelationRepo($this->adapter);
+            $employeeId = (int) $data['employeeId'];
+            $relationList = [];
+            $result = $repository->getByEmpId($employeeId);
+            foreach ($result as $row) {
+                array_push($relationList, $row);
+            }
+            $num = count($relationList);
+
+            return new JsonModel([
+                "success" => true,
+                "data" => $relationList,
+                "num" => $num
+            ]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
+    
+    
+    public function submitRelationDtlAction()
+    {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            
+            $relationListEmpty = (int) $data['relationListEmpty'];
+            $employeeId = (int) $data['employeeId'];
+            
+            $employeeRepo = new EmployeeRepository($this->adapter);
+            $employeeRelationRepo = new \Setup\Repository\EmployeeRelationRepo($this->adapter);
+            $employeeDetail = $employeeRepo->fetchById((int) $this->employeeId);
+
+
+            if ($relationListEmpty == 1) {
+                $relationList = $data['relationList'];
+                foreach ($relationList as $relations) {
+                    $employeeRelationModel= new \Setup\Model\EmployeeRelation();
+                    $employeeRelationModel->employeeId= (int)$employeeId;
+                    $employeeRelationModel->status= 'E';
+                    $employeeRelationModel->personName=$relations['personName'] ;
+                    $employeeRelationModel->relationId=$relations['relationId']['RELATION_ID'] ;
+                    $employeeRelationModel->dob=$relations['dob'] ;
+                    $employeeRelationModel->isDependent=$relations['isDependent']['id'] ;
+                    $employeeRelationModel->isNominee=$relations['isNominee']['id'] ;
+
+                    $id = (int) $relations['eRId'];
+                    if ($id == 0) {
+                        $employeeRelationModel->eRId = (int) (Helper::getMaxId($this->adapter, \Setup\Model\EmployeeRelation::TABLE_NAME, \Setup\Model\EmployeeRelation::E_R_ID)) + 1;
+                        $employeeRelationModel->createdBy = (int) $this->employeeId;
+                        $employeeRelationModel->createdDt = Helper::getcurrentExpressionDate();
+                        $employeeRelationRepo->add($employeeRelationModel);
+                    } else {
+                        $employeeRelationModel->modifiedBy = (int) $this->employeeId;
+                        $employeeRelationModel->modifiedDt = Helper::getcurrentExpressionDate();
+                        $employeeRelationRepo->edit($employeeRelationModel, $id);
+                    }
+                }
+            }
+
+            return new JsonModel(['success' => true, 'data' => "Employee Experience Detail Successfully Added", 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
+    
+    
+    public function deleteRelationDtlAction() {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+
+            $id = $data['id'];
+            $repository = new \Setup\Repository\EmployeeRelationRepo($this->adapter);
+            $repository->delete($id);
+
+            return new JsonModel(['success' => true, 'data' => "Experience Detail Successfully Removed", 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
+    
+    
     
 }

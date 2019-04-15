@@ -557,6 +557,146 @@
                     }
                 }
 
+
+                // employee relation starts from here
+                $scope.ConditionalType = [
+                    {"id": "N", "name": "No"},
+                    {"id": "Y", "name": "Yes"},
+                ];
+                $scope.relationFormList = [];
+                $scope.counterRelation = '';
+                $scope.relationList = document.relation;
+                $scope.relationFormTemplate = {
+                    eRId: 0,
+                    relationId: $scope.relationList[0],
+                    personName: "",
+                    dob: "",
+                    isDependent: $scope.ConditionalType[0],
+                    isNominee: $scope.ConditionalType[0],
+                    checkbox: "checkboxr0",
+                    checked: false
+                };
+
+                if (employeeId !== 0) {
+                    window.app.pullDataById(document.pullReltionDetailLink, {
+                        'employeeId': employeeId
+                    }).then(function (success) {
+                        $scope.$apply(function () {
+                            var relationList = success.data;
+                            var relationNum = success.num;
+                            if (relationNum > 0) {
+                                $scope.counterRelation = relationNum;
+                                for (var j = 0; j < relationNum; j++) {
+                                    let tempIndex = $scope.relationList.findIndex(record => record.RELATION_ID === relationList[j].RELATION_ID);
+
+                                    $scope.relationFormList.push(angular.copy({
+                                        eRId: relationList[j].E_R_ID,
+                                        relationId: $scope.relationList[tempIndex],
+                                        personName: relationList[j].PERSON_NAME,
+                                        dob: relationList[j].DOB,
+                                        isDependent: $scope.ConditionalType[relationList[j].IS_NOMINEE_DET],
+                                        isNominee: $scope.ConditionalType[relationList[j].IS_DEPENDENT_DET],
+                                        checkbox: "checkboxr"+ j,
+                                        checked: false
+                                    }));
+
+                                }
+                            } else {
+                                $scope.counterRelation = 1;
+                                $scope.relationFormList.push(angular.copy($scope.relationFormTemplate));
+                            }
+                        });
+                    }, function (failure) {
+                        console.log(failure);
+                    });
+                } else {
+                    $scope.counterRelation = 1;
+                    $scope.relationFormList.push(angular.copy($scope.experienceFormTemplate));
+                }
+
+
+
+
+
+                $scope.submitRelation = function () {
+                    console.log('submit realtion');
+                    if ($scope.employeeRelationForm.$valid && $scope.relationFormList.length > 0) {
+                        $scope.relationListEmpty = 1;
+
+
+                        if (($scope.relationFormList.length == 1 && angular.equals($scope.relationFormTemplate, $scope.relationFormList[0])) || $scope.relationFormList.length == 0) {
+                            console.log("app log", "The form is not filled");
+                            $scope.relationListEmpty = 0;
+                        }
+                        window.app.pullDataById(document.submitRelationDtlLink, {
+                            relationList: $scope.relationFormList,
+                            employeeId: parseInt(employeeId),
+                            relationListEmpty: parseInt($scope.relationListEmpty)
+                        }).then(function (success) {
+                            $scope.$apply(function () {
+                                console.log(success.data);
+                                $window.location.href = document.urlSubmitRelation;
+                            });
+                        }, function (failure) {
+                            console.log(failure);
+                        });
+                    } else if ($scope.employeeRelationForm.length == 0) {
+                        console.log('no val');
+                        $window.location.href = document.urlSubmitRelation;
+                    }
+
+                };
+
+                $scope.addRelation = function () {
+                    $scope.relationFormList.push(angular.copy({
+                        id: 0,
+                        relationId: $scope.relationList[0],
+                        personName: "",
+                        dob: "",
+                        isDependent: $scope.ConditionalType[0],
+                        isNominee: $scope.ConditionalType[0],
+                        checkbox: "checkboxr" + $scope.counterRelation,
+                        checked: false
+                    }));
+                    $scope.counterRelation++;
+//                    $scope.$apply(function () {
+//                        $("select").select2();
+//                        app.startEndDatePicker('expfromDate_checkboxe'+$scope.counterExperience, 'exptoDate_checkboxe'+$scope.counterExperience);
+//                    });
+                };
+
+
+                $scope.deleteRelation = function () {
+                    console.log('sdfsdf');
+                    var tempE = 0;
+                    var lengthE = $scope.relationFormList.length;
+                    for (var i = 0; i < lengthE; i++) {
+                        if ($scope.relationFormList[i - tempE].checked) {
+                            var id = $scope.relationFormList[i - tempE].eRId;
+                            console.log(id);
+                            if (id != 0) {
+                                window.app.pullDataById(document.deleteRelationDtlLink, {
+                                    "id": id
+                                }).then(function (success) {
+                                    $scope.$apply(function () {
+                                        console.log(success.data);
+                                    });
+                                }, function (failure) {
+                                    console.log(failure);
+                                });
+                            }
+                            $scope.relationFormList.splice(i - tempE, 1);
+                            tempE++;
+                        }
+                    }
+                }
+
+
+
+
+
+
+
             })
             .directive("datepicker", function () {
                 return {
