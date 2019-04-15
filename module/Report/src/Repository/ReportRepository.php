@@ -1584,7 +1584,7 @@ EOT;
   }
 
   public function fetchWeeklyWorkingHoursReport($by){
-    $condition = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId'], $by['genderId'], $by['locationId']);
+    $condition = EntityHelper::getSearchConditon($by['companyId'], $by['branchId'], $by['departmentId'], $by['positionId'], $by['designationId'], $by['serviceTypeId'], $by['serviceEventTypeId'], $by['employeeTypeId'], $by['employeeId'], $by['genderId'], $by['locationId'],$by['functionalTypeId']);
 
     $toDate = !empty($_POST['toDate']) ? $_POST['toDate'] : date('d-M-y', strtotime('now')) ;
     $toDate = date('d-M-y', strtotime($toDate));
@@ -1596,6 +1596,8 @@ EOT;
     TO_CHAR(ATTENDANCE_DT,'DY') AS WEEKNAME,
     E.DEPARTMENT_ID,
     D.DEPARTMENT_NAME,
+	FUNT.FUNCTIONAL_TYPE_ID,
+	FUNT.FUNCTIONAL_TYPE_EDESC,
       CASE WHEN AD.OVERALL_STATUS='DO'
       THEN
       0
@@ -1616,8 +1618,9 @@ EOT;
     LEFT JOIN HRIS_DEPARTMENTS D  ON (D.DEPARTMENT_ID=E.DEPARTMENT_ID)
     LEFT JOIN HRIS_DESIGNATIONS DES ON (E.DESIGNATION_ID=DES.DESIGNATION_ID) 
       LEFT JOIN HRIS_POSITIONS P ON (E.POSITION_ID=P.POSITION_ID)
+	  LEFT JOIN HRIS_FUNCTIONAL_TYPES FUNT ON (E.FUNCTIONAL_TYPE_ID=FUNT.FUNCTIONAL_TYPE_ID)
     WHERE 
-     E.STATUS='E'
+     E.STATUS='E' AND E.EMPLOYEE_CODE<1000 
     AND E.RETIRED_FLAG='N' {$condition} 
     AND E.RESIGNED_FLAG='N' 
     AND ATTENDANCE_DT BETWEEN TO_DATE('{$fromDate}', 'DD-MON-YY') 
@@ -1627,6 +1630,8 @@ EOT;
     FOR WEEKNAME 
     IN ( 'TUE' AS TUE,'WED' AS WED,'THU' AS THU,'FRI' AS FRI,'SAT' AS SAT,'SUN' AS SUN,'MON' AS MON)
     )";  
+	
+	
     
     return $this->rawQuery($sql);    
   }

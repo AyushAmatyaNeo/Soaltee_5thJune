@@ -25,19 +25,20 @@
                             }
                         }
                     },
-                    group: { field: "DEPARTMENT_NAME" , aggregates:[
-                        { field: "ASSIGNED_HOURS", aggregate: "sum" },
-                        { field: "TOTAL_HOURS_WORKED", aggregate: "sum" },
-                        { field: "EXTRA_HOURS_WORKED", aggregate: "sum" },
-                        { field: "AVG_EXTRA_HOURS_WORKED", aggregate: "sum" }
-                    ]},
+               //     group: { field: "DEPARTMENT_NAME" , aggregates:[
+                  //      { field: "ASSIGNED_HOURS", aggregate: "sum" },
+                  //      { field: "TOTAL_HOURS_WORKED", aggregate: "sum" },
+                   //     { field: "EXTRA_HOURS_WORKED", aggregate: "sum" },
+                   //     { field: "AVG_EXTRA_HOURS_WORKED", aggregate: "sum" }
+                    //]
+					//},
                     pageSize: 20,
-                    aggregate: [ 
-                        { field: "ASSIGNED_HOURS", aggregate: "sum" },
-                        { field: "TOTAL_HOURS_WORKED", aggregate: "sum" },
-                        { field: "EXTRA_HOURS_WORKED", aggregate: "sum" },
-                        { field: "AVG_EXTRA_HOURS_WORKED", aggregate: "sum" }
-                    ]
+                  //  aggregate: [ 
+                     //   { field: "ASSIGNED_HOURS", aggregate: "sum" },
+                   //     { field: "TOTAL_HOURS_WORKED", aggregate: "sum" },
+                   //     { field: "EXTRA_HOURS_WORKED", aggregate: "sum" },
+                   //     { field: "AVG_EXTRA_HOURS_WORKED", aggregate: "sum" }
+                   // ]
                 },
                 height: 550,
                 scrollable: true,
@@ -50,10 +51,16 @@
                 columns: [
                     { field: "EMPLOYEE_CODE", title: "Code", width: "100px" },
                     { field: "FULL_NAME", title: "Full Name", width: "100px" },
+					 { field: "DEPARTMENT_NAME", title: "Department", width: "100px" },
+					{field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: "100px" },
                     {title: "No. Of Hours Worked In A Week", columns: days},
-                    { field: "ASSIGNED_HOURS", title: "Assigned Hours", width: "100px", aggregates: ["sum"], groupFooterTemplate: "#=sum#" },
-                    { field: "EXTRA_HOURS_WORKED", title: "Extra Hours Worked", width: "100px", aggregates: ["sum"], groupFooterTemplate: "#=sum#" },
-                    { field: "AVG_EXTRA_HOURS_WORKED", title: "Average Extra Hours", width: "100px", format: "{0:0.##}", aggregates: ["sum"], groupFooterTemplate: "#= kendo.toString(sum, '0.00') #"}
+					 { field: "ASSIGNED_HOURS", title: "Assigned Hours", width: "100px"},
+                    { field: "EXTRA_HOURS_WORKED", title: "Extra Hours Worked", width: "100px"},
+                    { field: "AVG_EXTRA_HOURS_WORKED", title: "Average Extra Hours", width: "100px"}
+					
+                  //  { field: "ASSIGNED_HOURS", title: "Assigned Hours", width: "100px", aggregates: ["sum"], groupFooterTemplate: "#=sum#" },
+                  //  { field: "EXTRA_HOURS_WORKED", title: "Extra Hours Worked", width: "100px", aggregates: ["sum"], groupFooterTemplate: "#=sum#" },
+                  //  { field: "AVG_EXTRA_HOURS_WORKED", title: "Average Extra Hours", width: "100px", format: "{0:0.##}", aggregates: ["sum"], groupFooterTemplate: "#= kendo.toString(sum, '0.00') #"}
                 ] 
             });  
         }
@@ -126,14 +133,15 @@
                 if (response.success) {
                     var dayOffCounter;
                     responseData = response.data;
+					console.log(responseData);
                     $table.empty(); 
 
                     weekDays = ['SUN_WH', 'MON_WH', 'TUE_WH', 'WED_WH', 'THU_WH', 'FRI_WH', 'SAT_WH'];
                     days = [{ field: "TOTAL_HOURS_WORKED", title: "Total Hours", width: "100px", aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
                         { field: "DAY_OFF", title: "Day Off", width: "100px" }];
-
+						
                     for(var i = response.days.length - 1; i >= 0; i--){
-                        days.unshift({ field: weekDays[response.days[i].WEEKDAY], title: response.days[i].WEEKNAME, width: "100px" });
+                        days.unshift({ field: weekDays[(response.days[i].WEEKDAY)-1], title: response.days[i].WEEKNAME, width: "100px" });
                     }
 
                     for(var i = 0; i < responseData.length; i++){
@@ -151,6 +159,7 @@
                         responseData[i].DAY_OFF = dayOffCounter;
                         responseData[i].AVG_EXTRA_HOURS_WORKED = calculateAverageExtraHours(responseData[i]);
                     }
+					
                     initializeKendo(responseData, days);
                 } else {
                     app.showMessage(response.error, 'error');
