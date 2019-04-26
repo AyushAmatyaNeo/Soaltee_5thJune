@@ -946,11 +946,6 @@ INTO HRIS_MENUS
   (
     NULL,
     (select max(menu_id)+1 from hris_menus),
-    'Voucher',
-    (select menu_id from hris_menus where menu_name like 'Medical Reimbursement' 
-    and route='javascript::' and action='javascript::'),
-    NULL,
-    'medicalReport',
     'Leave Count Date Wise',
     2,
     NULL,
@@ -959,8 +954,6 @@ INTO HRIS_MENUS
     trunc(sysdate),
     NULL,
     'fa fa-pencil-square-o',
-    'voucher',
-    6,
     'betweenDates',
     (select max(menu_index)+1 from hris_menus where parent_menu=2),
     NULL,
