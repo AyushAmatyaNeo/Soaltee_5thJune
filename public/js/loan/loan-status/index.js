@@ -34,9 +34,14 @@
                 <a class="btn  btn-icon-only btn-success" href="${document.viewLink}/#: LOAN_REQUEST_ID #" style="height:17px;" title="view">
                     <i class="fa fa-search-plus"></i>
                 </a>
-            </span>`}
+            </span>
+            <span> 
+            <a class="btn  btn-icon-only btn-success" href="${document.editLink}/#: LOAN_REQUEST_ID #" style="height:17px;" title="view">
+                <i class="fa fa-edit"></i>
+            </a>
+        </span>`}
         ];
-
+ 
         var map = {
             'FULL_NAME': 'Name',
             'LOAN_NAME': 'Loan',
@@ -51,7 +56,6 @@
             'RECOMMENDED_DATE': 'Recommended Date',
             'APPROVED_REMARKS': 'Approved Remarks',
             'APPROVED_DATE': 'Approved Date'
-
         }
         app.initializeKendoGrid($tableContainer, columns);
         app.searchTable($tableContainer, ['FULL_NAME']);

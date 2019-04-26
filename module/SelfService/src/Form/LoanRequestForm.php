@@ -6,7 +6,7 @@ use Zend\Form\Annotation;
  * @Annotation\Hydrator("Zend\Hydrator\ObjectProperty")
  * @Annotation\Name("LoanRequest")
  */
-
+ 
 class LoanRequestForm{
     /**
      * @Annotation\Type("Zend\Form\Element\Select")
@@ -16,7 +16,7 @@ class LoanRequestForm{
      * @Annotation\Attributes({ "id":"form-employeeId","class":"form-control"})
      */
     public $employeeId;
-    
+
     /**
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(true)
@@ -68,6 +68,15 @@ class LoanRequestForm{
      * @Annotation\Attributes({"id":"form-approvedRemarks","class":"form-reason form-control","style":"    height: 50px; font-size:12px"})
      */
     public $approvedRemarks;
+
+     /**
+     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Required(true)
+     * @Annotation\Filter({"name":"StripTags","name":"StringTrim"})
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Payment Months"})
+     * @Annotation\Attributes({ "id":"repaymentMonths","class":"form-control"})
+     */
+    public $repaymentMonths;
 
     /**
      * @Annotation\Type("Zend\Form\Element\Submit")

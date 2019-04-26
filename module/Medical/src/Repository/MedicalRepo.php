@@ -338,9 +338,16 @@ LEFT JOIN (select *  from HRIS_PREFERENCES WHERE KEY='STAFF_DEP_OPERATION') DMO 
         $sql = "SELECT 
             SUM(M.Approved_Amt) AS TOTAL_AMT
 ,TO_CHAR(TO_DATE(TRUNC(SUM(M.Approved_Amt)),'J'),'JSP')
-||' AND '||
+||
+case when MOD(SUM(M.Approved_Amt),1)*100 >0
+then
+' AND '||
  TO_CHAR(TO_DATE(TO_NUMBER(MOD(SUM(M.Approved_Amt),1)*100),'J'),'JSP')
-||' PAISA ONLY' AS TOTAL_AMT_IN_WORDS
+||' PAISA ONLY' 
+else
+' '
+end
+AS TOTAL_AMT_IN_WORDS
 ,TO_CHAR(TRUNC(SYSDATE),'DD-MON-YYYY') AS CUR_DATE
                     FROM Hris_Medical M
                     LEFT JOIN HRIS_EMPLOYEES E ON (E.EMPLOYEE_ID=M.EMPLOYEE_ID)
@@ -348,7 +355,7 @@ LEFT JOIN (select *  from HRIS_PREFERENCES WHERE KEY='STAFF_DEP_OPERATION') DMO 
                     {$searchConditon}
                     {$fromDateCondition}
                     {$toDateCondition}";
-
+                    
         $result = EntityHelper::rawQueryResult($this->adapter, $sql);
         return $result->current();
     }

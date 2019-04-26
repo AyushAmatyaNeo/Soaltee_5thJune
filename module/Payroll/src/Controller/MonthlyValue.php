@@ -127,8 +127,8 @@ class MonthlyValue extends HrisController {
 
             $detailRepo = new MonthlyValueDetailRepo($this->adapter);
             $result = $detailRepo->getMonthlyValuesDetailById($mthId, $fiscalYearId, $employeeFilter);
-
-            return new JsonModel(['success' => true, 'data' => Helper::extractDbData($result), 'error' => '']);
+            $employeeList=$this->getEmpListFromSearchValues($employeeFilter);
+            return new JsonModel(['success' => true, 'data' => Helper::extractDbData($result),'employeeList'=>$employeeList , 'error' => '']);
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
         }

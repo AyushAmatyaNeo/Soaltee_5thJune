@@ -7,6 +7,7 @@ class LoanRequest extends Model{
     const TABLE_NAME = "HRIS_EMPLOYEE_LOAN_REQUEST";
     const LOAN_REQUEST_ID = "LOAN_REQUEST_ID";
     const EMPLOYEE_ID = "EMPLOYEE_ID";
+    const REPAYMENT_MONTHS = "REPAYMENT_MONTHS";
     const LOAN_ID = "LOAN_ID";
     const REQUESTED_AMOUNT = "REQUESTED_AMOUNT";
     const REQUESTED_DATE = "REQUESTED_DATE";
@@ -21,11 +22,12 @@ class LoanRequest extends Model{
     const APPROVED_DATE = "APPROVED_DATE";
     const APPROVED_REMARKS = "APPROVED_REMARKS";
     const DEDUCT_ON_SALARY = "DEDUCT_ON_SALARY";
-    
+     
     public $loanRequestId;
     public $employeeId;
     public $loanId;
     public $requestedDate;
+    public $repaymentMonths;
     public $requestedAmount;
     public $loanDate;
     public $reason;
@@ -48,6 +50,7 @@ class LoanRequest extends Model{
         'loanDate'=>self::LOAN_DATE,
         'reason'=>self::REASON,
         'status'=>self::STATUS,
+        'repaymentMonths' => self::REPAYMENT_MONTHS,
         'approvedAmount'=>self::APPROVED_AMOUNT,
         'recommendedBy'=>self::RECOMMENDED_BY,
         'recommendedDate'=>self::RECOMMENDED_DATE,

@@ -372,7 +372,9 @@ BEGIN
             
             -- MONTHLY LEAVE END HERE
             
-            
+            begin
+            HRIS_QUEUE_REATTENDANCE(:new.START_DATE,:new.employee_id,:new.END_DATE);
+            end;
             
 
         END IF; -- END ID INSERT AP

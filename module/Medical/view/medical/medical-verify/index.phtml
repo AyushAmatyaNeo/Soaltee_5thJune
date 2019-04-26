@@ -28,6 +28,7 @@ $this->headScript()
     document.acl =<?php echo json_encode($acl); ?>;
     document.pullMedicalListLink = '<?= $this->url("medicalVerify", ["action" => "pullMedicalList"]) ?>';
     document.viewLink = '<?= $this->url("medicalVerify", ["action" => "view"]); ?>';
+    document.bulkLink = '<?php echo $this->url('medicalVerify', ['action' => 'bulk']); ?>';
 </script>
 <div class="page-bar">
 <?= $this->navigation('Zend\Navigation\medicalEntry')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -182,6 +183,19 @@ $this->headScript()
 
     <div id="table">
     </div>
+    
+     <!--bulk action--> 
+    <div style="display: none;" class="row margin-top-20" id="bulkActionDiv" >
+        <div class="col-sm-2 ">
+            <button action="reject" class="btn btn-danger btnApproveReject">Reject</button>
+        </div>
+        <div class="col-sm-2 col-sm-offset-8">
+            <button action="approve" class="btn btn-info btnApproveReject pull-right">Approve</button>
+        </div>
+    </div>
+    
+    
+    
 </div>
 
 

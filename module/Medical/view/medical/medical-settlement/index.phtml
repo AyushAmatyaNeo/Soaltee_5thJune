@@ -12,7 +12,7 @@ $this->headScript()
     ->appendFile($this->basePath('js/search.js'))
     ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
     ->appendFile($this->basePath('js/nepali-datepicker-ext.js'))
-    ->appendFile($this->basePath('js/medical/medical-verify/index.js'));
+    ->appendFile($this->basePath('js/medical/medical-settlement/index.js'));
 
 ?>
 
@@ -28,6 +28,7 @@ $this->headScript()
     document.acl =<?php echo json_encode($acl); ?>;
     document.pullMedicalListLink = '<?= $this->url("medicalSettlement", ["action" => "pullMedicalList"]) ?>';
     document.viewLink = '<?= $this->url("medicalSettlement", ["action" => "view"]); ?>';
+    document.bulkLink = '<?php echo $this->url('medicalSettlement', ['action' => 'bulk']); ?>';
 </script>
 <div class="page-bar">
 <?= $this->navigation('Zend\Navigation\medicalSettlement')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -182,6 +183,18 @@ $this->headScript()
 
     <div id="table">
     </div>
+    
+     <!--bulk action--> 
+    <div style="display: none;" class="row margin-top-20" id="bulkActionDiv" >
+        <div class="col-sm-2 ">
+            <button action="reject" class="btn btn-danger btnApproveReject">Reject</button>
+        </div>
+        <div class="col-sm-2 col-sm-offset-8">
+            <button action="approve" class="btn btn-info btnApproveReject pull-right">Approve</button>
+        </div>
+    </div>
+    
+    
 </div>
 
 

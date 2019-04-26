@@ -299,11 +299,69 @@ class LoanStatusRepository implements RepositoryInterface {
             $sql .= " AND E." . HrEmployees::EMPLOYEE_ID . " IN (SELECT " . HrEmployees::EMPLOYEE_ID . " FROM " . HrEmployees::TABLE_NAME . " WHERE " . HrEmployees::SERVICE_EVENT_TYPE_ID . "= $serviceEventTypeId)";
         }
 
-        $sql .= " ORDER BY LR.REQUESTED_DATE DESC";
-
+        $sql .= " ORDER BY LR.LOAN_REQUEST_ID DESC";
+        
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result;
+    }
+
+    public function editList($id){
+      $sql = "SELECT HLPD.SNO, HLPD.PAYMENT_ID, HE.FULL_NAME, HLMS.INTEREST_RATE, HLMS.LOAN_NAME,
+      HLPD.FROM_DATE, HLPD.TO_DATE, 
+      HLPD.AMOUNT, 
+      HLPD.PRINCIPLE_AMOUNT, HLPD.INTEREST_AMOUNT, HLPD.PAID_FLAG AS PAID 
+      FROM HRIS_LOAN_PAYMENT_DETAIL HLPD
+      JOIN HRIS_EMPLOYEE_LOAN_REQUEST HELR ON HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID
+      JOIN HRIS_EMPLOYEES HE ON HELR.EMPLOYEE_ID = HE.EMPLOYEE_ID
+      JOIN HRIS_LOAN_MASTER_SETUP HLMS ON HLMS.LOAN_ID = HELR.LOAN_ID
+      WHERE HELR.LOAN_REQUEST_ID = $id ORDER BY HLPD.SNO";
+     
+      $statement = $this->adapter->query($sql);
+      $result = $statement->execute();
+      return $result;
+    }
+ 
+    public function skipMonth($requestId, $id){ 
+      $sql = "BEGIN
+      HRIS_LOAN_PAYMENT_DETAILS({$requestId},{$id}); 
+      END;
+      ";
+
+      $statement = $this->adapter->query($sql); 
+      $statement->execute(); 
+    }
+ 
+    public function getLoanRequestId($id){
+      $sql = "SELECT DISTINCT LOAN_REQUEST_ID FROM HRIS_LOAN_PAYMENT_DETAIL WHERE 
+      PAYMENT_ID = $id";
+
+      $statement = $this->adapter->query($sql);
+      $result = $statement->execute();
+      return $result;
+    }
+
+    public function getLoanRequestDetails($ids){
+
+      $ids = implode($ids, ',');
+
+      $sql = "SELECT (CASE WHEN (SELECT COUNT(*) FROM HRIS_LOAN_PAYMENT_DETAIL 
+      WHERE LOAN_REQUEST_ID IN ($ids)
+      AND PAID_FLAG = 'N') > 0 
+      THEN 'OPEN' 
+      ELSE 'CLOSED' END) 
+      AS STATUS,
+      SUM(CASE WHEN PAID_FLAG = 'N' THEN AMOUNT ELSE 0 END) 
+      AS BALANCE,
+      SUM(CASE WHEN PAID_FLAG = 'Y' THEN AMOUNT ELSE 0 END) 
+      AS PAID_AMOUNT
+      FROM HRIS_LOAN_PAYMENT_DETAIL
+      where LOAN_REQUEST_ID IN ($ids) GROUP BY LOAN_REQUEST_ID 
+      ORDER BY LOAN_REQUEST_ID DESC;";
+    
+      $statement = $this->adapter->query($sql);
+      $result = $statement->execute();
+      return $result;
     }
 
 }

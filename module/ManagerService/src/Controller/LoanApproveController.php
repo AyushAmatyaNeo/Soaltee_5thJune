@@ -83,7 +83,8 @@ class LoanApproveController extends AbstractActionController {
                 } else if ($action == "Approve") {
                     $loanRequestModel->status = "RC";
                     $this->flashmessenger()->addMessage("Loan Request Approved!!!");
-                }
+                    $this->loanApproveRepository->addToDetails($id);
+                } 
                 $loanRequestModel->recommendedRemarks = $getData->recommendedRemarks;
                 $this->loanApproveRepository->edit($loanRequestModel, $id);
                 $loanRequestModel->loanRequestId = $id;
@@ -101,6 +102,7 @@ class LoanApproveController extends AbstractActionController {
                 } else if ($action == "Approve") {
                     $loanRequestModel->status = "AP";
                     $this->flashmessenger()->addMessage("Loan Request Approved");
+                    $this->loanApproveRepository->addToDetails($id);
                 }
                 if ($role == 4) {
                     $loanRequestModel->recommendedBy = $this->employeeId;

@@ -144,4 +144,33 @@ class MedicalSettlement extends HrisController {
         return $statusFormElement;
     }
 
+    public function bulkAction() {
+        $request = $this->getRequest();
+        try {
+            $postData = $request->getPost();
+            $this->makeDecision($postData['id'], $postData['action']);
+            return new JsonModel(['success' => true, 'data' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
+    private function makeDecision($id, $approve) {
+        $detail = $this->repository->fetchById($id);
+        $status = $detail['BILL_STATUS'];
+        $requestedAmt = $detail['REQUESTED_AMT'];
+        if ($status == 'AP') {
+            $medical = new Medical();
+            if ($approve == "reject") {
+                $medical->billStatus = "C";
+            } else if ($approve == "approve") {
+                $medical->billStatus = "PD";
+//                $medical->approvedAmt = $requestedAmt;
+            $medical->transferedBy = $this->employeeId;
+            $medical->bankTransferDt = Helper::getcurrentExpressionDate();
+            }
+            $this->repository->edit($medical, $id);
+        }
+    }
+
 }

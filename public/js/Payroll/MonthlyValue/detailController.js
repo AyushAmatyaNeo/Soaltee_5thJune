@@ -16,6 +16,7 @@
         var $footer = $('#monthlyValueDetailFooter');
 
         var exportMonthList;
+        var selectedMonthlyValueName;
 
         app.populateSelect($monthlyValueId, document.monthlyValues, "MTH_ID", "MTH_EDESC", "Select Monthly Value");
         app.populateSelect($fiscalYearId, document.fiscalYears, "FISCAL_YEAR_ID", "FISCAL_YEAR_NAME", "Select Fiscal Year");
@@ -35,7 +36,8 @@
                 mthId: $monthlyValueId.val(),
                 fiscalYearId: $fiscalYearId.val(),
                 employeeFilter: document.searchManager.getSearchValues()}).then(function (response) {
-                initTable($fiscalYearId.val(), document.searchManager.getSelectedEmployee(), response.data);
+//                console.log(response.employeeList);
+                initTable($fiscalYearId.val(), response.employeeList, response.data);
             }, function (error) {
                 console.log(error);
             });
@@ -56,7 +58,7 @@
         var initTable = function (fiscalYearId, employeeList, serverData) {
             var selectedfiscalYearId = $fiscalYearId.val();
             var selecetedMonthlyValueId = $monthlyValueId.val();
-            var selectedMonthlyValueName = $("#monthlyValueId option:selected").text();
+            selectedMonthlyValueName = $("#monthlyValueId option:selected").text();
 
             var filteredMonths = months.filter(function (item) {
                 return item['FISCAL_YEAR_ID'] == fiscalYearId;
@@ -64,7 +66,7 @@
 
             exportMonthList = filteredMonths;
 
-            $header.html('');
+            $header.html('<tr>');
             $header.append($('<th>', {text: 'Id'}));
             $header.append($('<th>', {text: 'Code'}));
             $header.append($('<th>', {text: 'Name'}));
@@ -72,6 +74,7 @@
                 $header.append($('<th>', {text: item['MONTH_EDESC']}));
             });
             $header.append($('<th>', {text: ''}));
+            $header.append('</tr>');
 
             $grid.html('');
             $.each(employeeList, function (index, item) {
@@ -125,6 +128,7 @@
             var $tr = $('<tr>');
 
             $tr.append($('<td>', {text: ''}));
+            $tr.append($('<td>', {text: ''}))
             $tr.append($('<td>', {text: ''}))
 
             $.each(filteredMonths, function (k, v) {
@@ -218,9 +222,9 @@
             $.each(exportMonthList, function (k, v) {
                 map[v.MONTH_EDESC] = v.MONTH_EDESC;
             });
-            console.log(map);
+//            console.log(map);
             var exportData = createcodes($table, map);
-            app.excelExport(exportData, map, 'MonthlyValueUpload.xlsx');
+            app.excelExport(exportData, map, selectedMonthlyValueName+'.xlsx');
         });
 
         function createcodes($tableId, map) {

@@ -150,7 +150,7 @@
             console.log(map);
             var exportData = createcodes($table, map);
 //            console.log(exportData);
-            app.excelExport(exportData, map, 'FlatValueUpload.xlsx');
+            app.excelExport(exportData, map, selectedflatValueName+'.xlsx');
         });
 
 

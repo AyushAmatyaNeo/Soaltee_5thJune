@@ -68,6 +68,16 @@ return [
                     ]
                 ]
             ],
+            'leavereportcard' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/leave-report-card[/:action]',
+                    'defaults' => [
+                        'controller' => Controller\LeaveReportCard::class,
+                        'action' => 'index'
+                    ]
+                ]
+            ],
         ]
     ],
     'navigation' => [
@@ -229,7 +239,8 @@ return [
             Controller\LeaveApply::class => ControllerFactory::class,
             Controller\LeaveStatus::class => ControllerFactory::class,
             Controller\LeaveBalance::class => ControllerFactory::class,
-            Controller\LeaveSubBypass::class => ControllerFactory::class
+            Controller\LeaveSubBypass::class => ControllerFactory::class,
+            Controller\LeaveReportCard::class => ControllerFactory::class
         ],
     ],
     'view_manager' => [

@@ -16,7 +16,7 @@ use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Form\Element\Select;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
-
+  
 class LoanStatus extends AbstractActionController {
 
     private $adapter;
@@ -105,11 +105,12 @@ class LoanStatus extends AbstractActionController {
             } else if ($action == "Approve") {
                 $loanRequest->status = "AP";
                 $this->flashmessenger()->addMessage("Loan Request Approved");
+                $this->loanApproveRepository->addToDetails($id);
             }
             $loanRequest->approvedBy = $this->employeeId;
             $loanRequest->approvedRemarks = $reason;
             $this->loanApproveRepository->edit($loanRequest, $id);
-
+ 
             return $this->redirect()->toRoute("loanStatus");
         }
         return Helper::addFlashMessagesToArray($this, [
@@ -127,20 +128,62 @@ class LoanStatus extends AbstractActionController {
                     'recommApprove' => $recommApprove
         ]);
     }
+ 
+    public function editAction(){
+        $id = (int) $this->params()->fromRoute('id');
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $id = (int) $this->params()->fromRoute('id');
+            $data = $this->loanStatusRepository->editList($id);
+            $data = Helper::extractDbData($data);
+            
+            return new JsonModel([
+                "success" => "true",
+                "data" => $data
+            ]);
+        }
 
+        return Helper::addFlashMessagesToArray($this, [
+            'searchValues' => EntityHelper::getSearchData($this->adapter)
+        ]);
+    }
+ 
+    public function skipAction(){
+        $id = (int) $this->params()->fromRoute('id');
+        $loanStatusRepository = new LoanStatusRepository($this->adapter);
+        
+        $requestId = Helper::extractDbData($loanStatusRepository->getLoanRequestId($id));
+        
+        $loanStatusRepository->skipMonth($requestId[0]['LOAN_REQUEST_ID'], $id);
+ 
+        return $this->redirect()->toRoute('loanStatus', array(
+            'controller' => 'LoanStatus',
+            'action' =>  'edit',
+            'id' => $requestId[0]['LOAN_REQUEST_ID']
+        ));
+    }
+
+ 
     public function pullLoanRequestStatusListAction() {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
 
-
             $loanStatusRepository = new LoanStatusRepository($this->adapter);
             $result = $loanStatusRepository->getLoanRequestList($data);
             $recordList = Helper::extractDbData($result);
+            // $request_ids = array();
+            // foreach($recordList as $record){
+            //     array_push($request_ids, $record['LOAN_REQUEST_ID']);
+            // }
+            
+            // $additionalDetails =  Helper::extractDbData($loanStatusRepository->getLoanRequestDetails($request_ids));
             return new JsonModel([
                 "success" => "true",
-                "data" => $recordList,
+                "data" => $recordList
+                //'additionalDetails' => $additionalDetails
             ]);
+
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }

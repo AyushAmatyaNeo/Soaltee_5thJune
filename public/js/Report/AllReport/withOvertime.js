@@ -10,6 +10,7 @@
                     'COMPANY_NAME': 'Company',
                     'DEPARTMENT_NAME': 'Department',
                     'EMPLOYEE_ID': 'ID',
+                    'EMPLOYEE_CODE': 'Code',
                     'FULL_NAME': 'Name',
                     'PRESENT': 'Present',
                     'ABSENT': 'Absent',
@@ -63,10 +64,11 @@
         var $search = $('#search');
         var $confirm = $('#confirm');
         app.initializeKendoGrid($withOTReport, [
-            {field: "COMPANY_NAME", title: "Company", width: 150, locked: true},
-            {field: "DEPARTMENT_NAME", title: "Department", width: 150, locked: true},
-            {field: "EMPLOYEE_ID", title: "Id", width: 150, locked: true},
-            {field: "FULL_NAME", title: "Name", width: 150, locked: true},
+            {field: "COMPANY_NAME", title: "Company", width: 120, locked: true},
+            {field: "DEPARTMENT_NAME", title: "Department", width: 120, locked: true},
+            {field: "EMPLOYEE_ID", title: "Id", width: 100, locked: true},
+            {field: "EMPLOYEE_CODE", title: "Code", width: 100, locked: true},
+            {field: "FULL_NAME", title: "Name", width: 130, locked: true},
             {field: "PRESENT", title: "Present", width: 150},
             {field: "ABSENT", title: "Absent", width: 150},
             {field: "DAYOFF", title: "Dayoff", width: 150},

@@ -1,4 +1,5 @@
 <?php
+
 namespace Payroll\Service;
 
 use Application\Helper\Helper;
@@ -46,6 +47,7 @@ class PayrollGenerator {
         "IS_TEMPORARY",
         "TOTAL_DAYS_TO_PAY",
         "BRANCH_ALLOWANCE",
+        "MONTH",
     ];
     const SYSTEM_RULE = [
         "TOTAL_ANNUAL_AMOUNT",
@@ -211,4 +213,5 @@ class PayrollGenerator {
         }
         return $payValue;
     }
+
 }

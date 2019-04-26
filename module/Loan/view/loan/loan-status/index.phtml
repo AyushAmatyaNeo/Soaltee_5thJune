@@ -23,6 +23,7 @@ $this->headScript()
     document.url = '<?= $this->url("restful", ["action" => "index"]) ?>';
     document.searchValues =<?php echo json_encode($searchValues) ?>;
     document.viewLink = '<?= $this->url("loanStatus", ["action" => "view"]) ?>';
+    document.editLink = '<?= $this->url("loanStatus", ["action" => "edit"]) ?>';
     document.pullLoanRequestStatusListLink = '<?= $this->url("loanStatus", ["action" => "pullLoanRequestStatusList"]) ?>';
 </script>
 <div class="page-bar">
@@ -43,7 +44,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
     </script>
 <?php } ?>
 <div class="portlet light bg-inverse">
-    <div class="portlet-title">
+    <div class="portlet-title"> 
         <div class="caption">
             <i class="icon-paper-plane font-green-haze"></i>
             <span class="caption-subject bold font-green-haze uppercase"> Search</span>

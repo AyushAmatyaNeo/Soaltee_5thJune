@@ -523,25 +523,6 @@ class AllReportController extends HrisController {
                 'employeeDetail' => $this->storageData['employee_detail'],
         ]);
     }
-  
-    public function leaveReportCardAction(){
-        $request = $this->getRequest();
-        if ($request->isPost()){
-            try {
-                $data = $request->getPost();
-                $list = $this->repository->fetchLeaveReportCard($data);
-                return new JsonModel(['success' => true, 'data' => $list, 'message' => null]);
-            } catch (Exception $e) {
-                return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
-            }
-        }  
-          
-        return $this->stickFlashMessagesTo([
-                'searchValues' => ApplicationHelper::getSearchData($this->adapter),
-                'acl' => $this->acl,
-                'employeeDetail' => $this->storageData['employee_detail'],
-        ]); 
-    }
  
     public function weeklyWorkingHoursReportAction(){
         $request = $this->getRequest();

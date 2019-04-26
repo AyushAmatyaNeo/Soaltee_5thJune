@@ -49,3 +49,236 @@ Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION
 Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,CREATED_BY,MODIFIED_BY,IS_VISIBLE) values (null,3062,'Payslip',3061,null,'payroll','E',to_date('13-APR-18','DD-MON-RR'),null,'fa fa-square-o','payslip',1,292,null,'Y');
 Insert into HRIS_MENUS (MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,CREATED_BY,MODIFIED_BY,IS_VISIBLE) values (null,3063,'Taxslip',3061,null,'payroll','E',to_date('13-APR-18','DD-MON-RR'),null,'fa fa-square-o','taxslip',2,292,null,'Y');
 
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Payroll Setup',
+    8,
+    NULL,
+    'javascript::',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'javascript::',
+(select max(menu_index)+1 from hris_menus where Parent_Menu=8),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Variance',
+    (select menu_id from hris_menus  where menu_name like 'Payroll Setup%'),
+    NULL,
+    'varianceSetup',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'index',
+(select nvl(max(menu_index),0)+1 from hris_menus where 
+Parent_Menu=(select menu_id from hris_menus  where menu_name like 'Payroll Setup%')),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Payroll Reports',
+    8,
+    NULL,
+    'javascript::',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'javascript::',
+(select max(menu_index)+1 from hris_menus where Parent_Menu=8),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Variance',
+    (select menu_id from hris_menus  where menu_name like 'Payroll Report%'),
+    NULL,
+    'payrollReport',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'variance',
+(select nvl(max(menu_index),0)+1 from hris_menus where 
+Parent_Menu=(select menu_id from hris_menus  where menu_name like 'Payroll Report%')),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Grade And Basic',
+    (select menu_id from hris_menus  where menu_name like 'Payroll Report%'),
+    NULL,
+    'payrollReport',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'gradeBasic',
+(select nvl(max(menu_index),0)+1 from hris_menus where 
+Parent_Menu=(select menu_id from hris_menus  where menu_name like 'Payroll Report%')),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'BasicAllMonth',
+    (select menu_id from hris_menus  where menu_name like 'Payroll Report%'),
+    NULL,
+    'payrollReport',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'basicMonthlyReport',
+(select nvl(max(menu_index),0)+1 from hris_menus where 
+Parent_Menu=(select menu_id from hris_menus  where menu_name like 'Payroll Report%')),
+    NULL,
+    NULL,
+    'Y'
+  );

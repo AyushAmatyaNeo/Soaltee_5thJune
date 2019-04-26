@@ -12,10 +12,11 @@ $this->headScript()->appendFile($this->basePath('js/SelfService/loan-request/loa
 
 $form->setAttribute('role', 'form');
 $form->setAttribute('id', 'loan-form');
-
+ 
 $employeeId = $form->get('employeeId');
 $employeeId->setValueOptions($employees);
 $loanId = $form->get('loanId');
+$paymentMonths = $form->get('repaymentMonths');
 $loanId->setValueOptions($loans);
 $requestedAmount = $form->get('requestedAmount');
 $loanDate = $form->get('loanDate');
@@ -125,7 +126,15 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                                 </div>
                             </div>     
                         </div> 
+                    </div>
 
+                    <div class="col-sm-4">
+                    <div class="form-group">
+                            <?php print $this->formLabel($paymentMonths); ?>
+                            <span class="required" aria-required="true">*</span>
+                            <?php print $this->formElement($paymentMonths); ?>
+                            <?php print $this->formElementErrors()->render($paymentMonths, ['class' => 'help-block']); ?>
+                        </div>
                     </div>
 
                     <div class="col-sm-4">

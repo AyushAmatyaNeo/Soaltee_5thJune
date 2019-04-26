@@ -16,7 +16,7 @@ class LoanApply extends AbstractActionController{
     private $form;
     private $adapter;
     private $loanRequesteRepository;
-    
+     
     public function __construct(AdapterInterface $adapter) {
         $this->adapter = $adapter;
         $this->loanRequesteRepository = new LoanRequestRepository($adapter);
@@ -33,8 +33,7 @@ class LoanApply extends AbstractActionController{
     public function addAction() {
         $this->initializeForm();
         $request = $this->getRequest();
-
-        $model = new LoanRequestModel();
+        $model = new LoanRequestModel();      
         if ($request->isPost()) {
             $this->form->setData($request->getPost());
             if ($this->form->isValid()) {
@@ -43,12 +42,13 @@ class LoanApply extends AbstractActionController{
                 $model->requestedDate = Helper::getcurrentExpressionDate();
                 $model->status = 'RQ';
                 $model->deductOnSalary = 'Y';
+                
                 $this->loanRequesteRepository->add($model);
                 $this->flashmessenger()->addMessage("Loan Request Successfully added!!!");
                 return $this->redirect()->toRoute("loanStatus");
             }
         }
-
+        
         return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
                     'employees'=> EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["FIRST_NAME", "MIDDLE_NAME", "LAST_NAME"],["STATUS"=>'E','RETIRED_FLAG'=>'N'],"FIRST_NAME","ASC"," ",FALSE,TRUE),

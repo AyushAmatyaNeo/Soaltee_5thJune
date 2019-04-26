@@ -123,4 +123,13 @@ class LoanApproveRepository implements RepositoryInterface {
         return $result;
     }
 
+    public function addToDetails($id){
+        $sql = "BEGIN
+        HRIS_LOAN_PAYMENT_DETAILS({$id});
+        END;
+        ";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return $result;
+    }
 }
