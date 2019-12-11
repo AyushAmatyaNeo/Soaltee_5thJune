@@ -100,6 +100,20 @@ print $this->form()->openTag($form);
                         <table>
                             <tr>
                                 <td width="40%">
+                                    <label for="departure">Departure :</label> 
+                                </td>
+                                <td>
+                                    <input type="text" disabled="disabled" value="<?php echo $detail['DEPARTURE'] ?>" name="departure"  id="departure" class="form-control">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                     <div class="col-xs-12 col-sm-4 col-md-4 col-box bottomgap">
+                        <table>
+                            <tr>
+                                <td width="40%">
                                     <label for="destination">Destination :</label> 
                                 </td>
                                 <td>
@@ -108,8 +122,6 @@ print $this->form()->openTag($form);
                             </tr>
                         </table>
                     </div>
-                </div>
-                <div class="row">
                     <div class="col-xs-12 col-sm-4 col-md-4 col-box bottomgap">
                         <table>
                             <tr>

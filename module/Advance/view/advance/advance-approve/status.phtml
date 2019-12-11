@@ -9,7 +9,6 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
     print $this->messages[1];
     print '</div>';
 }
-
 ?>
 <?php if ($this->messages) { ?>
     <script>
@@ -19,18 +18,17 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 
 <?php
 $this->headLink()
-    ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.common.min.css'))
-    ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.default.min.css'));
+        ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.common.min.css'))
+        ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.default.min.css'));
 $this->headLink()
-    ->appendStylesheet($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.css'));
+        ->appendStylesheet($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.css'));
 
 $this->headScript()
-    ->appendFile($this->basePath('jszip/dist/jszip.min.js'))
-    ->appendFile($this->basePath('telerik_kendoui/js/kendo.all.min.js'))
-    ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
-    ->appendFile($this->basePath('js/nepali-datepicker-ext.js'))
-    ->appendFile($this->basePath('js/advance/advance-approve/status.js'));
-
+        ->appendFile($this->basePath('jszip/dist/jszip.min.js'))
+        ->appendFile($this->basePath('telerik_kendoui/js/kendo.all.min.js'))
+        ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
+        ->appendFile($this->basePath('js/nepali-datepicker-ext.js'))
+        ->appendFile($this->basePath('js/advance/advance-approve/status.js'));
 ?>
 
 <script>
@@ -75,30 +73,35 @@ $this->headScript()
         <div class="portlet-body">
             <div class="row margin-top-10">
                 <div class="col-sm-2">
-<?php print $this->formElement($advanceStatus); ?>
+                    <label>Status</label>
+                    <?php print $this->formElement($advanceStatus); ?>
                 </div>   
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="fromDate" name="fromDate"  class="form-control" placeholder="From Date"/>
+                        <label>From Date</label>
+                        <input type="text" id="fromDate" name="fromDate"  class="form-control reset-field" placeholder="From Date"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control" placeholder="From Date Nepali"/>
+                        <label>Nepali From Date</label>
+                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control reset-field" placeholder="From Date Nepali"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="toDate" name="toDate"class="form-control" placeholder="To Date"/>
+                        <label>To Date</label>
+                        <input type="text" id="toDate" name="toDate"class="form-control reset-field" placeholder="To Date"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                        <label>Nepali To Date</label>
+                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
-                    <button id="reset" class="btn default btn-sm pull-right">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

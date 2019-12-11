@@ -72,17 +72,22 @@
             var fromDate = $fromDate.val();
             var toDate = $toDate.val();
             var dateRange = app.getDateRangeBetween(nepaliDatePickerExt.getDate(fromDate), nepaliDatePickerExt.getDate(toDate));
-
-
-
+            var weekday = new Array(7);
+            weekday[0] = "Sun";
+            weekday[1] = "Mon";
+            weekday[2] = "Tue";
+            weekday[3] = "Wed";
+            weekday[4] = "Thu";
+            weekday[5] = "Fri";
+            weekday[6] = "Sat";
             columns.splice(2);
             for (var i in dateRange) {
-                var columnTitle = dateRange[i].getFullYear() + "-" + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + "-" + ("0" + dateRange[i].getDate()).slice(-2);
+                var columnTitle = dateRange[i].getFullYear() + "-" + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + "-" + ("0" + dateRange[i].getDate()).slice(-2) + " " + "(" + weekday[dateRange[i].getDay()] + ")";
 //                var forDate = "f" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2);
 //                var shiftId = "s" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2);
                 var forDate = "F" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2) + "_D";
                 var shiftId = "F" + dateRange[i].getFullYear() + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + ("0" + dateRange[i].getDate()).slice(-2) + "_S";
-                columns.push({title: columnTitle, width: 130, field: [forDate, "EMPLOYEE_ID", shiftId], template: cellTemplate(forDate, shiftId)});
+                columns.push({title: columnTitle, width: 170, field: [forDate, "EMPLOYEE_ID", shiftId], template: cellTemplate(forDate, shiftId)});
             }
 
             initialize($table, kendoConfig);
@@ -174,7 +179,7 @@
             var selectedRow = ds.getByUid(dataItem.uid);
             var selectedShiftId = $this.val();
             var selectedDate = $this.attr('for-date');
-            
+
             app.serverRequest(document.getShiftDetails, {
                 shiftId: selectedShiftId,
                 fromDate: selectedFromDate,
@@ -214,7 +219,9 @@
 //            console.log('sdfsdf');
 //            console.log("clicked", e.ctrlKey, e.altKey, e.shiftKey);
 //        });
-
+//        $('#reset').on('click', function () {
+//            $('.form-control').val("");
+//        });
 
     });
 })(window.jQuery, window.app);

@@ -44,8 +44,14 @@ class WorkOnDayoffStatusRepository extends HrisRepository {
                   INITCAP(TO_CHAR(WD.REQUESTED_DATE, 'DD-MON-YYYY'))              AS REQUESTED_DATE_AD,
                   BS_DATE(TO_CHAR(WD.REQUESTED_DATE, 'DD-MON-YYYY'))              AS REQUESTED_DATE_BS,
                   LEAVE_STATUS_DESC(WD.STATUS)                                    AS STATUS,
-                  REC_APP_ROLE(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY)      AS ROLE,
-                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE,
+                   REC_APP_ROLE(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  )      AS ROLE,
+                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  ) AS YOUR_ROLE,
                   WD.REMARKS                                                      AS REMARKS,
                   WD.DURATION                                                     AS DURATION,
                   WD.EMPLOYEE_ID                                                  AS EMPLOYEE_ID,
@@ -78,34 +84,16 @@ class WorkOnDayoffStatusRepository extends HrisRepository {
                 ON RECM.EMPLOYEE_ID = RA.RECOMMEND_BY
                 LEFT OUTER JOIN HRIS_EMPLOYEES APRV
                 ON APRV.EMPLOYEE_ID = RA.APPROVED_BY
+                LEFT JOIN HRIS_ALTERNATE_R_A ALR
+                    ON (ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=WD.EMPLOYEE_ID AND ALR.R_A_ID={$recomApproveId})
+                    LEFT JOIN HRIS_ALTERNATE_R_A ALA
+                    ON (ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=WD.EMPLOYEE_ID AND ALA.R_A_ID={$recomApproveId})
                 LEFT OUTER JOIN HRIS_EMPLOYEES U
                 ON (U.EMPLOYEE_ID= RA.RECOMMEND_BY
-                OR U.EMPLOYEE_ID = RA.APPROVED_BY)
+                OR U.EMPLOYEE_ID = RA.APPROVED_BY
+                OR U.EMPLOYEE_ID   =ALR.R_A_ID
+                OR U.EMPLOYEE_ID   =ALA.R_A_ID)
                 WHERE E.STATUS   ='E'
-                AND (E1.STATUS   =
-                  CASE
-                    WHEN E1.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR E1.STATUS  IS NULL)
-                AND (E2.STATUS =
-                  CASE
-                    WHEN E2.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR E2.STATUS    IS NULL)
-                AND (RECM.STATUS =
-                  CASE
-                    WHEN RECM.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR RECM.STATUS  IS NULL)
-                AND (APRV.STATUS =
-                  CASE
-                    WHEN APRV.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR APRV.STATUS  IS NULL)
                 AND U.EMPLOYEE_ID= {$recomApproveId}
                 {$searchCondition}
                 {$statusCondition}
@@ -127,12 +115,13 @@ class WorkOnDayoffStatusRepository extends HrisRepository {
         $positionId = $data['positionId'];
         $serviceTypeId = $data['serviceTypeId'];
         $serviceEventTypeId = $data['serviceEventTypeId'];
+        $functionalTypeId = $data['functionalTypeId'];
         $employeeTypeId = $data['employeeTypeId'];
         $requestStatusId = $data['requestStatusId'];
         $fromDate = $data['fromDate'];
         $toDate = $data['toDate'];
 
-        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, null, null, $functionalTypeId);
         $statusCondition = "";
         $fromDateCondition = "";
         $toDateCondition = "";

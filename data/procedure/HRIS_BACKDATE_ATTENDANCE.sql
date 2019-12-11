@@ -1,67 +1,101 @@
-CREATE OR REPLACE PROCEDURE HRIS_BACKDATE_ATTENDANCE(
-    P_ID HRIS_ATTENDANCE_REQUEST.ID%TYPE )
-AS
-  P_ATTENDANCE_DT HRIS_ATTENDANCE_REQUEST.ATTENDANCE_DT%TYPE;
-  P_EMPLOYEE_ID HRIS_EMPLOYEES.EMPLOYEE_ID%TYPE;
-  P_IN_TIME HRIS_ATTENDANCE_REQUEST.IN_TIME%TYPE;
-  P_OUT_TIME HRIS_ATTENDANCE_REQUEST.OUT_TIME%TYPE;
-  P_STATUS HRIS_ATTENDANCE_REQUEST.STATUS%TYPE;
+create or replace PROCEDURE hris_backdate_attendance ( p_id hris_attendance_request.id%TYPE ) AS
+
+    p_attendance_dt   hris_attendance_request.attendance_dt%TYPE;
+    p_employee_id     hris_employees.employee_id%TYPE;
+    p_in_time         hris_attendance_request.in_time%TYPE;
+    p_out_time        hris_attendance_request.out_time%TYPE;
+    p_status          hris_attendance_request.status%TYPE;
+    p_in_remarks      hris_attendance_request.in_remarks%TYPE;
+    p_out_remarks      hris_attendance_request.out_remarks%TYPE;
 BEGIN
-  SELECT ATTENDANCE_DT,
-    EMPLOYEE_ID,
-    IN_TIME,
-    OUT_TIME,
-    STATUS
-  INTO P_ATTENDANCE_DT,
-    P_EMPLOYEE_ID,
-    P_IN_TIME,
-    P_OUT_TIME,
-    P_STATUS
-  FROM HRIS_ATTENDANCE_REQUEST
-  WHERE ID     =P_ID;
-  IF P_STATUS != 'AP' THEN
-    RETURN;
-  END IF;
-  IF P_IN_TIME IS NOT NULL THEN
-    INSERT
-    INTO HRIS_ATTENDANCE
-      (
-        ATTENDANCE_DT,
-        EMPLOYEE_ID,
-        ATTENDANCE_TIME,
-        ATTENDANCE_FROM
-      )
-      VALUES
-      (
-        P_ATTENDANCE_DT,
-        P_EMPLOYEE_ID,
-       TO_DATE(TO_CHAR(P_ATTENDANCE_DT,'DD-MON-YYYY')||' '||TO_CHAR(P_IN_TIME,'HH:MI AM'),'DD-MON-YYYY HH:MI AM'),
-        'SYSTEM'
-      );
-    HRIS_ATTENDANCE_AFTER_INSERT(P_EMPLOYEE_ID,P_ATTENDANCE_DT,P_IN_TIME,'SYSTEM');
-  END IF;
-  IF P_OUT_TIME IS NOT NULL THEN
-    INSERT
-    INTO HRIS_ATTENDANCE
-      (
-        ATTENDANCE_DT,
-        EMPLOYEE_ID,
-        ATTENDANCE_TIME,
-        ATTENDANCE_FROM
-      )
-      VALUES
-      (
-        P_ATTENDANCE_DT,
-        P_EMPLOYEE_ID,
-        TO_DATE(TO_CHAR(P_ATTENDANCE_DT,'DD-MON-YYYY')||' '||TO_CHAR(P_OUT_TIME,'HH:MI AM'),'DD-MON-YYYY HH:MI AM'),
-        'SYSTEM'
-      );
-    HRIS_ATTENDANCE_AFTER_INSERT(P_EMPLOYEE_ID,P_ATTENDANCE_DT,P_OUT_TIME,'SYSTEM');
-  END IF;
-  IF(TRUNC(P_ATTENDANCE_DT)<TRUNC(SYSDATE)) THEN
-    HRIS_QUEUE_REATTENDANCE(TRUNC(P_ATTENDANCE_DT),P_EMPLOYEE_ID,TRUNC(P_ATTENDANCE_DT));
-  END IF;
+    SELECT
+        attendance_dt,
+        employee_id,
+        in_time,
+        out_time,
+        status,
+        in_remarks,
+        out_remarks
+    INTO
+        p_attendance_dt,p_employee_id,p_in_time,p_out_time,p_status,p_in_remarks,p_out_remarks
+    FROM
+        hris_attendance_request
+    WHERE
+        id = p_id;
+
+    IF
+        p_status != 'AP'
+    THEN
+        return;
+    END IF;
+    IF
+        p_in_time IS NOT NULL
+    THEN
+        INSERT INTO hris_attendance (
+            attendance_dt,
+            employee_id,
+            attendance_time,
+            attendance_from,
+            remarks
+        ) VALUES (
+            p_attendance_dt,
+            p_employee_id,
+            TO_DATE(
+                TO_CHAR(p_attendance_dt,'DD-MON-YYYY') || ' ' || TO_CHAR(p_in_time,'HH:MI AM'),
+                'DD-MON-YYYY HH:MI AM'
+            ),
+            'SYSTEM',
+            p_in_remarks
+        );
+
+        hris_attendance_after_insert(
+            p_employee_id,
+            p_attendance_dt,
+            p_in_time,
+            p_in_remarks
+        );
+    END IF;
+
+    IF
+        p_out_time IS NOT NULL
+    THEN
+        INSERT INTO hris_attendance (
+            attendance_dt,
+            employee_id,
+            attendance_time,
+            attendance_from,
+            remarks
+        ) VALUES (
+            p_attendance_dt,
+            p_employee_id,
+            TO_DATE(
+                TO_CHAR(p_attendance_dt,'DD-MON-YYYY') || ' ' || TO_CHAR(p_out_time,'HH:MI AM'),
+                'DD-MON-YYYY HH:MI AM'
+            ),
+            'SYSTEM',
+            p_out_remarks
+            
+        );
+
+        hris_attendance_after_insert(
+            p_employee_id,
+            p_attendance_dt,
+            p_out_time,
+            p_out_remarks
+        );
+    END IF;
+
+    IF
+        ( trunc(p_attendance_dt) < trunc(SYSDATE) )
+    THEN
+        hris_queue_reattendance(
+            trunc(p_attendance_dt),
+            p_employee_id,
+            trunc(p_attendance_dt)
+        );
+    END IF;
+
 EXCEPTION
-WHEN NO_DATA_FOUND THEN
-  NULL;
+    WHEN no_data_found THEN
+        NULL;
 END;

@@ -17,6 +17,7 @@ $this->headScript()
     document.getSearchDataLink = '<?php echo $this->url('taxSheet', ['action' => 'getSearchData']); ?>';
     document.ruleList =<?php echo json_encode($ruleList); ?>;
     document.salarySheetList =<?php echo json_encode($salarySheetList); ?>;
+    document.acl =<?php echo json_encode($acl); ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\taxSheet')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -114,31 +115,37 @@ $this->headScript()
             <div class="col-sm-9">
                 <div class="row">
                     <div class="col-sm-2">
+                        <label>Fiscal Year</label>
                         <select id="fiscalYearId">
                         </select>
                     </div>
                     <div class="col-sm-2">
+                        <label>Month</label>
                         <select id="monthId">
                         </select>
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
-                            <input type="text" id="fromDate"  class="form-control" placeholder="From Date"/>
+                            <label>From Date</label>
+                            <input type="text" id="fromDate"  class="form-control reset-field" placeholder="From Date"/>
                         </div>
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
-                            <input type="text" id="nepaliFromDate" class="form-control" placeholder="From Date Nepali"/>
+                            <label>Nepali From</label>
+                            <input type="text" id="nepaliFromDate" class="form-control reset-field" placeholder="From Date Nepali"/>
                         </div>
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
-                            <input type="text" id="toDate" class="form-control" placeholder="To Date"/>
+                            <label>To Date</label>
+                            <input type="text" id="toDate" class="form-control reset-field" placeholder="To Date"/>
                         </div>
                     </div>
                     <div class="col-sm-2">
                         <div class="form-group">
-                            <input type="text" id="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                            <label>Nepali To Date</label>
+                            <input type="text" id="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
                         </div>
                     </div>
                 </div>

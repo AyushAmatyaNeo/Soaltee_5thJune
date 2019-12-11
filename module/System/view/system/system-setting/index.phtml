@@ -25,6 +25,10 @@ $orderBySeniority = $form->get('orderBySeniority');
 $calendarView = $form->get('calendarView');
 $attAppShiftChangeable = $form->get('attAppShiftChangeable');
 $attAppTimeChangeable = $form->get('attAppTimeChangeable');
+$travelSubCycle = $form->get('travelSubCycle');
+$subLeaveReference = $form->get('subLeaveReference');
+$subLeaveMaxDays = $form->get('subLeaveMaxDays');
+$leaveEncashMaxDays = $form->get('leaveEncashMaxDays');
 
 $submit = $form->get('submit');
 
@@ -190,6 +194,44 @@ if ($this->messages) {
                         </div>
                         <?php print $this->formElementErrors()->render($includeHolidayAsLeave, ['class' => 'help-block error']); ?>
                     </div>
+                    <div class=" col-sm-4 ">
+                        <div class="form-group padding-0">
+                            <?php print $this->formLabel($travelSubCycle); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($travelSubCycle); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($travelSubCycle, ['class' => 'help-block error']); ?>
+                    </div>
+                    
+                    <div class=" col-sm-4 ">
+                        <div class="form-group padding-0">
+                            <?php print $this->formLabel($subLeaveReference); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($subLeaveReference); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($subLeaveReference, ['class' => 'help-block error']); ?>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <?php print $this->formLabel($subLeaveMaxDays); ?>
+                            <?php print $this->formElement($subLeaveMaxDays); ?>
+                            <?php print $this->formElementErrors()->render($subLeaveMaxDays, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <?php print $this->formLabel($leaveEncashMaxDays); ?>
+                            <?php print $this->formElement($leaveEncashMaxDays); ?>
+                            <?php print $this->formElementErrors()->render($leaveEncashMaxDays, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                    
+                    
                 </div>
                     <h3 class="form-section">Report</h3>
                 <div class="row">

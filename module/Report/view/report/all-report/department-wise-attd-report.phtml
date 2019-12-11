@@ -21,6 +21,7 @@ $this->headScript()
     document.searchValues =<?php echo json_encode($searchValues); ?>;
     document.acl =<?php echo json_encode($acl); ?>;
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
+    document.preference =<?php echo json_encode($preference) ?>;
 </script>
 <?php
 if ($this->messages && (sizeof($this->messages) > 1)) {

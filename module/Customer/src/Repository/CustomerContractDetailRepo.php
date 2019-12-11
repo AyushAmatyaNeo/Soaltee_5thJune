@@ -52,7 +52,7 @@ class CustomerContractDetailRepo implements RepositoryInterface {
                 ), false);
         $select->from(["CD" => CustomerContractDetailModel::TABLE_NAME]);
         $select->join(["C" => CustomerContract::TABLE_NAME], "CD." . CustomerContractDetailModel::CONTRACT_ID . "=C." . CustomerContract::CONTRACT_ID, ["START_DATE", "END_DATE"], "left");
-        $select->join(["D" => Designation::TABLE_NAME], "CD." . CustomerContractDetailModel::DESIGNATION_ID . "=D." . Designation::DESIGNATION_ID, ["DESIGNATION_TITLE" => new Expression('INITCAP(D.DESIGNATION_TITLE)')], "left");
+        $select->join(["D" => Designation::TABLE_NAME], "CD." . CustomerContractDetailModel::DESIGNATION_ID . "=D." . Designation::DESIGNATION_ID, ["DESIGNATION_TITLE" => new Expression('(D.DESIGNATION_TITLE)')], "left");
         $select->join(["DT" => DutyTypeModel::TABLE_NAME], "CD." . CustomerContractDetailModel::DUTY_TYPE_ID . "=DT." . DutyTypeModel::DUTY_TYPE_ID, ["DUTY_TYPE_NAME" => new Expression('INITCAP(DT.DUTY_TYPE_NAME)')], "left");
         $select->where(["CD." . CustomerContractDetailModel::STATUS => 'E']);
         $select->where(["CD." . CustomerContractDetailModel::CONTRACT_ID => $id]);

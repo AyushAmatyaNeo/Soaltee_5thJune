@@ -12,7 +12,6 @@ $this->headScript()
     ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
     ->appendFile($this->basePath('js/nepali-datepicker-ext.js'))
     ->appendFile($this->basePath('js/LeaveManagement/LeaveStatus/index.js'));
-
 ?>
 
 <script>
@@ -104,13 +103,13 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <select multiple class="form-control" name="position" id="positionId">
                 </select>
             </div>
-        </div>
-        <div class="row margin-top-10">
             <div class="col-sm-2">
                 <label>Service Type</label>
                 <select multiple class="form-control" name="serviceType" id="serviceTypeId">
                 </select>
             </div>
+        </div>
+        <div class="row margin-top-10">
             <div class="col-sm-2">
                 <label>Service Event Type</label>
                 <select multiple class="form-control" name="serviceEventType" id="serviceEventTypeId">
@@ -120,6 +119,11 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <label>Employee Type</label>
                 <select multiple class="form-control" name="employeeType" id="employeeTypeId">
                 </select>
+            </div>
+            <div class="col-sm-2">
+                            <label>Functional Type</label>
+                            <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                            </select>
             </div>
             <div class="col-sm-2">
                 <label>Employee</label>
@@ -135,17 +139,17 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 
         <div class="row margin-top-10">
             <div class="col-sm-2">
-                <input type="text" id="fromDate" name="fromDate"  class="form-control" placeholder="From Date"/>
+                <input type="text" id="fromDate" name="fromDate"  class="form-control reset-field" placeholder="From Date"/>
             </div>
             <div class="col-sm-2">
-                <input type="text" id="nepaliFromDate" name="nepaliFromDate"  class="form-control" placeholder="From Date Nepali"/>
+                <input type="text" id="nepaliFromDate" name="nepaliFromDate"  class="form-control reset-field" placeholder="From Date Nepali"/>
 
             </div>
             <div class="col-sm-2">
-                <input type="text"  id="toDate" name="toDate"  class="form-control" placeholder="To Date"/>
+                <input type="text"  id="toDate" name="toDate"  class="form-control reset-field" placeholder="To Date"/>
             </div>
             <div class="col-sm-2">
-                <input type="text"  id="nepaliToDate" name="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                <input type="text"  id="nepaliToDate" name="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
             </div>
 
             <div class="col-sm-2 ">
@@ -155,8 +159,13 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
         </div>
 
         <div class="row margin-top-10">
+            <?php  if($acl['HR_CANCEL']=='Y'){  ?>
+            <div class="col-sm-4">
+                <label><input id="super_power" type="checkbox" class="reset-field">Use Super Power</label>
+            </div>
+            <?php }      ?>
             <div class=" col-sm-offset-8 col-sm-4">
-                <button class="btn default btn-sm pull-right hris-reset-btn">
+                <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                     Reset
                     <i class="fa fa-refresh"></i>
                 </button>
@@ -174,12 +183,14 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
     <div id="leaveRequestStatusTable">
     </div>
     <div style="display: none;" class="row margin-top-20" id="bulkActionDiv" >
+            <?php  if($acl['HR_APPROVE']=='Y'){  ?>
         <div class="col-sm-2 ">
             <button action="reject" class="btn btn-danger btnApproveReject">Reject</button>
         </div>
         <div class="col-sm-2 col-sm-offset-8">
             <button action="approve" class="btn btn-info btnApproveReject pull-right">Approve</button>
         </div>
+            <?php }      ?>
     </div>
 </div>
 

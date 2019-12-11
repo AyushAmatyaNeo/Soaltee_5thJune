@@ -59,7 +59,7 @@ class TravelExpenseDtlRepository implements RepositoryInterface {
             new Expression("TO_CHAR(TR.DESTINATION_TIME,'HH:MI AM') AS DESTINATION_TIME"),
             new Expression("TR.DESTINATION_PLACE AS DESTINATION_PLACE"),
             new Expression("TR.TRANSPORT_TYPE AS TRANSPORT_TYPE"),
-            new Expression("(CASE WHEN TR.TRANSPORT_TYPE = 'AP' THEN 'Aeroplane' WHEN TR.TRANSPORT_TYPE = 'OV' THEN 'Office Vehicles' WHEN TR.TRANSPORT_TYPE = 'TI' THEN 'Taxi' WHEN TR.TRANSPORT_TYPE = 'BS' THEN 'Bus' END) AS TRANSPORT_TYPE_DETAIL"),
+            new Expression("(CASE WHEN TR.TRANSPORT_TYPE = 'AP' THEN 'Aeroplane' WHEN TR.TRANSPORT_TYPE = 'OV' THEN 'Office Vehicles' WHEN TR.TRANSPORT_TYPE = 'TI' THEN 'Taxi' WHEN TR.TRANSPORT_TYPE = 'BS' THEN 'Bus' WHEN TR.TRANSPORT_TYPE = 'OF' THEN 'On Foot' END) AS TRANSPORT_TYPE_DETAIL"),
             new Expression("TR.FARE AS FARE"),
             new Expression("TR.ALLOWANCE AS ALLOWANCE"),
             new Expression("TR.LOCAL_CONVEYENCE AS LOCAL_CONVEYENCE"),

@@ -74,7 +74,21 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                             <table>
                                 <tr>
                                     <td width="40%">
-                                        <label for="destination">Destination :</label> 
+                                        <label for="departure">Departure :</label> 
+                                    </td>
+                                    <td>
+                                        <input type="text" disabled="disabled" value="<?php echo $detail['DEPARTURE'] ?>" name="departure" required="required" id="departure" class="form-control">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                           <div class="col-xs-12 col-sm-4 col-md-4 col-box bottomgap">
+                            <table>
+                                <tr>
+                                    <td width="40%">
+                                        <label for="destination">Departure :</label> 
                                     </td>
                                     <td>
                                         <input type="text" disabled="disabled" value="<?php echo $detail['DESTINATION'] ?>" name="destination" required="required" id="destination" class="form-control">
@@ -82,8 +96,6 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                                 </tr>
                             </table>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-xs-12 col-sm-4 col-md-4 col-box bottomgap">
                             <table>
                                 <tr>

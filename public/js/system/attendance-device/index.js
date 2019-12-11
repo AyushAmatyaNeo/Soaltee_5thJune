@@ -25,6 +25,8 @@
             {field: "PURPOSE", title: "Purpose", width: 200},
             {field: "ISACTIVE", title: "Active", width: 200},
             {field: "PING_STATUS", title: "Ping Status", width: 200},
+            {field: "BRANCH_ID", title: "Branch Id", width: 200},
+            {field: "FULL_NAME", title: "Branch Manager", width: 200},
             {field: "DEVICE_ID", title: "Action", width: 100, template: app.genKendoActionTemplate(actiontemplateConfig)}
         ];
 

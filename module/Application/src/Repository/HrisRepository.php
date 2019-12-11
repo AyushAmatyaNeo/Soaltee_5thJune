@@ -59,7 +59,7 @@ class HrisRepository {
         }
     }
 
-    protected function getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId = null, $locationId = null) {
+    protected function getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId = null, $locationId = null, $functionalTypeId = null) {
         $conditon = "";
         if ($companyId != null && $companyId != -1) {
             $conditon .= $this->conditionBuilder($companyId, "E.COMPANY_ID", "AND");
@@ -106,6 +106,9 @@ class HrisRepository {
         }
         if ($locationId != null && $locationId != -1) {
             $conditon .= $this->conditionBuilder($locationId, "E.LOCATION_ID", "AND");
+        }
+        if ($functionalTypeId != null && $functionalTypeId != -1) {
+            $conditon .= self::conditionBuilder($functionalTypeId, "E.FUNCTIONAL_TYPE_ID", "AND");
         }
         return $conditon;
     }

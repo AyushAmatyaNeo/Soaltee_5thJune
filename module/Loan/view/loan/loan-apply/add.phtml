@@ -17,8 +17,11 @@ $employeeId = $form->get('employeeId');
 $employeeId->setValueOptions($employees);
 $loanId = $form->get('loanId');
 $paymentMonths = $form->get('repaymentMonths');
+$interestRate = $form->get('interestRate');
+
 $loanId->setValueOptions($loans);
 $requestedAmount = $form->get('requestedAmount');
+
 $loanDate = $form->get('loanDate');
 $reason = $form->get('reason');
 
@@ -33,6 +36,7 @@ $form->prepare();
 <script>
     document.url = '<?= $this->url("restful", ["action" => "index"]) ?>';
     document.pullLoanListLink = '<?= $this->url("loanRequest", ["action" => "pullLoanList"]) ?>';
+    document.rateDetails = <?=json_encode($rateDetails)?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\loanApply')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -137,6 +141,15 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                         </div>
                     </div>
 
+                    <div class="col-sm-4">
+                    <div class="form-group">
+                            <?php print $this->formLabel($interestRate); ?>
+                            <span class="required" aria-required="true">*</span>
+                            <?php print $this->formElement($interestRate); ?>
+                            <?php print $this->formElementErrors()->render($interestRate, ['class' => 'help-block']); ?>
+                        </div>
+                    </div>
+                    
                     <div class="col-sm-4">
                         <div class="form-group">
                             <?php print $this->formLabel($reason); ?>

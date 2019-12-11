@@ -1,13 +1,13 @@
 <?php
- 
+
 namespace LeaveManagement\Controller;
- 
+
 use Application\Controller\HrisController;
 use Application\Custom\CustomViewModel;
 use Application\Helper\EntityHelper;
 use Application\Helper\Helper;
 use Exception;
-use LeaveManagement\Form\LeaveApplyForm; 
+use LeaveManagement\Form\LeaveApplyForm;
 use LeaveManagement\Model\LeaveApply as LeaveApplyModel;
 use LeaveManagement\Repository\LeaveApplyRepository;
 use Notification\Controller\HeadNotification;
@@ -25,12 +25,12 @@ class LeaveApply extends HrisController {
         parent::__construct($adapter, $storage);
         $this->initializeRepository(LeaveApplyRepository::class);
         $this->initializeForm(LeaveApplyForm::class);
-    } 
+    }
 
     public function fileUploadAction() {
         $request = $this->getRequest();
-        $responseData = []; 
-        $files = $request->getFiles()->toArray();  
+        $responseData = [];
+        $files = $request->getFiles()->toArray();
         try {
             if (sizeof($files) > 0) {
                 $ext = pathinfo($files['file']['name'], PATHINFO_EXTENSION);
@@ -50,10 +50,10 @@ class LeaveApply extends HrisController {
                 "traceAsString" => $e->getTraceAsString(),
                 "line" => $e->getLine()
             ];
-        }        
+        }
         return new JsonModel($responseData);
     }
- 
+
     public function pushLeaveFileLinkAction() {
         try {
             $newsId = $this->params()->fromRoute('id');
@@ -66,7 +66,7 @@ class LeaveApply extends HrisController {
         }
     }
 
-    public function addAction() { 
+    public function addAction() {
         $request = $this->getRequest();
         if ($request->isPost()) {
             $postedData = $request->getPost();
@@ -75,11 +75,15 @@ class LeaveApply extends HrisController {
             if ($this->form->isValid()) {
                 $leaveRequest = new LeaveApplyModel();
                 $leaveRequest->exchangeArrayFromForm($this->form->getData());
-                $leaveRequest->id = (int) Helper::getMaxId($this->adapter, LeaveApplyModel::TABLE_NAME, LeaveApplyModel::ID) + 1; 
+                $leaveRequest->id = (int) Helper::getMaxId($this->adapter, LeaveApplyModel::TABLE_NAME, LeaveApplyModel::ID) + 1;
                 $leaveRequest->startDate = Helper::getExpressionDate($leaveRequest->startDate);
                 $leaveRequest->endDate = Helper::getExpressionDate($leaveRequest->endDate);
-                $leaveRequest->requestedDt = Helper::getcurrentExpressionDate(); 
+                $leaveRequest->requestedDt = Helper::getcurrentExpressionDate();
                 $leaveRequest->status = "RQ";
+                
+                if(isset($postedData['subRefId']) && $postedData['subRefId']!=' '){
+                $leaveRequest->subRefId = $postedData['subRefId'];
+                }
                 $leaveRequest->status = ($postedData['applyStatus'] == 'AP') ? 'AP' : 'RQ';
                 $this->repository->add($leaveRequest);
                 $this->flashmessenger()->addMessage("Leave Request Successfully added!!!");
@@ -119,11 +123,26 @@ class LeaveApply extends HrisController {
         ];
         $applyOption = $this->getSelectElement(['name' => 'applyStatus', 'id' => 'applyStatus', 'class' => 'form-control', 'label' => 'Type'], $applyOptionValues);
 
+        $subLeaveReference = 'N';
+        if (isset($this->preference['subLeaveReference'])) {
+            $subLeaveReference = $this->preference['subLeaveReference'];
+        }
+        $subLeaveMaxDays = '500';
+        if (isset($this->preference['subLeaveMaxDays'])) {
+            $subLeaveMaxDays = $this->preference['subLeaveMaxDays'];
+        }
+        // $data = EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["EMPLOYEE_CODE", "FULL_NAME"], ["STATUS" => 'E', 'RETIRED_FLAG' => 'N', 'IS_ADMIN' => "N"], "FULL_NAME", "ASC", "-", FALSE, TRUE, $this->employeeId);
+        // echo '<pre>';
+        // echo count($data);
+        // print_r($data);
+        // die;
         return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
-                    'employees' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["EMPLOYEE_CODE","FULL_NAME"], ["STATUS" => 'E', 'RETIRED_FLAG' => 'N', 'IS_ADMIN' => "N"], "FULL_NAME", "ASC", "-", FALSE, TRUE),
+                    'employees' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["EMPLOYEE_CODE", "FULL_NAME"], ["STATUS" => 'E', 'RETIRED_FLAG' => 'N', 'IS_ADMIN' => "N"], "FULL_NAME", "ASC", "-", FALSE, TRUE, $this->employeeId),
                     'customRenderer' => Helper::renderCustomView(),
-                    'applyOption' => $applyOption
+                    'applyOption' => $applyOption,
+                    'subLeaveReference' => $subLeaveReference,
+                    'subLeaveMaxDays' => $subLeaveMaxDays
         ]);
     }
 
@@ -160,8 +179,15 @@ class LeaveApply extends HrisController {
                 $employeeId = $postedData['employeeId'];
                 $startDate = $postedData['startDate'];
                 $leaveDetail = $leaveRequestRepository->getLeaveDetail($employeeId, $leaveId, $startDate);
+                
+                $maxSubDays=500;
+                if(isset($this->preference['subLeaveMaxDays'])){
+                $maxSubDays=$this->preference['subLeaveMaxDays'];
+                }
+                
+                $subtituteDetails = $leaveRequestRepository->getSubstituteList($leaveId, $employeeId,$maxSubDays);
 
-                return new CustomViewModel(['success' => true, 'data' => $leaveDetail, 'error' => '']);
+                return new CustomViewModel(['success' => true, 'data' => $leaveDetail, 'subtituteDetails' => $subtituteDetails, 'error' => '']);
             } else {
                 throw new Exception("The request should be of type post");
             }
@@ -201,5 +227,6 @@ class LeaveApply extends HrisController {
             return new CustomViewModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
         }
     }
+    
 
 }

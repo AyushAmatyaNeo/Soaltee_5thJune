@@ -275,8 +275,14 @@ class TrainingApproveRepository extends HrisRepository {
                   RAA.FULL_NAME                                                   AS APPROVER_NAME,
                   TR.STATUS                                                       AS STATUS ,
                   LEAVE_STATUS_DESC(TR.STATUS)                                    AS STATUS_DETAIL ,
-                  REC_APP_ROLE(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY)      AS ROLE,
-                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE
+                  REC_APP_ROLE(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  )      AS ROLE,
+                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  ) AS YOUR_ROLE
                 FROM HRIS_EMPLOYEE_TRAINING_REQUEST TR
                 LEFT JOIN HRIS_TRAINING_MASTER_SETUP T
                 ON T.TRAINING_ID=TR.TRAINING_ID
@@ -292,11 +298,27 @@ class TrainingApproveRepository extends HrisRepository {
                 ON (RA.RECOMMEND_BY=RAR.EMPLOYEE_ID)
                 LEFT JOIN HRIS_EMPLOYEES RAA
                 ON(RA.APPROVED_BY=RAA.EMPLOYEE_ID)
+                LEFT JOIN HRIS_ALTERNATE_R_A ALR
+                ON(ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=TR.EMPLOYEE_ID AND ALR.R_A_ID={$search['userId']})
+                LEFT JOIN HRIS_ALTERNATE_R_A ALA
+                ON(ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=TR.EMPLOYEE_ID AND ALA.R_A_ID={$search['userId']})
                 LEFT JOIN HRIS_EMPLOYEES U
                 ON(U.EMPLOYEE_ID = RA.RECOMMEND_BY
-                OR U.EMPLOYEE_ID =RA.APPROVED_BY)
+                OR U.EMPLOYEE_ID =RA.APPROVED_BY
+                OR U.EMPLOYEE_ID   =ALR.R_A_ID
+                OR U.EMPLOYEE_ID   =ALA.R_A_ID)
                 WHERE 1          =1
-                AND ((RA.RECOMMEND_BY= U.EMPLOYEE_ID AND TR.STATUS='RQ') OR (RA.APPROVED_BY= U.EMPLOYEE_ID AND TR.STATUS='RC') )
+                AND ((
+                (
+                (RA.RECOMMEND_BY= U.EMPLOYEE_ID)
+                OR(ALR.R_A_ID= U.EMPLOYEE_ID)
+                )
+                AND TR.STATUS IN ('RQ')) 
+                OR (
+                ((RA.APPROVED_BY= U.EMPLOYEE_ID)
+                OR(ALA.R_A_ID= U.EMPLOYEE_ID)
+                )
+                AND TR.STATUS IN ('RC')) )
                 AND U.EMPLOYEE_ID={$search['userId']}";
         return $this->rawQuery($sql);
     }
@@ -395,8 +417,14 @@ class TrainingApproveRepository extends HrisRepository {
                   RAA.FULL_NAME                                                   AS APPROVER_NAME,
                   TR.STATUS                                                       AS STATUS ,
                   LEAVE_STATUS_DESC(TR.STATUS)                                    AS STATUS_DETAIL ,
-                  REC_APP_ROLE(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY)      AS ROLE,
-                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE
+                  REC_APP_ROLE(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  )      AS ROLE,
+                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  ) AS YOUR_ROLE
                 FROM HRIS_EMPLOYEE_TRAINING_REQUEST TR
                 LEFT JOIN HRIS_TRAINING_MASTER_SETUP T
                 ON T.TRAINING_ID=TR.TRAINING_ID
@@ -412,9 +440,15 @@ class TrainingApproveRepository extends HrisRepository {
                 ON (RA.RECOMMEND_BY=RAR.EMPLOYEE_ID)
                 LEFT JOIN HRIS_EMPLOYEES RAA
                 ON(RA.APPROVED_BY=RAA.EMPLOYEE_ID)
+                LEFT JOIN HRIS_ALTERNATE_R_A ALR
+                ON(ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=TR.EMPLOYEE_ID AND ALR.R_A_ID={$search['userId']})
+                LEFT JOIN HRIS_ALTERNATE_R_A ALA
+                ON(ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=TR.EMPLOYEE_ID AND ALA.R_A_ID={$search['userId']})
                 LEFT JOIN HRIS_EMPLOYEES U
                 ON(U.EMPLOYEE_ID = RA.RECOMMEND_BY
-                OR U.EMPLOYEE_ID =RA.APPROVED_BY)
+                OR U.EMPLOYEE_ID =RA.APPROVED_BY
+                OR U.EMPLOYEE_ID   =ALR.R_A_ID
+                OR U.EMPLOYEE_ID   =ALA.R_A_ID)
                 WHERE 1          =1
                 AND U.EMPLOYEE_ID={$search['userId']} {$condition}";
         return $this->rawQuery($sql);
@@ -433,8 +467,9 @@ class TrainingApproveRepository extends HrisRepository {
         $serviceTypeId = $search['serviceTypeId'];
         $serviceEventTypeId = $search['serviceEventTypeId'];
         $status = $search['status'];
+        $functionalTypeId = $search['functionalTypeId'];
         $employeeTypeId = $search['employeeTypeId'];
-        $searchConditon = EntityHelper::getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $searchConditon = EntityHelper::getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, null, null, $functionalTypeId);
         
         $condition = "";
         if (isset($search['fromDate']) && $search['fromDate'] != null) {

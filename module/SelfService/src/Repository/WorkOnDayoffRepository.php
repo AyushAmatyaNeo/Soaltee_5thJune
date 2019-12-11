@@ -10,6 +10,7 @@ use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Sql;
 use Zend\Db\TableGateway\TableGateway;
+use Application\Helper\Helper;
 
 class WorkOnDayoffRepository implements RepositoryInterface {
 
@@ -22,18 +23,28 @@ class WorkOnDayoffRepository implements RepositoryInterface {
     }
 
     public function add(Model $model) {
-        $this->tableGateway->insert($model->getArrayCopyForDB());
+        $addData=$model->getArrayCopyForDB();
+        $this->tableGateway->insert($addData);
+        
+
+        if ($addData['STATUS']=='AP' && date('Y-m-d', strtotime($model->fromDate)) <= date('Y-m-d')) {
+            $sql = "BEGIN 
+            HRIS_REATTENDANCE('{$model->fromDate}',$model->employeeId,'{$model->toDate}');
+               END; ";
+
+            EntityHelper::rawQueryResult($this->adapter, $sql);
+        }
     }
 
     public function delete($id) {
-        $sql="BEGIN
+        $sql = "BEGIN
 UPDATE HRIS_EMPLOYEE_WORK_DAYOFF SET STATUS='C',MODIFIED_DATE=TRUNC(SYSDATE) WHERE ID={$id};
 DELETE FROM HRIS_EMPLOYEE_LEAVE_ADDITION WHERE WOD_ID={$id};
 DELETE FROM HRIS_OVERTIME_DETAIL WHERE WOD_ID= {$id};
 DELETE FROM HRIS_OVERTIME WHERE WOD_ID = {$id};
 END;";
 
-EntityHelper::rawQueryResult($this->adapter, $sql);
+        EntityHelper::rawQueryResult($this->adapter, $sql);
     }
 
     public function edit(Model $model, $id) {

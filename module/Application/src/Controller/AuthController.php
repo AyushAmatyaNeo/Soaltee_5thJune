@@ -83,7 +83,7 @@ class AuthController extends AbstractActionController {
             $this->getAuthService()->clearIdentity();
         }
         //end
-
+        
         if ($this->getAuthService()->hasIdentity()) {
             return $this->redirect()->toRoute('dashboard');
         }
@@ -130,9 +130,12 @@ class AuthController extends AbstractActionController {
                 /*
                  * user authentication
                  */
+
                 $this->getAuthService()->getAdapter()
                         ->setIdentity($request->getPost('username'))
-                        ->setCredential($request->getPost('password'));
+                        ->setCredential($request->getPost('password'))
+                        ->getDbSelect()->where("STATUS = 'E' AND IS_LOCKED = 'N'");
+
                 $result = $this->getAuthService()->authenticate();
                 foreach ($result->getMessages() as $message) {
                     $this->flashmessenger()->addMessage($message);
@@ -156,7 +159,7 @@ class AuthController extends AbstractActionController {
                         $todayAttendance = $attendanceDetailRepo->fetchByEmpIdAttendanceDT($employeeId, 'TRUNC(SYSDATE)');
                         $inTime = $todayAttendance['IN_TIME'];
                         $attendanceType = ($inTime) ? "OUT" : "IN";
-                        $allowRegisterAttendance = ($todayAttendance['TRAVEL_ID'] == null && $todayAttendance['LEAVE_ID'] == null && $todayAttendance['TRAINING_ID'] == null && $todayAttendance['HOLIDAY_ID'] == null) ? true : false;
+                        $allowRegisterAttendance = ($todayAttendance['TRAVEL_ID'] == null && $todayAttendance['LEAVE_ID'] == null) ? true : false;
                     }
 
                     $employeeRepo = new EmployeeRepository($this->adapter);

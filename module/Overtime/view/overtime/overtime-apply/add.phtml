@@ -24,7 +24,9 @@ $endTime->setAttributes(['readonly' => "readonly"]);
 $description = $form->get('description');
 $remarks = $form->get('remarks');
 $submit = $form->get('submit');
+$submit->setAttribute('id', 'submit');
 $submit->setAttribute('value', 'SUBMIT');
+$totalHour = $form->get('allTotalHour');  // added for SHIVAM CEMENT
 
 $form->setAttribute('action', $this->url('overtimeApply', ['action' => 'add']));
 
@@ -32,7 +34,10 @@ $form->setAttribute('action', $this->url('overtimeApply', ['action' => 'add']));
 $form->prepare();
 ?>
 <script>
-    document.url = '<?= $this->url("restful", ["action" => "index"]) ?>';</script>
+    document.url = '<?= $this->url("restful", ["action" => "index"]) ?>';
+    document.validateAttendanceLink = '<?= $this->url("overtimeRequest", ["action" => "validateAttendance"]) ?>';
+</script>
+
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\overtimeApply')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
 </div>
@@ -132,7 +137,9 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                                 <input dvalue="{{overtimeDetail.endTime}}" timepicker type="text" size="3"  class="form-control" name="endTime[]" ng-model="overtimeDetail.endTime" value="" required="required" readonly="readonly"/>
                             </td>
                             <td width="45%" style="padding:5px;">
-                                <input type="text" size="3" class="form-control" name="totalHour[]" value="{{calculateHour(overtimeDetail.startTime, overtimeDetail.endTime)}}"  required="required" readonly="readonly"/>
+                                <input type="text" size="3" class="form-control" name="totalHour[]" value="{{calculateHour(overtimeDetail.startTime, overtimeDetail.endTime)}}"  required="required" readonly="readonly"/> 
+                             <!-- FOR SHIVAM CEMENT -->  
+                             <!--   <input dvalue="{{overtimeDetail.totalHour}}" type="text" size="3" class="form-control" name="totalHour[]" ng-model="overtimeDetail.totalHour" required="required" /> -->
                             </td>
                             <td width="47">
                                 <a href="javascript:;" class="btn btn-icon-only default" ng-click="delete(index)" id="plushIcon">

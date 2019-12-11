@@ -22,6 +22,8 @@ class Branch extends Model {
     const MODIFIED_DT = "MODIFIED_DT";
     const CREATED_BY = "CREATED_BY";
     const MODIFIED_BY = "MODIFIED_BY";
+    const BRANCH_MANAGER_ID = "BRANCH_MANAGER_ID";
+    const PROVINCE_ID = "PROVINCE_ID";
 
     public $branchId;
     public $branchCode;
@@ -38,6 +40,8 @@ class Branch extends Model {
     public $modifiedDt;
     public $createdBy;
     public $modifiedBy;
+    public $branchManager;
+    public $province;
     public $mappings = [
         'branchId' => self::BRANCH_ID,
         'branchCode' => self::BRANCH_CODE,
@@ -54,6 +58,8 @@ class Branch extends Model {
         'modifiedDt' => self::MODIFIED_DT,
         'createdBy' => self::CREATED_BY,
         'modifiedBy' => self::MODIFIED_BY,
+        'branchManager' => self::BRANCH_MANAGER_ID,
+        'province' => self::PROVINCE_ID,
     ];
 
 }

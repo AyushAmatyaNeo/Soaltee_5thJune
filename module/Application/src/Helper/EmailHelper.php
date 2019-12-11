@@ -8,7 +8,7 @@ use Zend\Mail\Transport\SmtpOptions;
 class EmailHelper {
 
     const maxMassMail = 50;
-    const massEmailId = 'mhrpravin@gmail.com';
+    const massEmailId = '';
 
     public static function getSmtpTransport(): Smtp {
         $transport = new Smtp();
@@ -19,8 +19,8 @@ class EmailHelper {
             'connection_config' => [
 //                'username' => 'ukesh.gaiju@itnepal.com',
 //                'password' => 'ukesh@123',
-                'username' => 'no-reply@scp.com.np',
-                'password' => 'Google@#@2019',
+                'username' => 'hris.donotreply@scp.com.np',
+                'password' => 'soaltee2019',
                
             ],
         ]);

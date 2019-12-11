@@ -35,6 +35,21 @@
         $submitBtn.on('click', function () {
             var selectedFromDate = $('#fromDate').val();
             var selectedToDate = $('#toDate').val();
+
+            let fromDate = new Date(selectedFromDate);
+            let toDate = new Date(selectedToDate);
+            let currentDate = new Date();
+
+            if(fromDate > currentDate){
+                app.showMessage("Future Date selected in From Date");
+                return;
+            }
+
+            if(toDate > currentDate){
+                app.showMessage("Future Date selected in To Date");
+                return;
+            }
+
             if (!selectedFromDate || !selectedToDate) {
                 app.showMessage("Please select a date First");
                 return;

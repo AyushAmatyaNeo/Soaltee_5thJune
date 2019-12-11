@@ -183,7 +183,17 @@ class LeaveApproveRepository implements RepositoryInterface {
                   INITCAP(RECM.FULL_NAME)                             AS RECOMMENDER_NAME,
                   INITCAP(APRV.FULL_NAME)                             AS APPROVER_NAME,
                   ELA.TOTAL_DAYS                                      AS TOTAL_DAYS,
-                  ELA.BALANCE                                         AS BALANCE
+                  ELA.BALANCE                                         AS BALANCE,
+                  (CASE WHEN (LA.HALF_DAY IS NULL OR LA.HALF_DAY = 'N')
+                  then LA.NO_OF_DAYS
+                  else LA.NO_OF_DAYS/2
+                  END) AS ACTUAL_DAYS,
+                  (CASE WHEN (LA.HALF_DAY IS NULL OR LA.HALF_DAY = 'N') 
+                  THEN 'Full Day' 
+                  WHEN (LA.HALF_DAY = 'F') THEN 'First Half' 
+                  ELSE 'Second Half' END) AS HALF_DAY_DETAIL
+                ,CASE WHEN SUB_REF_ID IS NOT NULL THEN 
+                INITCAP(L.LEAVE_ENAME)||'('||SLR.SUB_NAME||')' END AS LEAVE_ENAME
                 FROM HRIS_EMPLOYEE_LEAVE_REQUEST LA
                 LEFT JOIN HRIS_LEAVE_MASTER_SETUP L
                 ON L.LEAVE_ID=LA.LEAVE_ID
@@ -200,7 +210,26 @@ class LeaveApproveRepository implements RepositoryInterface {
                 LEFT JOIN HRIS_EMPLOYEES RECM
                 ON RECM.EMPLOYEE_ID=RA.RECOMMEND_BY
                 LEFT JOIN HRIS_EMPLOYEES APRV
-                ON APRV.EMPLOYEE_ID=RA.APPROVED_BY,
+                ON APRV.EMPLOYEE_ID=RA.APPROVED_BY
+                LEFT JOIN 
+                (SELECT 
+                WOD_ID AS ID
+                ,LA.EMPLOYEE_ID
+                ,NO_OF_DAYS
+                ,WD.FROM_DATE||' - '||WD.TO_DATE AS SUB_NAME
+                from 
+                HRIS_EMPLOYEE_LEAVE_ADDITION LA
+                JOIN Hris_Employee_Work_Dayoff WD ON (LA.WOD_ID=WD.ID)
+                UNION
+                SELECT 
+                WOH_ID AS ID
+                ,LA.EMPLOYEE_ID
+                ,NO_OF_DAYS
+                ,H.Holiday_Ename||'-'||WH.FROM_DATE||' - '||WH.TO_DATE AS SUB_NAME
+                from 
+                HRIS_EMPLOYEE_LEAVE_ADDITION LA
+                JOIN Hris_Employee_Work_Holiday WH ON (LA.WOH_ID=WH.ID)
+                LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID)) SLR ON (SLR.ID=LA.SUB_REF_ID),
                   HRIS_LEAVE_MONTH_CODE MTH,
                   HRIS_EMPLOYEE_LEAVE_ASSIGN ELA
                 WHERE LA.ID = {$id}
@@ -341,6 +370,8 @@ class LeaveApproveRepository implements RepositoryInterface {
     CASE WHEN ALA_E.FULL_NAME IS NOT NULL THEN ALA_E.FULL_NAME ELSE  aprv.full_name END AS approver_name,
                   ELA.TOTAL_DAYS                                      AS TOTAL_DAYS,
                   ELA.BALANCE                                         AS BALANCE
+                  ,CASE WHEN SUB_REF_ID IS NOT NULL THEN 
+INITCAP(L.LEAVE_ENAME)||'('||SLR.SUB_NAME||')' END AS LEAVE_ENAME
                 FROM HRIS_EMPLOYEE_LEAVE_REQUEST LA
                 LEFT JOIN HRIS_LEAVE_MASTER_SETUP L
                 ON L.LEAVE_ID=LA.LEAVE_ID
@@ -361,7 +392,26 @@ class LeaveApproveRepository implements RepositoryInterface {
                 LEFT JOIN HRIS_ALTERNATE_R_A ALR ON(ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=LA.EMPLOYEE_ID AND ALR.R_A_ID={$employeeId})
                 LEFT JOIN HRIS_ALTERNATE_R_A ALA ON(ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=LA.EMPLOYEE_ID AND ALA.R_A_ID={$employeeId})
                 LEFT JOIN HRIS_EMPLOYEES ALR_E ON(ALR.R_A_ID=ALR_E.EMPLOYEE_ID)
-                LEFT JOIN HRIS_EMPLOYEES ALA_E ON(ALA.R_A_ID=ALA_E.EMPLOYEE_ID),
+                LEFT JOIN HRIS_EMPLOYEES ALA_E ON(ALA.R_A_ID=ALA_E.EMPLOYEE_ID)
+                LEFT JOIN 
+                (SELECT 
+                WOD_ID AS ID
+                ,LA.EMPLOYEE_ID
+                ,NO_OF_DAYS
+                ,WD.FROM_DATE||' - '||WD.TO_DATE AS SUB_NAME
+                from 
+                HRIS_EMPLOYEE_LEAVE_ADDITION LA
+                JOIN Hris_Employee_Work_Dayoff WD ON (LA.WOD_ID=WD.ID)
+                UNION
+                SELECT 
+                WOH_ID AS ID
+                ,LA.EMPLOYEE_ID
+                ,NO_OF_DAYS
+                ,H.Holiday_Ename||'-'||WH.FROM_DATE||' - '||WH.TO_DATE AS SUB_NAME
+                from 
+                HRIS_EMPLOYEE_LEAVE_ADDITION LA
+                JOIN Hris_Employee_Work_Holiday WH ON (LA.WOH_ID=WH.ID)
+                LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID)) SLR ON (SLR.ID=LA.SUB_REF_ID),
                   HRIS_LEAVE_MONTH_CODE MTH,
                   HRIS_EMPLOYEE_LEAVE_ASSIGN ELA
                 WHERE LA.ID = {$id}
@@ -376,7 +426,20 @@ class LeaveApproveRepository implements RepositoryInterface {
                     WHERE TRUNC(SYSDATE)BETWEEN FROM_DATE AND TO_DATE)
                   END
                 OR ELA.FISCAL_YEAR_MONTH_NO IS NULL)";
-
+                
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return $result->current();
+    }
+    
+     public function getSameDateApprovedStatus($employeeId, $startDate, $endDate) {
+        $sql = "SELECT COUNT(*) as LEAVE_COUNT
+  FROM HRIS_EMPLOYEE_LEAVE_REQUEST
+  WHERE (('{$startDate}' BETWEEN START_DATE AND END_DATE)
+  OR ('{$endDate}' BETWEEN START_DATE AND END_DATE))
+  AND STATUS  IN ('AP','CP','CR')
+  AND EMPLOYEE_ID = $employeeId
+                ";
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result->current();

@@ -205,6 +205,7 @@ class LeaveStatusRepository extends HrisRepository {
         $serviceTypeId = $data['serviceTypeId'];
         $serviceEventTypeId = $data['serviceEventTypeId'];
         $employeeTypeId = $data['employeeTypeId'];
+        $functionalTypeId = $data['functionalTypeId'];
 
         $leaveRequestStatusId = $data['leaveRequestStatusId'];
         $leaveId = $data['leaveId'];
@@ -212,7 +213,7 @@ class LeaveStatusRepository extends HrisRepository {
         $toDate = $data['toDate'];
 
 
-        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId,null,null,$functionalTypeId);
         $statusCondition = '';
         $leaveCondition = '';
         $fromDateCondition = "";
@@ -233,9 +234,25 @@ class LeaveStatusRepository extends HrisRepository {
             $toDateCondition = "AND LA.END_DATE<=TO_DATE('{$toDate}','DD-MM-YYYY')";
         }
 
-        $sql = "SELECT INITCAP(L.LEAVE_ENAME) AS LEAVE_ENAME,
+        $sql = "SELECT 
+             FUNT.FUNCTIONAL_TYPE_EDESC                                        AS FUNCTIONAL_TYPE_EDESC,
+            --INITCAP(L.LEAVE_ENAME) AS LEAVE_ENAME,
+            CASE WHEN SUB_REF_ID IS NULL THEN 
+INITCAP(L.LEAVE_ENAME)
+ELSE
+INITCAP(L.LEAVE_ENAME)||'('||SLR.SUB_NAME||')'
+END
+AS LEAVE_ENAME,
                   L.LEAVE_CODE,
                   LA.NO_OF_DAYS,
+                  case when L.ALLOW_HALFDAY = 'Y'
+                  then LA.NO_OF_DAYS/2
+                  else LA.NO_OF_DAYS
+                  END as ACTUAL_DAYS,
+                  (CASE WHEN (LA.HALF_DAY IS NULL OR LA.HALF_DAY = 'N') 
+                  THEN 'Full Day' 
+                  WHEN (LA.HALF_DAY = 'F') THEN 'First Half' 
+                  ELSE 'Second Half' END) AS HALF_DAY_DETAIL,
                   INITCAP(TO_CHAR(LA.START_DATE, 'DD-MON-YYYY'))     AS START_DATE_AD,
                   BS_DATE(TO_CHAR(LA.START_DATE, 'DD-MON-YYYY'))     AS START_DATE_BS,
                   INITCAP(TO_CHAR(LA.END_DATE, 'DD-MON-YYYY'))       AS END_DATE_AD,
@@ -247,7 +264,7 @@ class LeaveStatusRepository extends HrisRepository {
                   LA.EMPLOYEE_ID                                     AS EMPLOYEE_ID,
                   INITCAP(TO_CHAR(LA.RECOMMENDED_DT, 'DD-MON-YYYY')) AS RECOMMENDED_DT,
                   INITCAP(TO_CHAR(LA.APPROVED_DT, 'DD-MON-YYYY'))    AS APPROVED_DT,
-                  E.EMPLOYEE_CODE AS EMPLOYEE_CODE,                  
+                  E.EMPLOYEE_CODE                                    AS EMPLOYEE_CODE,                  
                   INITCAP(E.FULL_NAME)                               AS FULL_NAME,
                   INITCAP(E1.FULL_NAME)                              AS RECOMMENDED_BY_NAME,
                   INITCAP(E2.FULL_NAME)                              AS APPROVED_BY_NAME,
@@ -279,6 +296,27 @@ class LeaveStatusRepository extends HrisRepository {
                 ON APRV.EMPLOYEE_ID = RA.APPROVED_BY
                 LEFT OUTER JOIN HRIS_LEAVE_SUBSTITUTE LS
                 ON LA.ID       = LS.LEAVE_REQUEST_ID
+                LEFT JOIN 
+                (SELECT 
+WOD_ID AS ID
+,LA.EMPLOYEE_ID
+,NO_OF_DAYS
+,WD.FROM_DATE||' - '||WD.TO_DATE AS SUB_NAME
+from 
+HRIS_EMPLOYEE_LEAVE_ADDITION LA
+JOIN Hris_Employee_Work_Dayoff WD ON (LA.WOD_ID=WD.ID)
+UNION
+SELECT 
+WOH_ID AS ID
+,LA.EMPLOYEE_ID
+,NO_OF_DAYS
+,H.Holiday_Ename||'-'||WH.FROM_DATE||' - '||WH.TO_DATE AS SUB_NAME
+from 
+HRIS_EMPLOYEE_LEAVE_ADDITION LA
+JOIN Hris_Employee_Work_Holiday WH ON (LA.WOH_ID=WH.ID)
+LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID)) SLR ON (SLR.ID=LA.SUB_REF_ID)
+LEFT JOIN HRIS_FUNCTIONAL_TYPES FUNT
+    ON E.FUNCTIONAL_TYPE_ID=FUNT.FUNCTIONAL_TYPE_ID                
                 WHERE L.STATUS ='E'
                 AND E.STATUS   ='E'
                 {$searchCondition} {$statusCondition} {$leaveCondition} {$fromDateCondition} {$toDateCondition}
@@ -286,4 +324,19 @@ class LeaveStatusRepository extends HrisRepository {
         $finalSql = $this->getPrefReportQuery($sql);
         return $this->rawQuery($finalSql);
     }
+    
+    public function getSameDateApprovedStatus($employeeId, $startDate, $endDate) {
+        $sql = "SELECT COUNT(*) as LEAVE_COUNT
+  FROM HRIS_EMPLOYEE_LEAVE_REQUEST
+  WHERE (('{$startDate}' BETWEEN START_DATE AND END_DATE)
+  OR ('{$endDate}' BETWEEN START_DATE AND END_DATE))
+  AND STATUS  IN ('AP','CP','CR')
+  AND EMPLOYEE_ID = $employeeId
+                ";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return $result->current();
+    }
+    
+    
 }

@@ -17,11 +17,12 @@ class AdvanceStatusRepository extends HrisRepository {
         $designationId = $data['designationId'];
         $positionId = $data['positionId'];
         $serviceTypeId = $data['serviceTypeId'];
+        $functionalTypeId = $data['functionalTypeId'];
         $serviceEventTypeId = $data['serviceEventTypeId'];
         $status = $data['status'];
         $employeeTypeId = $data['employeeTypeId'];
 
-        $searchConditon = EntityHelper::getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $searchConditon = EntityHelper::getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, null, null, $functionalTypeId);
         $fromDateCondition = "";
         $toDateCondition = "";
         $statusCondition = '';

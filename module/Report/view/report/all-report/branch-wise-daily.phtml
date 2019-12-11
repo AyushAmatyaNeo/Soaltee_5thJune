@@ -24,7 +24,7 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/branch-wise
     document.monthId =<?php echo $monthId; ?>;
     document.branchId =<?php echo $branchId; ?>;
     document.getFiscalYearMonthLink = '<?php echo $this->url('allreport', ['action' => 'getFiscalYearMonth']); ?>';
-
+document.preference =<?php echo json_encode($preference) ?>;
 </script>
 
 

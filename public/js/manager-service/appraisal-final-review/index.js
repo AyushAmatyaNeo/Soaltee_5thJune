@@ -155,5 +155,8 @@
             console.log('test');
         });
 
+//        $('#reset').on('click', function (){
+//            $('.form-control').val("");
+//        });
     });
 })(window.jQuery, window.app);

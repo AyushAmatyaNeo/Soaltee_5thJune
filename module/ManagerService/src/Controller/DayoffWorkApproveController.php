@@ -133,7 +133,7 @@ class DayoffWorkApproveController extends HrisController {
     }
 
     public function statusAction() {
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', "id" => "requestStatusId", "class" => "form-control", 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', "id" => "requestStatusId", "class" => "form-control reset-field", 'label' => 'Status']);
         return $this->stickFlashMessagesTo([
                     'status' => $statusSE,
                     'recomApproveId' => $this->employeeId,

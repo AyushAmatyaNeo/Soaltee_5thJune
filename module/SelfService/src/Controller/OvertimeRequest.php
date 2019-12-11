@@ -138,4 +138,10 @@ class OvertimeRequest extends HrisController {
         ]);
     }
 
+    public function validateAttendanceAction(){
+        $date = date_format(date_create($_POST['date']), "d-M-y");
+        $employeeId = $_POST['employeeId'];
+        $result = $this->detailRepository->getAttendanceOvertimeValidation($employeeId, $date);
+        return new JSONModel(["validation" => $result["VALIDATION"]]);
+    }
 }

@@ -153,7 +153,15 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                                             <?php echo $approver; ?>
                                         </td>
                                     </tr>
-
+                                    <tr height="30">
+                                        <td>
+                                            Actual Deduction Days
+                                        </td>
+                                        <td width="15">:</td>
+                                        <td>
+                                            <?php echo $actualDays; ?>
+                                        </td>
+                                    </tr>
                                 </table>
                             </div>
 
@@ -178,6 +186,18 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                                             <input type="hidden" id="availableDays" value="<?php echo $availableDays; ?>"/>
                                         </td>
                                     </tr>
+                                    
+                                    <?php if($subLeaveName){ ?>
+                                    <tr height="30">
+                                        <td>
+                                            Sub Info
+                                        </td>
+                                        <td width="15">:</td>
+                                        <td>
+                                            <?php echo $subLeaveName; ?>
+                                        </td>
+                                    </tr>
+                                    <?php } ?>
 
                                 </table>
                             </div>
@@ -343,8 +363,10 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <?php } ?>
                 <div class="form-group">
                     <?php if ($status == 'RQ' || $status == 'RC' || $status == 'CP' || $status == 'CR') { ?>
-                        <?php print $this->formSubmit($submit); ?>
-                        <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">
+                        <?php  if($acl['HR_APPROVE']=='Y'){  ?>
+                            <?php print $this->formSubmit($submit); ?>
+                            <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">
+                            <?php }      ?>
                     <?php } ?>
                 </div>
             </div>

@@ -44,7 +44,7 @@ class TravelRequest extends HrisController {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'statusId', 'class' => 'form-control', 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'statusId', 'class' => 'form-control reset-field', 'label' => 'Status']);
         return $this->stickFlashMessagesTo([
                     'status' => $statusSE,
                     'employeeId' => $this->employeeId
@@ -59,6 +59,7 @@ class TravelRequest extends HrisController {
             $postData = $request->getPost();
             $travelSubstitute = $postData->travelSubstitute;
             $this->form->setData($postData);
+
             if ($this->form->isValid()) {
                 $model->exchangeArrayFromForm($this->form->getData());
                 $model->requestedAmount = ($model->requestedAmount == null) ? 0 : $model->requestedAmount;
@@ -75,6 +76,10 @@ class TravelRequest extends HrisController {
 
                     $travelSubstitute = $postData->travelSubstitute;
 
+                    if (isset($this->preference['travelSubCycle']) && $this->preference['travelSubCycle'] == 'N') {
+                        $travelSubstituteModel->approvedFlag = 'Y';
+                        $travelSubstituteModel->approvedDate = Helper::getcurrentExpressionDate();
+                    }
                     $travelSubstituteModel->travelId = $model->travelId;
                     $travelSubstituteModel->employeeId = $travelSubstitute;
                     $travelSubstituteModel->createdBy = $this->employeeId;
@@ -82,10 +87,19 @@ class TravelRequest extends HrisController {
                     $travelSubstituteModel->status = 'E';
 
                     $travelSubstituteRepo->add($travelSubstituteModel);
-                    try {
-                        HeadNotification::pushNotification(NotificationEvents::TRAVEL_SUBSTITUTE_APPLIED, $model, $this->adapter, $this);
-                    } catch (Exception $e) {
-                        $this->flashmessenger()->addMessage($e->getMessage());
+
+                    if (!isset($this->preference['travelSubCycle']) OR ( isset($this->preference['travelSubCycle']) && $this->preference['travelSubCycle'] == 'Y')) {
+                        try {
+                            HeadNotification::pushNotification(NotificationEvents::TRAVEL_SUBSTITUTE_APPLIED, $model, $this->adapter, $this);
+                        } catch (Exception $e) {
+                            $this->flashmessenger()->addMessage($e->getMessage());
+                        }
+                    } else {
+                        try {
+                            HeadNotification::pushNotification(NotificationEvents::TRAVEL_APPLIED, $model, $this->adapter, $this);
+                        } catch (Exception $e) {
+                            $this->flashmessenger()->addMessage($e->getMessage());
+                        }
                     }
                 } else {
                     try {
@@ -101,10 +115,11 @@ class TravelRequest extends HrisController {
             'ad' => 'Advance'
         );
         $transportTypes = array(
-            'AP' => 'Aero Plane',
+            'AP' => 'Aeroplane',
             'OV' => 'Office Vehicles',
             'TI' => 'Taxi',
-            'BS' => 'Bus'
+            'BS' => 'Bus',
+            'OF'  => 'On Foot'
         );
         return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
@@ -139,7 +154,7 @@ class TravelRequest extends HrisController {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'statusId', 'class' => 'form-control', 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'statusId', 'class' => 'form-control reset-field', 'label' => 'Status']);
         return $this->stickFlashMessagesTo([
                     'status' => $statusSE,
                     'employeeId' => $this->employeeId
@@ -168,6 +183,7 @@ class TravelRequest extends HrisController {
             $model->fromDate = $detail['FROM_DATE'];
             $model->toDate = $detail['TO_DATE'];
             $model->destination = $detail['DESTINATION'];
+            $model->departure = $detail ['DEPARTURE'];
             $model->purpose = $detail['PURPOSE'];
             $model->travelCode = $detail['TRAVEL_CODE'];
             $model->requestedType = 'ep';
@@ -229,13 +245,13 @@ class TravelRequest extends HrisController {
         if ($id === 0) {
             return $this->redirect()->toRoute("travelRequest");
         }
-      
+
         $detail = $this->repository->fetchById($id);
-        $fileDetails = $this->repository->fetchAttachmentsById($id);
+        //$fileDetails = $this->repository->fetchAttachmentsById($id);
         $model = new TravelRequestModel();
         $model->exchangeArrayFromDB($detail);
         $this->form->bind($model);
- 
+
         $numberInWord = new NumberHelper();
         $advanceAmount = $numberInWord->toText($detail['REQUESTED_AMOUNT']);
 
@@ -245,8 +261,54 @@ class TravelRequest extends HrisController {
                     'approver' => $detail['APPROVED_BY_NAME'] == null ? $detail['APPROVER_NAME'] : $detail['APPROVED_BY_NAME'],
                     'detail' => $detail,
                     'todayDate' => date('d-M-Y'),
-                    'advanceAmount' => $advanceAmount,
-                    'files' => $fileDetails
+                    'advanceAmount' => $advanceAmount
+                        //'files' => $fileDetails
+        ]);
+    }
+
+    public function editAction() {
+        $request = $this->getRequest();
+
+        $id = (int) $this->params()->fromRoute('id');
+        if ($id === 0) {
+            return $this->redirect()->toRoute("travelRequest");
+        }
+        if ($this->repository->checkAllowEdit($id) == 'N') {
+            return $this->redirect()->toRoute("travelRequest");
+        }
+
+        if ($request->isPost()) {
+            $travelRequest = new TravelRequestModel();
+            $postedData = $request->getPost();
+            $this->form->setData($postedData);
+
+            if ($this->form->isValid()) {
+                $travelRequest->exchangeArrayFromForm($this->form->getData());
+                $travelRequest->modifiedDt = Helper::getcurrentExpressionDate();
+                $travelRequest->employeeId = $this->employeeId;
+                $this->repository->edit($travelRequest, $id);
+                $this->flashmessenger()->addMessage("Travel Request Successfully Edited!!!");
+                return $this->redirect()->toRoute("travelRequest");
+            }
+        }
+
+        $detail = $this->repository->fetchById($id);
+        //$fileDetails = $this->repository->fetchAttachmentsById($id);
+        $model = new TravelRequestModel();
+        $model->exchangeArrayFromDB($detail);
+        $this->form->bind($model);
+
+        $numberInWord = new NumberHelper();
+        $advanceAmount = $numberInWord->toText($detail['REQUESTED_AMOUNT']);
+
+        return Helper::addFlashMessagesToArray($this, [
+                    'form' => $this->form,
+                    'recommender' => $detail['RECOMMENDED_BY_NAME'] == null ? $detail['RECOMMENDER_NAME'] : $detail['RECOMMENDED_BY_NAME'],
+                    'approver' => $detail['APPROVED_BY_NAME'] == null ? $detail['APPROVER_NAME'] : $detail['APPROVED_BY_NAME'],
+                    'detail' => $detail,
+                    'todayDate' => date('d-M-Y'),
+                    'advanceAmount' => $advanceAmount
+                        //'files' => $fileDetails
         ]);
     }
 

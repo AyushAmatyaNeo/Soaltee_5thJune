@@ -19,8 +19,7 @@ class SystemUtility extends HrisController {
     public function __construct(AdapterInterface $adapter, StorageInterface $storage) {
         $this->adapter = $adapter;
         parent::__construct($adapter, $storage);
-
-        //$this->initializeRepository(SystemUtilityRepository::class);
+        $this->initializeRepository(SystemUtilityRepository::class);
     }
 
     public function reAttendanceAction() {
@@ -103,6 +102,25 @@ class SystemUtility extends HrisController {
             return $this->redirect()->toRoute("system-utility", ['action' => 'updateSeniority']);
         }
         return Helper::addFlashMessagesToArray($this, []);
+    }
+
+    public function queryAction() {
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            try {
+                $data = $_POST['query'];
+                $queryResult = $this->repository->runQuery($data);
+                return new JsonModel(['success' => true, 'data' => $queryResult, 'message' => null]);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+            }
+        }
+
+        return $this->stickFlashMessagesTo([
+                    'acl' => $this->acl,
+                    'employeeDetail' => $this->storageData['employee_detail'],
+        ]);
     }
 
 }

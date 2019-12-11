@@ -19,7 +19,12 @@ class SalarySheetEmpDetail extends Model {
     const PRESENT = "PRESENT";
     const ABSENT = "ABSENT";
     const SALARY = "SALARY";
-
+    const ACCOUNT = "ACCOUNT";
+    const DESIGNATION = "DESIGNATION";
+    const JOIN = "JOIN";
+    const PAID = "PAID";
+    const UNPAID = "UNPAID";
+    
     public $sheetNo;
     public $monthId;
     public $year;
@@ -33,6 +38,11 @@ class SalarySheetEmpDetail extends Model {
     public $present;
     public $absent;
     public $salary;
+    public $account;
+    public $designation;
+    public $join;
+    public $paid;
+    public $unpaid;
     public $mappings = [
         'sheetNo' => self::SHEET_NO,
         'monthId' => self::MONTH_ID,
@@ -47,6 +57,11 @@ class SalarySheetEmpDetail extends Model {
         'present' => self::PRESENT,
         'absent' => self::ABSENT,
         'salary' => self::SALARY,
+        'account' => self::ACCOUNT_NO,
+        'designation'=>self::DESIGNATION_TITLE,
+        'join'=>self::JOIN_DATE,
+        'paid'=>self::PAID_LEAVE,
+        'unpaid'=>self::UNPAID_LEAVE,
     ];
 
 }

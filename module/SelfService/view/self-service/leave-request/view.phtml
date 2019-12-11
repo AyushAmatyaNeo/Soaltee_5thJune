@@ -142,6 +142,15 @@ print $this->form()->openTag($form);
                                             <?php echo $approver; ?>
                                         </td>
                                     </tr>
+                                    <tr height="30">
+                                        <td>
+                                            Leave Type
+                                        </td>
+                                        <td width="15">:</td>
+                                        <td>
+                                            <?php echo $halfdayDetail; ?> 
+                                        </td>
+                                    </tr>
                                 </table> 
                             </div>
                             <div class="col-sm-4">
@@ -162,6 +171,15 @@ print $this->form()->openTag($form);
                                         <td width="15">:</td>
                                         <td>
                                             <?php echo $availableDays; ?>
+                                        </td>
+                                    </tr>
+                                    <tr height="30">
+                                        <td>
+                                            Actual Deduction Days
+                                        </td>
+                                        <td width="15">:</td>
+                                        <td>
+                                            <?php echo $actualDays; ?>
                                         </td>
                                     </tr>
                                 </table>

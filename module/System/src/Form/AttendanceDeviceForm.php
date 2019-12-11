@@ -77,11 +77,19 @@ class AttendanceDeviceForm {
      * @Annotation\Attributes({ "id":"purpose","class":"form-control"})
      */
     public $purpose;
-
+    
     /**
      * @Annotation\Type("Zend\Form\Element\Submit")
      * @Annotation\Attributes({"value":"Submit","class":"btn btn-success","id":"btnSubmit"})
      */
     public $submit;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Branch Manager"})
+     * @Annotation\Attributes({ "id":"branchManager","class":"form-control"})
+     */
+    public $branchManager;
 
 }

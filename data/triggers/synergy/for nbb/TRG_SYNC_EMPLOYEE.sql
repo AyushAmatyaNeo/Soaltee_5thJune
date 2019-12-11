@@ -1,7 +1,7 @@
 create or replace TRIGGER TRG_SYNC_EMPLOYEE AFTER
   DELETE OR
   INSERT OR
-  UPDATE ON NBB7576.HRIS_EMPLOYEES REFERENCING NEW AS NEW OLD AS OLD FOR EACH ROW
+  UPDATE ON HRIS_EMPLOYEES REFERENCING NEW AS NEW OLD AS OLD FOR EACH ROW
 DECLARE V_DELETED_FLAG CHAR(1 BYTE);
   V_GENDER                                                                                                     CHAR(1 BYTE);
   V_MARITAL_STATUS                                                                                             VARCHAR2(10 BYTE);

@@ -30,7 +30,7 @@ class LoanRequestForm{
      * @Annotation\Required({"required":"true"})
      * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
      * @Annotation\Options({"label":"Request Amount"})
-     * @Annotation\Attributes({ "id":"form-requestedAmount","min":"0", "class":"form-requestedAmount form-control","step":"0.01" })
+     * @Annotation\Attributes({ "id":"requestedAmount","min":"0", "class":"form-requestedAmount form-control","step":"0.01" })
      */
     public $requestedAmount;
      /**
@@ -77,6 +77,15 @@ class LoanRequestForm{
      * @Annotation\Attributes({ "id":"repaymentMonths","class":"form-control"})
      */
     public $repaymentMonths;
+
+    /**
+     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Required(true)
+     * @Annotation\Filter({"name":"StripTags","name":"StringTrim"})
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Interest Rate"})
+     * @Annotation\Attributes({ "id":"interestRate","class":"form-control", "readonly":"readonly"})
+     */
+    public $interestRate;
 
     /**
      * @Annotation\Type("Zend\Form\Element\Submit")

@@ -16,6 +16,7 @@ $this->headScript()
     document.url = '<?= $this->url("appraisalAssign", ["action" => "index"]) ?>';
     document.searchValues =<?php echo json_encode($searchValues); ?>;
     document.employeeList =<?php echo json_encode($employeeList); ?>;
+    document.acl =<?php echo json_encode($acl); ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\AppraisalAssign')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -41,38 +42,45 @@ $this->headScript()
             <div class="portlet-body">
                 <div class="row">
                     <div class="col-sm-2">
+                        <label>Company</label>
                         <select class="form-control" name="company" id="companyId">
                         </select>
                     </div>
                     <div class="col-sm-2">
+                        <label>Branch</label>
                         <select class="form-control" name="branchId" id="branchId">
                         </select>
                     </div>
                     <div class="col-sm-2">
+                        <label>Department</label>
                         <select class="form-control" name="department" id="departmentId">
                         </select>
                     </div>
                     <div class="col-sm-2">
+                        <label>Designation</label>
                         <select class="form-control" name="designation" id="designationId">
                         </select>
                     </div>
                     <div class="col-sm-2">
+                        <label>Position</label>
                         <select class="form-control" name="position" id="positionId">
                         </select>
                     </div>
                 </div>
                 <div class="row margin-top-10">
                     <div class="col-sm-2">
+                        <label>Service Type</label>
                         <select class="form-control" name="serviceType" id="serviceTypeId">
                         </select>
                     </div>
                     <div class="col-sm-2">
+                        <label>Employee</label>
                         <select class="form-control" name="employee" id="employeeId">
                         </select>
                     </div>
                     <div class="col-sm-4 col-lg-offset-4">
                         <label height="45"></label>
-                        <button id="reset" class="btn default btn-sm pull-right">
+                        <button id="reset" class="btn default btn-sm pull-right hris-reset-btn ">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

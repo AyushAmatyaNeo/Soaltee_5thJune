@@ -48,12 +48,20 @@ class PayrollGenerator {
         "TOTAL_DAYS_TO_PAY",
         "BRANCH_ALLOWANCE",
         "MONTH",
+        "BRANCH_ID",
+        "CAFE_MEAL_PREVIOUS",
+        "CAFE_MEAL_CURRENT",
+        "PAYROLL_EMPLOYEE_TYPE"
     ];
     const SYSTEM_RULE = [
         "TOTAL_ANNUAL_AMOUNT",
         "TOTAL_AMOUNT",
         "SELF_PREV_TOTAL",
-        "MULTIPLICATION_FACTOR"
+        "MULTIPLICATION_FACTOR",
+        "LOAN_AMT",
+        "LOAN_INT",
+        "PREVIOUS_TOTAL",
+        "PREVIOUS_MONTH_AMOUNT"
     ];
 
     public function __construct($adapter) {
@@ -89,8 +97,11 @@ class PayrollGenerator {
         $this->employeeId = $employeeId;
         $this->monthId = $monthId;
         $this->sheetNo = $sheetNo;
-        $payList = $this->ruleRepo->fetchAll();
+        $payList = $this->ruleRepo->fetchAllTypeWise($sheetNo);
         $systemRuleProcessor = new SystemRuleProcessor($this->adapter, $employeeId, null, $monthId, null);
+        
+        $file = Helper::UPLOAD_DIR . "/PAYROLL_LOG.txt";
+        file_put_contents($file,"Generate Start for employeeId=".$employeeId." monthId=".$monthId." sheetNo=".$sheetNo);
 
         $ruleValueMap = [];
         $ruleTaxValueMap = [];
@@ -98,6 +109,17 @@ class PayrollGenerator {
         foreach ($payList as $ruleDetail) {
             $ruleId = $ruleDetail[Rules::PAY_ID];
             $formula = $ruleDetail[Rules::FORMULA];
+            
+            // to override formula start
+            $salaryTypeId=$ruleDetail['SALARY_TYPE_ID'];
+            $salaryTypeFlag=$ruleDetail['TYPE_FLAG'];
+            $salaryTypeFormula=$ruleDetail['TYPE_FORMULA'];
+            if ($salaryTypeId != 1  && ( $salaryTypeFlag!==null OR $salaryTypeFlag == 'Y')) {
+                $formula = $salaryTypeFormula;
+            }else if($salaryTypeId != 1 && ($salaryTypeFlag!==null OR $salaryTypeFlag != 'Y')){
+                $formula = 0;
+            }
+            // to override formula end
             $q = ['MONTH_ID' => $this->monthId, 'PAY_ID' => $ruleId, 'EMPLOYEE_ID' => $this->employeeId];
             $ruleValue = $this->sspvmRepo->fetch($q);
             if ($ruleValue == null) {
@@ -118,8 +140,16 @@ class PayrollGenerator {
                 foreach ($this->formattedSystemRuleList as $key => $systemRule) {
                     $formula = $this->convertSystemRuleToValue($formula, $key, $systemRule, $ruleId);
                 }
-
+                //added by prabin to remoeve extra params PARS and PARAe start
+                $formula=$this->deleteAllBetweenString("PARS", "PARE", $formula);
+                //added by prabin to remoeve extra params PARS and PARAe end
+//                    print_r($formula);
                 $processedformula = $this->convertReferencingRuleToValue($formula, $refRules);
+                
+                //print_r($processedformula);
+                
+                $current = file_get_contents($file);
+                file_put_contents($file, $current."\r\nstartRuleId=".$ruleId." ".$processedformula);
                 $ruleValue = eval("return {$processedformula} ;");
             }
             $rule = ["ruleValue" => $ruleValue, "rule" => $ruleDetail];
@@ -214,4 +244,16 @@ class PayrollGenerator {
         return $payValue;
     }
 
+    // added by prabin start
+    private function deleteAllBetweenString($beginning, $end, $string) {
+        $beginningPos = strpos($string, $beginning);
+        $endPos = strpos($string, $end);
+        if ($beginningPos === false || $endPos === false) {
+            return $string;
+        }
+        $textToDelete = substr($string, $beginningPos, ($endPos + strlen($end)) - $beginningPos);
+        return $this->deleteAllBetweenString($beginning, $end, str_replace($textToDelete, '', $string)); // recursion to ensure all occurrences are replaced
+    }
+    // added by prabin end
+    
 }

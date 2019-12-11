@@ -44,11 +44,12 @@ class TravelApproveController extends HrisController {
     public function viewAction() {
         $id = (int) $this->params()->fromRoute('id');
         $role = $this->params()->fromRoute('role');
+
         if ($id === 0 || $role === 0) {
             return $this->redirect()->toRoute("travelApprove");
         }
         $request = $this->getRequest();
-        $filesData = $this->repository->fetchAttachmentsById($id);
+        //$filesData = $this->repository->fetchAttachmentsById($id);
         $travelRequestModel = new TravelRequest();
         if ($request->isPost()) {
             $postedData = (array) $request->getPost();
@@ -71,8 +72,8 @@ class TravelApproveController extends HrisController {
                     'approver' => $detail['APPROVED_BY_NAME'] == null ? $detail['APPROVER_NAME'] : $detail['APPROVED_BY_NAME'],
                     'detail' => $detail,
                     'todayDate' => date('d-M-Y'),
-                    'advanceAmount' => $advanceAmount,
-                    'files' => $filesData
+                    'advanceAmount' => $advanceAmount
+                    //'files' => $filesData
         ]);
     }
 
@@ -99,10 +100,11 @@ class TravelApproveController extends HrisController {
             array_push($expenseDtlList, $row);
         }
         $transportType = [
-            "AP" => "Aero Plane",
+            "AP" => "Aeroplane",
             "OV" => "Office Vehicles",
             "TI" => "Taxi",
-            "BS" => "Bus"
+            "BS" => "Bus",
+            "OF"  => "On Foot"
         ];
         $numberInWord = new NumberHelper();
         $totalAmountInWords = $numberInWord->toText($totalAmount);
@@ -139,7 +141,7 @@ class TravelApproveController extends HrisController {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'status', 'class' => 'form-control', 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'status', 'class' => 'form-control reset-field', 'label' => 'Status']);
         return $this->stickFlashMessagesTo([
                     'travelStatus' => $statusSE,
                     'recomApproveId' => $this->employeeId,

@@ -39,10 +39,11 @@ class TrainingAssignController extends HrisController {
         }
 
         $trainings = EntityHelper::getTableKVListWithSortOption($this->adapter, Training::TABLE_NAME, Training::TRAINING_ID, [Training::TRAINING_NAME], [Training::STATUS => 'E'], "TRAINING_NAME", "ASC", null, [-1 => "All Training"], true);
-        $trainingSE = $this->getSelectElement(['name' => 'trainingId', 'id' => 'trainingId', 'class' => 'form-control', 'label' => 'Training'], $trainings);
+        $trainingSE = $this->getSelectElement(['name' => 'trainingId', 'id' => 'trainingId', 'class' => 'form-control reset-field', 'label' => 'Training'], $trainings);
         return $this->stickFlashMessagesTo([
                     'trainings' => $trainingSE,
-                    'searchValues' => EntityHelper::getSearchData($this->adapter)
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'acl' => $this->acl,
         ]);
     }
 
@@ -167,7 +168,7 @@ class TrainingAssignController extends HrisController {
                 } else {
                     $trainingAssignList = null;
                 }
-                if ($trainingAssignList != null && $trainingAssignList['STATUS']=='E') {
+                if ($trainingAssignList != null && $trainingAssignList['STATUS'] == 'E') {
                     $employeeRow['TRAINING_NAME'] = $trainingAssignList['TRAINING_NAME'];
                     $employeeRow['TRAINING_ID'] = $trainingAssignList['TRAINING_ID'];
                     $employeeRow['START_DATE'] = $trainingAssignList['START_DATE'];

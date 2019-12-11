@@ -240,6 +240,14 @@ class HrEmployeesForm
      * @Annotation\Attributes({ "id":"addrPermZoneId","class":"full-width select2-offscreen","data-init-plugin":"select2","tabindex":"-1"})
      */
     public $addrPermZoneId;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Permanent Province"})
+     * @Annotation\Attributes({ "id":"addrPermProvinceId","class":"full-width select2-offscreen","data-init-plugin":"select2","tabindex":"-1"})
+     */
+    public $addrPermProvinceId;
 
 
     /**
@@ -292,6 +300,14 @@ class HrEmployeesForm
      * @Annotation\Attributes({ "id":"addrTempZoneId","class":"full-width select2-offscreen","data-init-plugin":"select2","tabindex":"-1"})
      */
     public $addrTempZoneId;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Temporary Province"})
+     * @Annotation\Attributes({ "id":"addrTempProvinceId","class":"full-width select2-offscreen","data-init-plugin":"select2","tabindex":"-1"})
+     */
+    public $addrTempProvinceId;
 
 
     /**

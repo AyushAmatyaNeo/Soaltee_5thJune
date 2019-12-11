@@ -24,6 +24,7 @@ use SelfService\Controller\TravelNotification;
 use SelfService\Controller\TravelRequest;
 use SelfService\Controller\WorkOnDayoff;
 use SelfService\Controller\WorkOnHoliday;
+use SelfService\Controller\RoleTransfer;
 use Zend\Router\Http\Segment;
 
 return [
@@ -317,6 +318,20 @@ return [
                     ],
                     'defaults' => [
                         'controller' => PaySlipPrevious::class,
+                        'action' => 'index',
+                    ]
+                ],
+            ],
+            'roleTransfer' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/selfservice/roleTransfer[/:action[/:id]]',
+                    'constants' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => RoleTransfer::class,
                         'action' => 'index',
                     ]
                 ],
@@ -884,6 +899,24 @@ return [
                 ],
             ],
         ],
+        'roleTransfer' => [
+            [
+                'label' => 'Role Transfer',
+                'route' => 'roleTransfer',
+                'action' => 'index',
+            ],
+            [
+                'label' => 'Role Transfer',
+                'route' => 'roleTransfer',
+                'pages' => [
+                    [
+                        'label' => 'Role Transfer',
+                        'route' => 'roleTransfer',
+                        'action' => 'index',
+                    ],
+                ],
+            ],
+        ],
     ],
     'controllers' => [
         'factories' => [
@@ -908,6 +941,7 @@ return [
             SubordinatesReview::class => ControllerFactory::class,
             Birthday::class => ControllerFactory::class,
             PaySlipPrevious::class => ControllerFactory::class,
+            RoleTransfer::class => ControllerFactory::class,
         ],
     ],
     'view_manager' => [

@@ -121,6 +121,11 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Functional Type</label>
+                    <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                    </select>
+                </div>
+                <div class="col-sm-2">
                     <label>Employee</label>
                     <select multiple class="form-control" name="employee" id="employeeId">
                     </select>
@@ -129,28 +134,38 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 
         <div class="row margin-top-10">
             <div class="col-sm-2">
-                <input type="text" id="fromDate" name="fromDate"  class="form-control" placeholder="From Date"/>
+                <label>From Date Nepali</label>
+                <input type="text" id="fromDate" name="fromDate"  class="form-control reset-field" placeholder="From Date"/>
             </div>
             <div class="col-sm-2">
-                <input type="text" id="nepaliFromDate" name="nepaliFromDate"  class="form-control" placeholder="From Date Nepali"/>
+                <label>From Date Nepali</label>
+                <input type="text" id="nepaliFromDate" name="nepaliFromDate"  class="form-control reset-field" placeholder="From Date Nepali"/>
 
             </div>
             <div class="col-sm-2">
-                <input type="text"  id="toDate" name="toDate"  class="form-control" placeholder="To Date"/>
+                <label>To Date</label>
+                <input type="text"  id="toDate" name="toDate"  class="form-control reset-field" placeholder="To Date"/>
             </div>
             <div class="col-sm-2">
-                <input type="text"  id="nepaliToDate" name="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                <label>To Date Nepali</label>
+                <input type="text"  id="nepaliToDate" name="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
             </div>
 
             <div class="col-sm-2 ">
+                <label>Status</label>
                 <?php print $this->formElement($status); ?>
             </div>
 
         </div>
 
         <div class="row margin-top-10">
+            <?php if ($acl['HR_CANCEL'] == 'Y') { ?>
+                <div class="col-sm-4">
+                    <label><input id="super_power" type="checkbox" class="reset-field">Use Super Power</label>
+                </div>
+            <?php } ?>
             <div class=" col-sm-offset-8 col-sm-4">
-                <button class="btn default btn-sm pull-right hris-reset-btn">
+                <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                     Reset
                     <i class="fa fa-refresh"></i>
                 </button>
@@ -167,12 +182,14 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
     <div id="table">
     </div>
     <div style="display: none;" class="row margin-top-20" id="bulkActionDiv" >
+        <?php  if($acl['HR_APPROVE']=='Y'){  ?>
         <div class="col-sm-2 ">
             <button action="reject" class="btn btn-danger btnApproveReject">Reject</button>
         </div>
         <div class="col-sm-2 col-sm-offset-8">
             <button action="approve" class="btn btn-info btnApproveReject pull-right">Approve</button>
         </div>
+        <?php }      ?>
     </div>
 </div>
 

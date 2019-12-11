@@ -34,7 +34,9 @@
         app.populateSelect($extraFields, extraFieldsList, 'ID', 'VALUE', '---', '');
 
 
-        var initKendoGrid = function (defaultColumns, otVariables, extraVariable) {
+        var initKendoGrid = function (defaultColumns, otVariables, extraVariable, reportData) {
+            let dataSchemaCols = {};
+            let aggredCols = [];
             $table.empty();
 //            console.log(defaultColumns);
             map = {
@@ -57,7 +59,8 @@
                         columns.push({
                             field: value,
                             title: extraFieldsList[i]['VALUE'],
-                            width: 100
+                            width: 100,
+                            
                         });
                         map[value] = extraFieldsList[i]['VALUE'];
                     }
@@ -69,9 +72,13 @@
                 columns.push({
                     field: value['DEFAULT_COL'],
                     title: value['MONTH_NAME'],
-                    width: widthVal
+                    width: widthVal,
+                    aggregates: ["sum"],
+                    footerTemplate: "#=sum||''#"
                 });
                 map[value['DEFAULT_COL']] = value['MONTH_NAME'];
+                dataSchemaCols[value['DEFAULT_COL']] = {type: "number"};
+                aggredCols.push({field: value['DEFAULT_COL'], aggregate: "sum"});
             });
 
 //            $.each(otVariables, function (index, value) {
@@ -86,13 +93,65 @@
 //                    }
 //                }
 //            });
+//            console.log(map);
+//            app.initializeKendoGrid($table, columns);
 
-            console.log(map);
-            app.initializeKendoGrid($table, columns);
-
-
-
-
+            $table.kendoGrid({
+                toolbar: ["excel"],
+                excel: {
+                    fileName: "Basic Monthly Report.xlsx",
+                    filterable: false,
+                    allPages: true
+                },
+                excelExport: function(e) {
+                    var rows = e.workbook.sheets[0].rows;
+                    var columns = e.workbook.sheets[0].columns;
+                    
+                    rows.unshift({
+                        cells: [
+                        {value: "Basic Monthly Report", colSpan: columns.length, textAlign: "left"}
+                        ]
+                    });
+                    if(document.preference != undefined){
+                        if(document.preference.companyAddress != null){
+                            rows.unshift({
+                                cells: [
+                                {value: document.preference.companyAddress, colSpan: columns.length, textAlign: "left"}
+                                ]
+                            });
+                        }
+                    }
+                    if(document.preference != undefined){
+                        if(document.preference.companyName != null){
+                            rows.unshift({
+                                cells: [
+                                {value: document.preference.companyName, colSpan: columns.length, textAlign: "left"}
+                                ]
+                            });
+                        }
+                    }
+                },
+                dataSource: {
+                    data: reportData,
+                    schema: {
+                        model: {
+                            fields: dataSchemaCols
+                        }
+                    },
+                    pageSize: 20,
+                    aggregate: aggredCols
+                },
+                height: 550,
+                scrollable: true,
+                sortable: true,
+                groupable: true,
+                filterable: true,
+                pageable: {
+                    input: true,
+                    numeric: false
+                },
+                columns: columns
+            });
         }
 
 
@@ -114,8 +173,8 @@
             app.serverRequest(document.basicMonthlyLink, q).then(function (response) {
                 if (response.success) {
 //                    console.log(response);
-                    initKendoGrid(response.columns, $otVariable.val(), $extraFields.val());
-                    app.renderKendoGrid($table, response.data);
+                    initKendoGrid(response.columns, $otVariable.val(), $extraFields.val(), response.data);
+                    //app.renderKendoGrid($table, response.data);
                 } else {
                     app.showMessage(response.error, 'error');
                 }

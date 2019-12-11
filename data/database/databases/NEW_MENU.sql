@@ -379,7 +379,7 @@ INTO HRIS_MENUS
     NULL,
     'overtime-report',
     'E',
-    to_date('09-MAY-18','DD-MON-RR'),
+    trunc(sysdate),
     NULL,
     'fa fa-list-alt',
     'index',
@@ -1000,3 +1000,700 @@ INTO HRIS_MENUS
     'Y'
   );
 
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Leave Carry Forward',
+    2,
+    NULL,
+    'leavecarryforward',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'index',
+    (select max(menu_index)+1 from hris_menus where Parent_Menu=2),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'add',
+    (select menu_id from hris_menus where menu_name='Leave Carry Forward'),
+    NULL,
+    'leavecarryforward',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'add',
+    (select max(menu_index)+1 from hris_menus where Parent_Menu=(select menu_id from hris_menus where menu_name='Leave Carry Forward')),
+    NULL,
+    NULL,
+    'N'
+  );
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'edit',
+    (select menu_id from hris_menus where menu_name='Leave Carry Forward'),
+    NULL,
+    'leavecarryforward',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'edit',
+    (select max(menu_index)+1 from hris_menus where Parent_Menu=(select menu_id from hris_menus where menu_name='Leave Carry Forward')),
+    NULL,
+    NULL,
+    'N'
+  );
+
+  INSERT INTO hris_menus (
+    menu_code,
+    menu_id,
+    menu_name,
+    parent_menu,
+    menu_description,
+    route,
+    status,
+    created_dt,
+    modified_dt,
+    icon_class,
+    action,
+    menu_index,
+    created_by,
+    modified_by,
+    is_visible
+) VALUES (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Basic Report',
+    85,
+    NULL,
+    'loanReport',
+    'E',
+    TO_DATE('07-MAY-19','DD-MON-RR'),
+    NULL,
+    'fa fa-star-o',
+    'index',
+    910,
+    12,
+    NULL,
+    'Y'
+);
+
+
+INSERT INTO hris_menus (
+    menu_code,
+    menu_id,
+    menu_name,
+    parent_menu,
+    menu_description,
+    route,
+    status,
+    created_dt,
+    modified_dt,
+    icon_class,
+    action,
+    menu_index,
+    created_by,
+    modified_by,
+    is_visible
+) VALUES (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Employee Statement',
+    85,
+    NULL,
+    'loanReport',
+    'E',
+    TO_DATE('07-MAY-19','DD-MON-RR'),
+    NULL,
+    'fa fa-star-o',
+    'loanVoucher',
+    911,
+    12,
+    NULL,
+    'Y'
+);
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Query Helper',
+    (select menu_id from hris_menus where lower(menu_name) like '%utility%'),
+    NULL,
+    'system-utility',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'query',
+    (select max(menu_index)+1  from hris_menus where lower(menu_name) like '%utility%'),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Overall Overtime Report',
+    280,
+    NULL,
+    'overtime-report',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-list-alt',
+    'overtimeReport',
+    (select max(menu_index)+1  from hris_menus where lower(ROUTE) like '%overtime-report%'),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Roster Report',
+    (select menu_id from hris_menus where lower(menu_name) like '%assign%' and PARENT_MENU is null),
+    NULL,
+    'allreport',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil',
+    'rosterReport',
+    (select max(menu_index)+1  from hris_menus where lower(menu_name) like '%assign%' and PARENT_MENU is null),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Age Report',
+    (select menu_id from hris_menus where lower(menu_name) = 'report' AND PARENT_MENU = 302),
+    NULL,
+    'allreport',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil',
+    'ageReport',
+    (select max(menu_index)+1  from hris_menus where PARENT_MENU = 148),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Contract Expiry Report',
+    (select menu_id from hris_menus where lower(menu_name) = 'report' AND PARENT_MENU = 302),
+    NULL,
+    'allreport',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil',
+    'contractExpiryReport',
+    (select max(menu_index)+1  from hris_menus where PARENT_MENU = 148),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+
+INSERT
+INTO HRIS_MENUS
+  (
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+  )
+  VALUES
+  (
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Best Case Shift Group',
+    (select menu_id from hris_menus where lower(menu_name) like 'setup%' and parent_menu is null),
+    NULL,
+    'shiftGroup',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-pencil-square-o',
+    'index',
+    (select max(menu_index)+1 from hris_menus where parent_menu=(select menu_id from hris_menus where lower(menu_name) like 'setup%'
+and parent_menu is null)),
+    NULL,
+    NULL,
+    'Y'
+  );
+
+
+Insert into HRIS_MENUS 
+(MENU_CODE,MENU_ID,MENU_NAME,PARENT_MENU,
+MENU_DESCRIPTION,ROUTE,STATUS,CREATED_DT,
+MODIFIED_DT,ICON_CLASS,ACTION,MENU_INDEX,
+IS_VISIBLE)
+values (null,
+(select max(menu_id)+1 from hris_menus)
+,'Weekly Roster',
+(select menu_id from hris_menus where lower(menu_name) like '%assign%' and PARENT_MENU is null),
+null,
+'roaster',
+'E',
+trunc(sysdate),
+null,
+'fa fa-square-o',
+'weeklyRoster',
+(select max(menu_index)+1  from hris_menus where lower(menu_name) like '%assign%' and PARENT_MENU is null),
+'Y');
+
+
+    INSERT INTO hris_menus (
+        menu_code,
+        menu_id,
+        menu_name,
+        parent_menu,
+        menu_description,
+        route,
+        status,
+        created_dt,
+        modified_dt,
+        icon_class,
+        action,
+        menu_index,
+        created_by,
+        modified_by,
+        is_visible
+    ) VALUES (
+        NULL,
+        (select max(menu_id)+1 from hris_menus),
+        'Group Shift Assign',
+        (select menu_id from hris_menus where lower(menu_name) like 'assign' and parent_menu is null),
+        NULL,
+        'groupshiftassign',
+        'E',
+        TO_DATE('12-SEP-19', 'DD-MON-RR'),
+        TO_DATE('12-SEP-19', 'DD-MON-RR'),
+        'fa fa-users',
+        'index',
+        2,
+        12,
+        12,
+        'Y'
+    );
+
+    INSERT
+    INTO HRIS_MENUS
+      (
+        MENU_CODE,
+        MENU_ID,
+        MENU_NAME,
+        PARENT_MENU,
+        MENU_DESCRIPTION,
+        ROUTE,
+        STATUS,
+        CREATED_DT,
+        MODIFIED_DT,
+        ICON_CLASS,
+        ACTION,
+        MENU_INDEX,
+        CREATED_BY,
+        MODIFIED_BY,
+        IS_VISIBLE
+      )
+      VALUES
+      (
+        NULL,
+        (select max(menu_id)+1 from hris_menus),
+        'Branch Wise Daily IN OUT',
+        148,
+        NULL,
+        'allreport',
+        'E',
+        trunc(sysdate),
+        NULL,
+        'fa fa-pencil',
+        'branchWiseDailyInOut',
+        (select max(menu_index)+1 from hris_menus where parent_menu=148),
+        NULL,
+        NULL,
+        'Y'
+      );
+
+        INSERT INTO HRIS_MENUS
+          (
+            MENU_CODE,
+            MENU_ID,
+            MENU_NAME,
+            PARENT_MENU,
+            MENU_DESCRIPTION,
+            ROUTE,
+            STATUS,
+            CREATED_DT,
+            MODIFIED_DT,
+            ICON_CLASS,
+            ACTION,
+            MENU_INDEX,
+            CREATED_BY,
+            MODIFIED_BY,
+            IS_VISIBLE
+          )
+          VALUES
+          (
+            NULL,
+            (select max(menu_id)+1 from hris_menus),
+            'Leave Addition Report',
+            2,
+            NULL,
+            'leavebalance',
+            'E',
+            trunc(sysdate),
+            NULL,
+            'fa fa-pencil-square-o',
+            'leaveAdditionReport',
+            (select max(menu_index)+1 from hris_menus where parent_menu=2),
+            NULL,
+            NULL,
+            'Y'
+          );
+
+
+        INSERT INTO HRIS_MENUS
+          (
+            MENU_CODE,
+            MENU_ID,
+            MENU_NAME,
+            PARENT_MENU,
+            MENU_DESCRIPTION,
+            ROUTE,
+            STATUS,
+            CREATED_DT,
+            MODIFIED_DT,
+            ICON_CLASS,
+            ACTION,
+            MENU_INDEX,
+            CREATED_BY,
+            MODIFIED_BY,
+            IS_VISIBLE
+          )
+          VALUES
+          (
+            NULL,
+            (select max(menu_id)+1 from hris_menus),
+            'Resigned or Retired Employees',
+            302,
+            NULL,
+            'employee',
+            'E',
+            trunc(sysdate),
+            NULL,
+            'fa fa-pencil-square-o',
+            'resignedOrRetired',
+            (select max(menu_index)+1 from hris_menus where parent_menu=302),
+            NULL,
+            NULL,
+            'Y'
+          );
+
+INSERT INTO HRIS_MENUS
+(
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+)
+VALUES
+(
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Leave Cancel',
+    6,
+    NULL,
+    'leaverequest',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-times',
+    'cancel',
+    (select max(menu_index)+1 from hris_menus where parent_menu=6),
+    NULL,
+    NULL,
+    'Y'
+);
+
+
+
+INSERT INTO hris_menus (
+    menu_code,
+    menu_id,
+    menu_name,
+    parent_menu,
+    menu_description,
+    route,
+    status,
+    created_dt,
+    modified_dt,
+    icon_class,
+    action,
+    menu_index,
+    created_by,
+    modified_by,
+    is_visible
+) VALUES (
+    NULL,
+    (SELECT MAX(MENU_ID)+1 FROM HRIS_MENUS),
+    'Salary Update',
+    (select menu_id from hris_menus where lower(menu_name) like 'utility'),
+    NULL,
+    'excelUpload',
+    'E',
+    TO_DATE('07-NOV-19', 'DD-MON-RR'),
+    NULL,
+    'fa fa-edit',
+    'updateEmployeeSalary',
+    3,
+    1000445,
+    NULL,
+    'Y'
+);
+
+INSERT
+INTO HRIS_MENUS
+(
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+)
+VALUES
+(
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Overtime Bulk Update',
+    301,
+    NULL,
+    'overtime-bulk-setup',
+    'E',
+    trunc(sysdate),
+    NULL,
+    'fa fa-list-alt',
+    'index',
+    9,
+    NULL,
+    NULL,
+    'Y'
+);

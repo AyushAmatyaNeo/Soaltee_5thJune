@@ -17,6 +17,7 @@ class AttendanceDevice extends Model {
     const STATUS = "STATUS";
     const DEVICE_COMPANY = "DEVICE_COMPANY";
     const PURPOSE = "PURPOSE";
+    const BRANCH_MANAGER_ID = "BRANCH_MANAGER_ID";
 
     public $deviceId;
     public $deviceName;
@@ -28,6 +29,7 @@ class AttendanceDevice extends Model {
     public $status;
     public $deviceCompany;
     public $purpose;
+    public $branchManager;
     public $mappings = [
         'deviceId' => self::DEVICE_ID,
         'deviceName' => self::DEVICE_NAME,
@@ -39,6 +41,7 @@ class AttendanceDevice extends Model {
         'status' => self::STATUS,
         'deviceCompany' => self::DEVICE_COMPANY,
         'purpose' => self::PURPOSE,
+        'branchManager' => self::BRANCH_MANAGER_ID,
     ];
 
 }

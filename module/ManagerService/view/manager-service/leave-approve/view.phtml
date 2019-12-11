@@ -109,6 +109,17 @@ print $this->form()->openTag($form);
                                             ?>
                                         </td>
                                     </tr>
+                                    <?php if($subLeaveName){ ?>
+                                    <tr height="30">
+                                        <td>
+                                            Sub Info
+                                        </td>
+                                        <td width="15">:</td>
+                                        <td>
+                                            <?php echo $subLeaveName; ?>
+                                        </td>
+                                    </tr>
+                                    <?php } ?>
                                     <?php if ($role != 4) { ?>
                                         <tr height="30">
                                             <td>

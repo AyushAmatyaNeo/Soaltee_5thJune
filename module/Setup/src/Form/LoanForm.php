@@ -88,5 +88,23 @@ class LoanForm {
      * @Annotation\Attributes({ "id":"companyId","class":"form-control"})
      */
     public $companyId;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(true)
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Interest Pay Code"})
+     * @Annotation\Attributes({ "id":"payIdInt","class":"form-control"})
+     */
+    public $payIdInt;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required(true)
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Amount Pay Code"})
+     * @Annotation\Attributes({ "id":"payIdAmt","class":"form-control"})
+     */
+    public $payIdAmt;
 
 }

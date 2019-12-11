@@ -70,8 +70,8 @@ class HolidayWorkApproveController extends HrisController {
 
     public function statusAction() {
         $holidayList = EntityHelper::getTableKVListWithSortOption($this->adapter, Holiday::TABLE_NAME, Holiday::HOLIDAY_ID, [Holiday::HOLIDAY_ENAME], [Holiday::STATUS => 'E'], Holiday::HOLIDAY_ENAME, "ASC", NULL, [-1 => 'All Holiday'], TRUE);
-        $holidaySE = $this->getSelectElement(['name' => 'holiday', 'id' => 'holidayId', 'class' => 'form-control', 'label' => 'Holiday'], $holidayList);
-        $statusSE = $this->getStatusSelectElement(['name' => 'requestStatusId', 'id' => 'requestStatusId', 'class' => 'form-control', 'label' => 'Status']);
+        $holidaySE = $this->getSelectElement(['name' => 'holiday', 'id' => 'holidayId', 'class' => 'form-control reset-field', 'label' => 'Holiday'], $holidayList);
+        $statusSE = $this->getStatusSelectElement(['name' => 'requestStatusId', 'id' => 'requestStatusId', 'class' => 'form-control reset-field', 'label' => 'Status']);
 
         return Helper::addFlashMessagesToArray($this, [
                     'holidays' => $holidaySE,

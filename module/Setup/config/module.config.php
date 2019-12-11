@@ -25,6 +25,7 @@ use Setup\Controller\ServiceEventTypeController;
 use Setup\Controller\ServiceQuestionController;
 use Setup\Controller\ServiceTypeController;
 use Setup\Controller\TrainingController;
+use Setup\Controller\ShiftGroupController;
 use Zend\Router\Http\Segment;
 
 return [
@@ -324,6 +325,16 @@ return [
                     'route' => '/setup/fileType[/:action[/:id]]',
                     'defaults' => [
                         'controller' => FileTypeController::class,
+                        'action' => 'index'
+                    ]
+                ]
+            ],
+            'shiftGroup' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/setup/shiftGroup[/:action[/:id]]',
+                    'defaults' => [
+                        'controller' => ShiftGroupController::class,
                         'action' => 'index'
                     ]
                 ]
@@ -957,6 +968,33 @@ return [
                 ]
             ]
         ],
+        'shiftGroup' => [
+            [
+                'label' => 'Best Shift Group',
+                'route' => 'shiftGroup',
+            ],
+            [
+                'label' => 'Best Shift Group',
+                'route' => 'shiftGroup',
+                'pages' => [
+                    [
+                        'label' => 'List',
+                        'route' => 'bestShiftGroup',
+                        'action' => 'index',
+                    ],
+                    [
+                        'label' => 'Add',
+                        'route' => 'bestShiftGroup',
+                        'action' => 'add',
+                    ],
+                    [
+                        'label' => 'Edit',
+                        'route' => 'bestShiftGroup',
+                        'action' => 'edit',
+                    ],
+                ]
+            ]
+        ],
     ],
     'controllers' => [
         'factories' => [
@@ -982,7 +1020,8 @@ return [
             LocationController::class => ControllerFactory::class,
             FunctionalTypesController::class => ControllerFactory::class,
             FunctionalLevelsController::class => ControllerFactory::class,
-            FileTypeController::class => ControllerFactory::class
+            FileTypeController::class => ControllerFactory::class,
+            ShiftGroupController::class => ControllerFactory::class
         ],
     ],
     'view_manager' => [

@@ -256,10 +256,11 @@ class JobHistoryController extends HrisController {
             $designationId = $data['designationId'];
             $positionId = $data['positionId'];
             $serviceTypeId = $data['serviceTypeId'];
+            $functionalTypeId = $data['functionalTypeId'];
             $serviceEventTypeId = $data['serviceEventTypeId'];
             $employeeTypeId = $data['employeeTypeId'];
 
-            $result = $this->repository->filter($fromDate, $toDate, $employeeId, $serviceEventTypeId, $companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $employeeTypeId);
+            $result = $this->repository->filter($fromDate, $toDate, $employeeId, $serviceEventTypeId, $companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $employeeTypeId, $functionalTypeId);
 
             $jobHistoryRecord = Helper::extractDbData($result);
 

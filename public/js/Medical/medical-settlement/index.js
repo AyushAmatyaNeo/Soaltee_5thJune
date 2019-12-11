@@ -21,7 +21,7 @@
             {field: "BILL_STATUS_NAME", title: "Status", width: 80},
             {field: "REQUESTED_AMT", title: "Request Amt", width: 80},
             {field: "APPROVED_AMT", title: "Approved Amt", width: 80},
-            {field: ["MEDICAL_ID"], title: "Action", width: 80, template: `
+            {field: "MEDICAL_ID", title: "Action", width: 80, template: `
             <span>                                  
                 <a class="btn  btn-icon-only btn-success" href="${document.viewLink}/#: MEDICAL_ID #" style="height:17px;" title="view">
                 <i class="fa fa-search-plus"></i>
@@ -94,7 +94,9 @@
             });
         });
 
-
+//        $("#reset").on("click", function () {
+//            $(".form-control").val("");
+//        });
 
 
 

@@ -90,11 +90,11 @@ class AttendanceApproveController extends HrisController {
 
         $request = $this->getRequest();
         $model = new AttendanceRequestModel();
-        $detail = $attendanceRequestRepository->fetchByIdWithEmployeeId($id,$this->employeeId);
-        
-        if ($this->employeeId!=$detail['RECOMMENDER_ID'] && $this->employeeId!=$detail['APPROVER_ID']) {
-            return $this->redirect()->toRoute("leaveapprove");
-        }
+        $detail = $attendanceRequestRepository->fetchByIdWithEmployeeId($id, $this->employeeId);
+
+//        if ($this->employeeId != $detail['RECOMMENDER_ID'] && $this->employeeId != $detail['APPROVER_ID']) {
+//            return $this->redirect()->toRoute("attedanceapprove");
+//        }
 
         $employeeId = $detail['EMPLOYEE_ID'];
         $employeeName = $detail['FULL_NAME'];
@@ -143,7 +143,7 @@ class AttendanceApproveController extends HrisController {
         $attendanceStatusFormElement = new Select();
         $attendanceStatusFormElement->setName("attendanceStatus");
         $attendanceStatusFormElement->setValueOptions($attendanceStatus);
-        $attendanceStatusFormElement->setAttributes(["id" => "attendanceRequestStatusId", "class" => "form-control"]);
+        $attendanceStatusFormElement->setAttributes(["id" => "attendanceRequestStatusId", "class" => "form-control reset-field"]);
         $attendanceStatusFormElement->setLabel("Status");
 
         return Helper::addFlashMessagesToArray($this, [

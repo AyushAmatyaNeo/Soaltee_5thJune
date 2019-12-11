@@ -36,14 +36,16 @@
                         template: "<span>#: (ATTENDANCE_DT_BS == null) ? '-' : ATTENDANCE_DT_BS #</span>"}]},
             {field: "IN_TIME", title: "Check In", template: "<span>#: (IN_TIME == null) ? '-' : IN_TIME #</span>"},
             {field: "OUT_TIME", title: "Check Out", template: "<span>#: (OUT_TIME == null) ? '-' : OUT_TIME #</span>"},
+            {field: "IN_REMARKS", title: "In Remarks"},
+            {field: "OUT_REMARKS", title: "Out Remarks"},
             {field: "STATUS", title: "Status", template: "<span>#: (STATUS == null) ? '-' : STATUS #</span>"},
-            {field: ["ID"], title: "Action", template: `
+            {field: "ID", title: "Action", template: `
                 <span>
                     <a class="btn  btn-icon-only btn-success" href="${document.viewLink}/#: ID #" style="height:17px;" title="view">
                         <i class="fa fa-search-plus"></i>
                     </a>
-                </span>
-`}];
+                </span>`}
+                ];
         columns = app.prependPrefColumns(columns);
         var map = {
             'EMPLOYEE_CODE': 'Code',
@@ -99,7 +101,7 @@
 
             var selectedValues = [];
             for (var i in list) {
-                selectedValues.push({id: list[i][pk], action: action});
+                selectedValues.push({id: list[i][pk], action: action, status: list[i]['STATUS'] });
             }
             app.bulkServerRequest(document.bulkLink, selectedValues, function () {
                 $search.trigger('click');
@@ -108,6 +110,9 @@
             });
         });
 
+//        $("#reset").on("click", function () {
+//            $(".form-control").val("");
+//        });
     });
 })(window.jQuery, window.app);
 

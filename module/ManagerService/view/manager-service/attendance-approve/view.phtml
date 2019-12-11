@@ -226,7 +226,8 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                         <div class="col-sm-4">
                             <div class="form-group <?= empty($inRemarks->getMessages()) ? "" : "error" ?>">
                                 <?php print $this->formLabel($inRemarks); ?>
-                                <?php print $this->formElement($inRemarks); ?>
+                                <?php // print $this->formElement($inRemarks); ?>
+                        <div style="border-style: inset; min-height: 50px;"> <?php echo $inRemarks->getValue();  ?></div>
                             </div>
                             <?php print $this->formElementErrors()->render($inRemarks, ['class' => 'help-block error']); ?>
                         </div>
@@ -234,7 +235,8 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                         <div class="col-sm-4">
                             <div class="form-group <?= empty($outRemarks->getMessages()) ? "" : "error" ?>">
                                 <?php print $this->formLabel($outRemarks); ?>
-                                <?php print $this->formElement($outRemarks); ?>
+                                <?php // print $this->formElement($outRemarks); ?>
+                                <div style="border-style: inset;min-height: 50px; "> <?php echo $outRemarks->getValue();  ?></div>
                             </div>
                             <?php print $this->formElementErrors()->render($outRemarks, ['class' => 'help-block error']); ?>
                         </div>
@@ -282,7 +284,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 
                 <div class="">
                     <?php
-                    if (($role==2||$role==4) && $status == 'RQ' || ( ($role==3 && $role==4) && $status == 'RC' && $employeeId != $recommendedBy)) {
+                    if (($role==2||$role==4) && $status == 'RQ' || ( ($role==3 || $role==4) && $status == 'RC' && $employeeId != $recommendedBy)) {
                         print $this->formSubmit($submit);
                         ?>
                         <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">

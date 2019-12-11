@@ -138,6 +138,34 @@ class SystemSettingForm {
     
     /**
      * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"Travel Substitute Cycle"})
+     * @Annotation\Attributes({ "id":"travelSubCycle","value":"Y"})
+     */
+    public $travelSubCycle;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"Sub Leave Reference"})
+     * @Annotation\Attributes({ "id":"subLeaveReference","value":"N"})
+     */
+    public $subLeaveReference;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Options({"label":"Sub Leave Max Days"})
+     * @Annotation\Attributes({ "id":"subLeaveMaxDays", "class":" form-control","min":"0"})
+     */
+    public $subLeaveMaxDays;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Options({"label":"leave Encash Max Days"})
+     * @Annotation\Attributes({ "id":"leaveEncashMaxDays", "class":" form-control","min":"0"})
+     */
+    public $leaveEncashMaxDays;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
      * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"Order By Name"})
      * @Annotation\Attributes({ "id":"orderByName","value":"Y"})
      */

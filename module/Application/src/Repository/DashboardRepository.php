@@ -199,10 +199,10 @@ class DashboardRepository {
                   HRIS_EMPLOYEE_FILE EFL,
                   HRIS_BRANCHES B,
                   HRIS_POSITIONS P
-                WHERE EMP.DESIGNATION_ID   = DSG.DESIGNATION_ID
+                WHERE EMP.DESIGNATION_ID   = DSG.DESIGNATION_ID(+)
                 AND EMP.PROFILE_PICTURE_ID = EFL.FILE_CODE(+)
-                AND EMP.BRANCH_ID          = B.BRANCH_ID
-                AND EMP.POSITION_ID        =P.POSITION_ID
+                AND EMP.BRANCH_ID          = B.BRANCH_ID(+)
+                AND EMP.POSITION_ID        =P.POSITION_ID(+)
                 ORDER BY TO_CHAR(EMP.BIRTH_DATE,'MMDD')
                 ";
 

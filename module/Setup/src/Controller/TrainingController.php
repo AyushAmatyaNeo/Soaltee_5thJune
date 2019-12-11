@@ -60,6 +60,7 @@ class TrainingController extends AbstractActionController {
     }
 
     public function addAction() {
+        
         ACLHelper::checkFor(ACLHelper::ADD, $this->acl, $this);
         $this->initializeForm();
         $request = $this->getRequest();

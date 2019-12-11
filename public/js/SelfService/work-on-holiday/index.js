@@ -50,7 +50,7 @@
                 ]},
             {field: "DURATION", title: "Duration"},
             {field: "STATUS_DETAIL", title: "Status"},
-            {field: ["ID", "ALLOW_EDIT", "ALLOW_DELETE"], title: "Action", template: action}
+            {field: "ID", title: "Action", template: action}
         ]);
 
 

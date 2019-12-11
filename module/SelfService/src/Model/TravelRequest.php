@@ -11,6 +11,7 @@ class TravelRequest extends Model{
     const FROM_DATE = "FROM_DATE";
     const TO_DATE = "TO_DATE";
     const DESTINATION = "DESTINATION";
+    Const DEPARTURE = "DEPARTURE";
     const PURPOSE = "PURPOSE";
     const REQUESTED_TYPE = "REQUESTED_TYPE";
     const REQUESTED_AMOUNT = "REQUESTED_AMOUNT";
@@ -34,6 +35,7 @@ class TravelRequest extends Model{
     public $fromDate;
     public $toDate;
     public $destination;
+    Public $departure;
     public $purpose;
     public $requestedType;
     public $requestedAmount;
@@ -58,6 +60,7 @@ class TravelRequest extends Model{
         'fromDate'=>self::FROM_DATE,
         'toDate'=>self::TO_DATE,
         'destination'=>self::DESTINATION,
+        'departure'=>self::DEPARTURE,
         'purpose'=>self::PURPOSE,
         'requestedAmount'=>self::REQUESTED_AMOUNT,
         'requestedType'=>self::REQUESTED_TYPE,

@@ -11,7 +11,17 @@
 			'MobileNo', 'emergContactAddress', 'emergContactNo', 'addrTempHouseNo', 
 			'bloodGroupId',
             'addrPermHouseNo',
-			'birthdate', 'firstName', 'middleName', 'lastName', 'nameNepali', 'nepaliBirthDate', 'companyId', 'idCardNo', 'idThumbId', 'idLbrf', 'tab1', 'tab2', 'tab3', 'tab4', 'tab5', 'tab7','tab1', 'tab8']);
+			'birthdate', 'firstName', 'middleName', 'lastName', 'nameNepali', 'nepaliBirthDate', 'companyId', 'idCardNo', 'idThumbId', 'idLbrf'
+                        , 'tab1'
+                        , 'tab2'
+                        , 'tab3'
+                        , 'tab4'
+                        , 'tab5'
+                        , 'tab7'
+                        , 'tab8'
+                        , 'tab9'
+                        , 'tab10'
+                    ]);
         }
     });
 })(window.jQuery, window.app);

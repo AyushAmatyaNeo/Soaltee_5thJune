@@ -23,6 +23,7 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/branchwise.
     document.comBraDepList =<?php echo json_encode($comBraDepList); ?>;
     document.branchId =<?php echo $branchId; ?>;
     document.linkToReportFour = '<?php echo $this->url('allreport', ['action' => 'employeeWise']); ?>';
+    document.preference =<?php echo json_encode($preference) ?>;
 </script>
 
 

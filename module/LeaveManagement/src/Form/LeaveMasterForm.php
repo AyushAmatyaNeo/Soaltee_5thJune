@@ -179,6 +179,13 @@ class LeaveMasterForm {
      * @Annotation\Attributes({ "id":"holidayAsLeave","value":"Y"})
      */
     public $holidayAsLeave;
-    
 
+    /**
+     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"label":"Apply Limit"})
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({ "id":"applyLimit","min":"0", "class":"form-control"})
+     */
+    public $applyLimit;
 }

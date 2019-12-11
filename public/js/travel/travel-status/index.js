@@ -10,6 +10,7 @@
         var $toDate = $('#toDate');
         var $bulkActionDiv = $('#bulkActionDiv');
         var $bulkBtns = $(".btnApproveReject");
+        var $superpower = $("#super_power");
         var action = `
             <div class="clearfix">
                 #if(REQUESTED_TYPE=='ad'){#
@@ -19,6 +20,11 @@
                 #}else{#
                 <a class="btn btn-icon-only green" href="${document.expenseDetailLink}/#:TRAVEL_ID#" style="height:17px;" title="View Detail">
                     <i class="fa fa-search"></i>
+                </a>
+                #}#
+                 #if(ALLOW_EDIT=='Y'){#
+                <a class="btn btn-icon-only yellow" href="${document.editLink}/#:TRAVEL_ID#" style="height:17px;" title="View Detail">
+                    <i class="fa fa-edit"></i>
                 </a>
                 #}#
             </div>
@@ -57,13 +63,14 @@
                         title: "Nepali",
                         width: 80
                     }]},
+            {field: "DEPARTURE", title: "Departure", width: 100},
             {field: "DESTINATION", title: "Destination", width: 100},
             {field: "REQUESTED_AMOUNT", title: "Request Amt.", width: 100},
             {field: "REQUESTED_TYPE_DETAIL", title: "Request For", width: 100},
             {field: "TRANSPORT_TYPE_DETAIL", title: "Transport", width: 100},
             {field: "STATUS_DETAIL", title: "Status", width: 90},
             {field: "VOUCHER_NO", title: "Voucher", width: 90},
-            {field: ["TRAVEL_ID", "REQUESTED_TYPE"], title: "Action", template: action, width: 80}
+            {field: "TRAVEL_ID", title: "Action", template: action, width: 80}
         ];
         columns=app.prependPrefColumns(columns);
         var pk = 'TRAVEL_ID';
@@ -100,6 +107,7 @@
             'TO_DATE_AD': 'To Date(AD)',
             'TO_DATE_BS': 'To Date(BS)',
             'DESTINATION': 'Destination',
+            'DEPARTURE' : 'Departure',
             'REQUESTED_AMOUNT': 'Request Amt',
             'REQUESTED_TYPE_DETAIL': 'Request Type',
             'TRANSPORT_TYPE_DETAIL': 'Transport',
@@ -127,10 +135,11 @@
         $bulkBtns.bind("click", function () {
             var list = grid.getSelected();
             var action = $(this).attr('action');
+            var superPower = $superpower.prop('checked');
 
             var selectedValues = [];
             for (var i in list) {
-                selectedValues.push({id: list[i][pk], action: action});
+                selectedValues.push({id: list[i][pk], action: action, status: list[i]['STATUS'], super_power: superPower});
             }
             app.bulkServerRequest(document.bulkLink, selectedValues, function () {
                 $search.trigger('click');
@@ -138,5 +147,6 @@
 
             });
         });
+        
     });
 })(window.jQuery, window.app);

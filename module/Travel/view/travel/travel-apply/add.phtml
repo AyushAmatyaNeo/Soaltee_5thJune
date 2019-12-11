@@ -17,6 +17,7 @@ $employeeId->setValueOptions($employees);
 $fromDate = $form->get('fromDate');
 $toDate = $form->get('toDate'); 
 $destination = $form->get('destination');
+$departure = $form ->get('departure');
 $requestedAmount = $form->get('requestedAmount');
 $requestedType = $form->get('requestedType');
 $requestedType->setValueOptions($requestTypes);
@@ -24,6 +25,7 @@ $transportType = $form->get('transportType');
 $transportType->setValueOptions($transportTypes);
 $purpose = $form->get('purpose');
 $remarks = $form->get('remarks');
+$noOfDays = $form->get('noOfDays');
 
 $submit = $form->get('submit');
 $submit->setAttribute('value', 'SUBMIT');
@@ -133,6 +135,13 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 
                     <div class="col-sm-4">
                         <div class="form-group">
+                            <?php print $this->formLabel($departure); ?>
+                            <?php print $this->formElement($departure); ?>
+                            <?php print $this->formElementErrors()->render($departure, ['class' => 'help-block']); ?>
+                        </div>               
+                    </div>
+                      <div class="col-sm-4">
+                        <div class="form-group">
                             <?php print $this->formLabel($destination); ?>
                             <?php print $this->formElement($destination); ?>
                             <?php print $this->formElementErrors()->render($destination, ['class' => 'help-block']); ?>
@@ -153,6 +162,17 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                             <?php print $this->formElement($requestedAmount); ?>
                             <?php print $this->formElementErrors()->render($requestedAmount, ['class' => 'help-block']); ?>
                         </div>
+                    </div>
+                    
+                    <div class="col-sm-4">
+                        <div
+                            class="form-group required <?= empty($noOfDays->getMessages()) ? "" : "error" ?>">
+                                <?php print $this->formLabel($noOfDays); ?>
+                            <span class="required" aria-required="true">*</span>
+                            <?php print $this->formElement($noOfDays); ?>
+                            <span id="errorMsg" style="font-size:11px; color:red;"></span>
+                        </div>
+                        <?php print $this->formElementErrors()->render($noOfDays, ['class' => 'help-block error']); ?>
                     </div>
                 </div>
 
@@ -180,7 +200,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                     <div class="col-sm-4">
                         <label for="substituteEmployee">Substitute Employee </label>
                         <span class="required" aria-required="true">*</span>
-                        <select id="travelEmpSub" required class="form-control" name="travelSubstitute" style="cursor: pointer;">
+                        <select id="travelEmpSub" required class="form-control reset-field" name="travelSubstitute" style="cursor: pointer;">
                             <?php foreach ($employees as $key => $value) { ?>
                                 <option style="cursor: pointer;" value="<?php echo $key; ?>"><?php echo $value; ?></option>
                             <?php } ?>
@@ -193,33 +213,22 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                             <?php print $this->formElementErrors()->render($remarks, ['class' => 'help-block']); ?>
                         </div>
                     </div>
+                    
+                    <div class="col-sm-4">
+                        <label for="applyOption">Apply Status</label>
+                        <?php print $this->formElement($applyOption); ?>
+                    </div>
                 </div>
 
-
-                <div>
-                    <p><b>Attach a travel Plan:</b></p>
-                </div>
-
-                <div class="row">
-                    <div class=" col-md-6 form-group">
-                        <table id="fileDetailsTbl" class="table">
-                            <tr>
-                                <th>Document</th> 
-                                <th>&nbsp;</th>
-                                <th>Action</th>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="col-md-3">
-                        <button id="addDocument" type="button" class="btn btn-primary">
-                            Add
-                        </button>
-                    </div>
-                    </div>
 
 
                 <?php
                 print $this->formSubmit($submit);
+                ?>
+                
+                <button id="reset" type="reset" class="btn default btn-sm hris-reset-btn">Reset<i class="fa fa-refresh"></i></button>
+
+                <?php
                 print $this->form()->closeTag();
                 ?>
             </div>
@@ -229,34 +238,4 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 </div>
 
 
-<!--bootstrap modal-->
-<div id="documentUploadModel" class="modal fade" role="dialog">
-    <div class="modal-dialog">
 
-        <!-- Modal content-->
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">Document Upload</h4>
-            </div>
-            <div class="modal-body">
-                <div class="modal-body" id="modal-body">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <!--<div id="dropZoneContainer" >-->
-                            <div id="dropZoneContainer"  class="dropzone">
-                            </div>
-                            <div id="uploadErr">Please upload document.</div>
-                        </div>
-                    </div>
-                </div> 
-            </div>
-
-        </div>
-        <div class="modal-footer">
-            <button id='uploadSubmitBtn' class="btn btn-primary" type="button" >OK</button>
-            <button id='uploadCancelBtn' class="btn btn-warning" type="button" >Cancel</button>
-            <!--<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>-->
-        </div>
-    </div>
-</div>

@@ -25,10 +25,11 @@ class Payroll extends HrisController {
                 $salarySheetDetailRepo = new SalarySheetDetailRepo($this->adapter);
                 $salSheEmpDetRepo = new SalSheEmpDetRepo($this->adapter);
                 $data['pay-detail'] = $salarySheetDetailRepo->fetchEmployeePaySlip($postedData['monthId'], $postedData['employeeId']);
-                $data['emp-detail'] = $salSheEmpDetRepo->fetchOneBy([
-                    SalarySheetEmpDetail::MONTH_ID => $postedData['monthId'],
-                    SalarySheetEmpDetail::EMPLOYEE_ID => $postedData['employeeId']
-                ]);
+                $data['emp-detail'] = $salSheEmpDetRepo->fetchOneByWithEmpDetails($postedData['monthId'], $postedData['employeeId']);
+//                $data['emp-detail'] = $salSheEmpDetRepo->fetchOneBy([
+//                    SalarySheetEmpDetail::MONTH_ID => $postedData['monthId'],
+//                    SalarySheetEmpDetail::EMPLOYEE_ID => $postedData['employeeId']
+//                ]);
                 return new JsonModel(['success' => true, 'data' => $data, 'error' => '']);
             } catch (Exception $e) {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);

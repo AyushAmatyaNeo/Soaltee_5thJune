@@ -13,6 +13,9 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reporttwo.j
 <script>
     document.getSearchDataLink = '<?php echo $this->url('allreport', ['action' => 'getSearchData']); ?>';
     document.calenderType ='<?php echo $calenderType; ?>';
+    document.preference =<?php echo json_encode($preference); ?>;
+    document.acl =<?php echo json_encode($acl); ?>;
+    document.employeeDetail =<?php echo json_encode($employeeDetail);?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\allreport')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -103,6 +106,11 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reporttwo.j
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Functional Type</label>
+                    <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                    </select>
+                </div>
+                <div class="col-sm-2">
                     <label>Employee</label>
                     <select multiple class="form-control" name="employee" id="employeeId">
                     </select>
@@ -110,10 +118,11 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reporttwo.j
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-2">
+                    <label>Fiscal Year</label>
                     <?php print $this->formElement($fiscalYearSE); ?>
                 </div>
                 <div class="col-sm-4 col-sm-offset-6">
-                    <button class="btn default btn-sm pull-right hris-filter-reset-btn">
+                    <button id="reset" class="btn default btn-sm pull-right ">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

@@ -17,6 +17,8 @@ BEGIN
         'TAXI'
       WHEN 'BS' THEN
         'BUS'
+      WHEN 'OF' THEN
+        'ON FOOT'
       END);
   END IF;
 RETURN V_FULL_FORM;

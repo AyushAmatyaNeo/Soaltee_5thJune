@@ -5,10 +5,11 @@
                 $scope.expenseDtlFormList = [];
                 $scope.counter = '';
                 $scope.transportTypeList = [
-                    {"id": "AP", "name": "Aero Plane"},
+                    {"id": "AP", "name": "Aeroplane"},
                     {"id": "OV", "name": "Office Vehicles"},
                     {"id": "TI", "name": "Taxi"},
                     {"id": "BS", "name": "Bus"},
+                    {"id": "OF", "name": "On Foot"}
                 ];
                 $scope.travelDetail = {
                     departureDateMain: '',

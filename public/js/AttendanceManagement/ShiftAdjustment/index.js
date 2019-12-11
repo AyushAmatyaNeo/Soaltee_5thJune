@@ -45,7 +45,7 @@
                     ]},
                 {field: "START_TIME", title: "Start Time", template: "<span>#: (START_TIME == null) ? '-' : START_TIME # </span>"},
                 {field: "END_TIME", title: "End Time", template: "<span>#: (END_TIME == null) ? '-' : END_TIME # </span>"},
-                {field: ["ADJUSTMENT_ID"], title: "Action", template: `<span><a class="btn-edit" 
+                {field: "ADJUSTMENT_ID", title: "Action", template: `<span><a class="btn-edit" 
         href="` + document.addLink + `/#:ADJUSTMENT_ID #" style="height:17px;">
         <i class="fa fa-edit"></i>
         </a> </span>`}
@@ -83,5 +83,8 @@
             }
         }
 
+//        $("#reset").on("click", function () {
+//            $(".form-control").val("");
+//        });
     });
 })(window.jQuery, window.app);

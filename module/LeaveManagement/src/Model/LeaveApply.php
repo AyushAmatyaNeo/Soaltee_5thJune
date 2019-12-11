@@ -29,6 +29,7 @@ class LeaveApply extends Model {
     const CANCEL_APP_BY = "CANCEL_APP_BY";
     const CANCEL_REC_DT = "CANCEL_REC_DT";
     const CANCEL_APP_DT = "CANCEL_APP_DT";
+    const SUB_REF_ID = "SUB_REF_ID";
 
     public $id;
     public $employeeId;
@@ -52,6 +53,7 @@ class LeaveApply extends Model {
     public $cancelAppBy;
     public $cancelRecDt;
     public $cancelAppDt;
+    public $subRefId;
     public $mappings = [
         'id' => self::ID,
         'employeeId' => self::EMPLOYEE_ID,
@@ -74,7 +76,8 @@ class LeaveApply extends Model {
         'cancelRecBy' => self::CANCEL_APP_BY,
         'cancelAppBy' => self::CANCEL_REC_BY,
         'cancelRecDt' => self::CANCEL_REC_DT,
-        'cancelAppDt' => self::CANCEL_APP_DT
+        'cancelAppDt' => self::CANCEL_APP_DT,
+        'subRefId' => self::SUB_REF_ID
     ];
 
 }

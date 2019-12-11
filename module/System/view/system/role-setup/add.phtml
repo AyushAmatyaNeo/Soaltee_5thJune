@@ -13,6 +13,8 @@ $remarks = $form->get('remarks');
 $selectOptions = $form->get('selectOptions');
 $submit = $form->get('submit');
 $submit->setAttribute('value', 'SUBMIT');
+$hrApprove = $form->get('hrApprove');
+$hrCancel = $form->get('hrCancel');
 
 $form->setAttribute('action', $this->url('rolesetup', ['action' => 'add']));
 
@@ -97,6 +99,24 @@ $form->prepare();
                             </div>
                         </div>
                         <?php print $this->formElementErrors()->render($allowDelete, ['class' => 'help-block error']); ?>
+                    </div>
+                    <div class=" col-sm-4 ">
+                        <div class="form-group padding-0">
+                            <?php print $this->formLabel($hrApprove); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($hrApprove); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($hrApprove, ['class' => 'help-block error']); ?>
+                    </div>
+                    <div class=" col-sm-4 ">
+                        <div class="form-group padding-0">
+                            <?php print $this->formLabel($hrCancel); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($hrCancel); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($hrCancel, ['class' => 'help-block error']); ?>
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">

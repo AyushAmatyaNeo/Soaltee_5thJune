@@ -69,7 +69,7 @@ class TaxSheetRepo extends HrisRepository {
                 FROM HRIS_TAX_SHEET TS
                 LEFT JOIN HRIS_PAY_SETUP P
                 ON (TS.PAY_ID         =P.PAY_ID)
-                WHERE P.INCLUDE_IN_TAX='Y'
+                WHERE P.INCLUDE_IN_TAX='Y' AND TS.VAL>0
                 AND TS.SHEET_NO       IN
                   (SELECT SHEET_NO FROM HRIS_SALARY_SHEET WHERE MONTH_ID ={$monthId}
                   )

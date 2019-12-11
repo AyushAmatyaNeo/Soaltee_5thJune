@@ -10,6 +10,8 @@ $minAmount = $form->get('minAmount');
 $maxAmount = $form->get('maxAmount');
 $interestRate = $form->get('interestRate');
 $repaymentAmount = $form->get('repaymentAmount');
+$payIdInt = $form->get('payIdInt');
+$payIdAmt = $form->get('payIdAmt');
 $repaymentPeriod = $form->get('repaymentPeriod');
 $remarks = $form->get('remarks');
 
@@ -34,6 +36,7 @@ $form->prepare();
     <script>
         document.menu=<?php $menu = ["id" => "menuSetup","subMenu"=>["id"=>"subMenuLoan"]];echo json_encode($menu);?>;
         document.url = '<?= $this->url("restful", ["action" => "index"]) ?>';
+        document.pay_codes = <?php echo json_encode($pay_codes); ?>;
     </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\loan')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -114,10 +117,35 @@ $form->prepare();
                 <div class="row">
                     <div class="col-sm-4">
                         <div class="form-group">
+                            <?php print $this->formLabel($payIdInt); ?>
+                            <span class="required" aria-required="true">*</span>
+                            <?php print $this->formElement($payIdInt); ?>
+                            <?php print $this->formElementErrors()->render($payIdInt, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <?php print $this->formLabel($payIdAmt); ?>
+                            <span class="required" aria-required="true">*</span>
+                            <?php print $this->formElement($payIdAmt); ?>
+                            <?php print $this->formElementErrors()->render($payIdAmt, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
                             <?php print $this->formLabel($repaymentPeriod); ?>
                             <span class="required" aria-required="true">*</span>
                             <?php print $this->formElement($repaymentPeriod); ?>
                             <?php print $this->formElementErrors()->render($repaymentPeriod, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <label>Rate Flexible Flag</label>
+                            <select name="isRateFlexible" id="isRateFlexible">
+                                <option value="N">No</option>
+                                <option value="Y">Yes</option>
+                            </select>
                         </div>
                     </div>
                     <div class="col-sm-4">

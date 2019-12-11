@@ -13,13 +13,14 @@
 
 
         function reinitializeKendo(optionalColumns) {
-            console.log(optionalColumns);
+//            console.log(optionalColumns);
             var columns = [
-                {field: "EMPLOYEE_CODE", title: "Code", width: 80, locked: true},
-                {field: "FULL_NAME", title: "Employee", width: 120, locked: true},
-                {field: "DEPARTMENT_NAME", title: "Department", width: 120, locked: true},
-                {field: "DESIGNATION_TITLE", title: "Designation", width: 120, locked: true},
-                {field: "POSITION_NAME", title: "Position", width: 120, locked: true},
+                {field: "EMPLOYEE_CODE", title: "Code", width: 70, locked: true},
+                {field: "FULL_NAME", title: "Employee", width: 110, locked: true},
+                {field: "DEPARTMENT_NAME", title: "Department", width: 110, locked: true},
+                {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 110, locked: true},
+                {field: "DESIGNATION_TITLE", title: "Designation", width: 110, locked: true},
+                {field: "POSITION_NAME", title: "Position", width: 100},
             ];
              map = {
                 'EMPLOYEE_CODE': 'Code',
@@ -33,25 +34,35 @@
 
             if (optionalColumns != null) {
                 $.each(optionalColumns, function (i, val) {
+                    
+                    for (var ii in leaveList) {
+//                        console.log(leaveList[ii]['LEAVE_ID']);
+                        if (leaveList[ii]['LEAVE_ID'] == val) {
+//                            console.log(leaveList[ii]);
 
-                    columnsList = {
-                        title: leaveList[i]['LEAVE_ENAME'],
-                        columns: [
-                            {
-                                title: 'TAKEN',
-                                field: 'L' + val + '_' + 'TAKEN',
-                                width: 100
-                            },
-                            {
-                                title: 'BALANCE',
-                                field: 'L' + val + '_' + 'BALANCE',
-                                width: 100
-                            },
-                        ]
-                    };
-                    map['L' + val + '_TAKEN'] = leaveList[i]['LEAVE_ENAME'] + 'TAKEN';
-                    map['L' + val + '_BALANCE'] = leaveList[i]['LEAVE_ENAME'] + 'BALANCE';
-                    columns.push(columnsList);
+                            columnsList = {
+                                title: leaveList[ii]['LEAVE_ENAME'],
+                                columns: [
+                                    {
+                                        title: 'TAKEN',
+                                        field: 'L' + val + '_' + 'TAKEN',
+                                        width: 100
+                                    },
+//                            {
+//                                title: 'BALANCE',
+//                                field: 'L' + val + '_' + 'BALANCE',
+//                                width: 100
+//                            },
+                                ]
+                            };
+                            map['L' + val + '_TAKEN'] = leaveList[ii]['LEAVE_ENAME'] + 'TAKEN';
+//                    map['L' + val + '_BALANCE'] = leaveList[i]['LEAVE_ENAME'] + 'BALANCE';
+                            columns.push(columnsList);
+
+                        }
+
+                    }
+
 
                 });
             } else {
@@ -66,21 +77,21 @@
                                 field: 'L' + leaveList[i]['LEAVE_ID'] + '_' + 'TAKEN',
                                 width: 100
                             },
-                            {
-                                title: 'BALANCE',
-                                field: 'L' + leaveList[i]['LEAVE_ID'] + '_' + 'BALANCE',
-                                width: 100
-                            },
+//                            {
+//                                title: 'BALANCE',
+//                                field: 'L' + leaveList[i]['LEAVE_ID'] + '_' + 'BALANCE',
+//                                width: 100
+//                            },
                         ]
                     };
                     map['L' + leaveList[i]['LEAVE_ID'] + '_TAKEN'] = leaveList[i]['LEAVE_ENAME'] + ' TAKEN';
-                    map['L' + leaveList[i]['LEAVE_ID'] + '_BALANCE'] = leaveList[i]['LEAVE_ENAME'] + ' BALANCE';
+//                    map['L' + leaveList[i]['LEAVE_ID'] + '_BALANCE'] = leaveList[i]['LEAVE_ENAME'] + ' BALANCE';
                     columns.push(columnsList);
 
                 }
 
             }
-            app.initializeKendoGrid($table, columns);
+            app.initializeKendoGrid($table, columns,null,null,null,'Leave Taken Between Dates Report.xlsx');
 
         }
         app.searchTable($table, ['EMPLOYEE_CODE', 'FULL_NAME']);
@@ -121,6 +132,11 @@
         $('#pdfExport').on("click", function () {
             app.exportToPDF($table, map, "Employee Leave Balance Report.pdf", 'A2');
         });
+        
+//         $("#reset").on("click", function () {
+//            $(".form-control").val("");
+//            document.searchManager.reset();
+//        });
 
     });
 })(window.jQuery, window.app);

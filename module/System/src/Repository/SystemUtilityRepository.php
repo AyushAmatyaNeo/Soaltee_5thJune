@@ -131,21 +131,21 @@ class SystemUtilityRepository implements RepositoryInterface {
               E.LOCATION_ID                                                     AS LOCATION_ID,
               E.FUNCTIONAL_TYPE_ID                                              AS FUNCTIONAL_TYPE_ID,
               E.FUNCTIONAL_LEVEL_ID                                             AS FUNCTIONAL_LEVEL_ID,
-              INITCAP(B.BRANCH_NAME)                                            AS BRANCH_NAME,
-              INITCAP(D.DEPARTMENT_NAME)                                        AS DEPARTMENT_NAME,
-              INITCAP(DES.DESIGNATION_TITLE)                                    AS DESIGNATION_TITLE,
-              INITCAP(P.POSITION_NAME)                                          AS POSITION_NAME,
+              B.BRANCH_NAME                                                     AS BRANCH_NAME,
+              D.DEPARTMENT_NAME                                                 AS DEPARTMENT_NAME,
+              DES.DESIGNATION_TITLE                                             AS DESIGNATION_TITLE,
+              P.POSITION_NAME                                                   AS POSITION_NAME,
               P.LEVEL_NO                                                        AS LEVEL_NO,
-              INITCAP(C.COMPANY_NAME)                                           AS COMPANY_NAME,
+              C.COMPANY_NAME                                                    AS COMPANY_NAME,
               INITCAP(G.GENDER_NAME)                                            AS GENDER_NAME,
               BG.BLOOD_GROUP_CODE                                               AS BLOOD_GROUP_CODE,
               RG.RELIGION_NAME                                                  AS RELIGION_NAME,
               INITCAP(CN.COUNTRY_NAME)                                          AS COUNTRY_NAME,
               INITCAP(VM.VDC_MUNICIPALITY_NAME)                                 AS VDC_MUNICIPALITY_NAME,
               VM1.VDC_MUNICIPALITY_NAME                                         AS VDC_MUNICIPALITY_NAME_TEMP,
-              INITCAP(D1.DEPARTMENT_NAME)                                       AS APP_DEPARTMENT_NAME,
-              INITCAP(DES1.DESIGNATION_TITLE)                                   AS APP_DESIGNATION_TITLE,
-              INITCAP(P1.POSITION_NAME)                                         AS APP_POSITION_NAME,
+              D1.DEPARTMENT_NAME                                                AS APP_DEPARTMENT_NAME,
+              DES1.DESIGNATION_TITLE                                            AS APP_DESIGNATION_TITLE,
+              P1.POSITION_NAME                                                  AS APP_POSITION_NAME,
               P1.LEVEL_NO                                                       AS APP_LEVEL_NO,
               INITCAP(S1.SERVICE_TYPE_NAME)                                     AS APP_SERVICE_TYPE_NAME,
               INITCAP(SE1.SERVICE_EVENT_TYPE_NAME)                              AS APP_SERVICE_EVENT_TYPE_NAME,
@@ -200,6 +200,15 @@ class SystemUtilityRepository implements RepositoryInterface {
         $result = $statement->execute();
 
         return Helper::extractDbData($result);
+    }
+
+    public function runQuery($query) {
+        $sql = $query;
+//        $statement = $this->adapter->query($sql);
+//        $result = $statement->execute();
+        $result = EntityHelper::rawQueryResult($this->adapter, $sql);
+        return Helper::extractDbData($result);
+//    return $this->rawQuery($sql);
     }
 
 }

@@ -65,15 +65,6 @@ class UserSetupForm {
     public $isLocked;
 
     /**
-     * @Annotation\Type("Zend\Form\Element\Radio")
-     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
-     * @Annotation\Options({"value_options":{"E":"Enabled","D":"Disabled"},"label":"Status"})
-     * @Annotation\Required(false)
-     * @Annotation\Attributes({ "id":"status"})
-     */
-    public $status;
-
-    /**
      * @Annotation\Type("Zend\Form\Element\Submit")
      * @Annotation\Attributes({"value":"Submit","class":"btn btn-success","id":"btnSubmit"})
      */

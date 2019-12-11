@@ -21,7 +21,7 @@
             {field: "ALLOW_UPDATE", title: "Allow Update", width: 150},
             {field: "ALLOW_DELETE", title: "Allow Delete", width: 150},
             {field: "REMARKS", title: "Remarks", width: 150},
-            {field: ["ROLE_ID"], title: "Action", width: 120, template: app.genKendoActionTemplate(actiontemplateConfig)}
+            {field: "ROLE_ID", title: "Action", width: 120, template: app.genKendoActionTemplate(actiontemplateConfig)}
         ];
         var map = {
             'ROLE_NAME': 'Name',

@@ -131,5 +131,72 @@ class RulesRepository extends HrisRepository {
                 ORDER BY PRIORITY_INDEX";
         return $this->rawQuery($sql);
     }
+    
+    
+    public function fetchAllTypeWise($sheetNo): Traversable {
+        $query = "SELECT PS.PAY_ID,
+                  PS.PAY_CODE,
+                  PS.PAY_EDESC,
+                  PS.PAY_TYPE_FLAG,
+                  (
+                  CASE
+                    WHEN PS.PAY_TYPE_FLAG ='A'
+                    THEN 'Additon'
+                    WHEN PS.PAY_TYPE_FLAG='D'
+                    THEN 'Deduction'
+                    WHEN PS.PAY_TYPE_FLAG='V'
+                    THEN 'View'
+                    ELSE 'Tax'
+                  END) AS PAY_TYPE,
+                  PS.PRIORITY_INDEX,
+                  PS.INCLUDE_IN_TAX,
+                  (
+                  CASE
+                    WHEN PS.INCLUDE_IN_TAX = 'Y'
+                    THEN 'Yes'
+                    ELSE 'No'
+                  END ) AS INCLUDE_IN_TAX_DETAIL,
+                  PS.INCLUDE_IN_SALARY,
+                  (
+                  CASE
+                    WHEN PS.INCLUDE_IN_SALARY = 'Y'
+                    THEN 'Yes'
+                    ELSE 'No'
+                  END ) AS INCLUDE_IN_SALARY_DETAIL,
+                  PS.INCLUDE_PAST_VALUE,
+                  (
+                  CASE
+                    WHEN PS.INCLUDE_PAST_VALUE = 'Y'
+                    THEN 'Yes'
+                    ELSE 'No'
+                  END ) AS INCLUDE_PAST_VALUE_DETAIL,
+                  PS.INCLUDE_FUTURE_VALUE,
+                  (
+                  CASE
+                    WHEN PS.INCLUDE_FUTURE_VALUE = 'Y'
+                    THEN 'Yes'
+                    ELSE 'No'
+                  END ) AS INCLUDE_FUTURE_VALUE_DETAIL,
+                  PS.DEDUCTION_LIMIT_FLAG,
+                  (
+                  CASE
+                    WHEN PS.DEDUCTION_LIMIT_FLAG = 'Y'
+                    THEN 'Yes'
+                    ELSE 'No'
+                  END ) AS DEDUCTION_LIMIT_FLAG_DETAIL,
+                  PS.FORMULA,
+                  PS.REMARKS,
+                  PS.STATUS
+                  ,SS.SALARY_TYPE_ID
+                  ,PSS.FORMULA AS TYPE_FORMULA
+                  ,PSS.FLAG AS TYPE_FLAG
+                FROM HRIS_PAY_SETUP PS
+                left join (select SALARY_TYPE_ID from Hris_Salary_Sheet where sheet_no={$sheetNo}) SS on (1=1)
+                LEFT JOIN HRIS_PAY_SETUP_SPECIAL PSS ON (PSS.SALARY_TYPE_ID=SS.SALARY_TYPE_ID AND PS.PAY_ID=PSS.PAY_ID)
+                WHERE PS.STATUS ='E' ORDER BY PRIORITY_INDEX";
+
+        $statement = $this->adapter->query($query);
+        return $statement->execute();
+    }
 
 }

@@ -148,6 +148,11 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                             <?php print $this->formElementErrors()->render($remarks, ['class' => 'help-block']); ?>
                         </div>
                     </div>
+                    
+                    <div class="col-sm-4">
+                        <label for="applyOption">Apply Status</label>
+                        <?php print $this->formElement($applyOption); ?>
+                    </div>
 
                 </div>
 

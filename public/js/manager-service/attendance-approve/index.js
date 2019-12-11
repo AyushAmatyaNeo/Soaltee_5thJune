@@ -130,7 +130,7 @@
             var selectedValues = [];
             for (var i in selectItems) {
                 if (selectItems[i].checked) {
-                    selectedValues.push({id: i, role: selectItems[i]['role'], btnAction: btnId});
+                    selectedValues.push({id: i, role: selectItems[i]['role'], btnAction: btnId, status: selectItems[i]['STATUS_DETAIL']});
                 }
             }
             app.bulkServerRequest(document.approveRejectUrl, selectedValues, function () {

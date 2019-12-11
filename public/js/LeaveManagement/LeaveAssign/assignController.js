@@ -9,9 +9,9 @@ angular.module('hris', [])
             var leaveId;
             var leaveYearId;
             $scope.leaveName;
-            $scope.monthSelect=false;
-            $scope.leaveMonthList=[];
-            
+            $scope.monthSelect = false;
+            $scope.leaveMonthList = [];
+
             $scope.checkAll = function (item) {
                 for (var i = 0; i < $scope.leaveList.length; i++) {
                     $scope.leaveList[i].checked = item;
@@ -48,7 +48,7 @@ angular.module('hris', [])
                 var promises = [];
                 for (var index in $scope.leaveList) {
                     if ($scope.leaveList[index].checked) {
-                        promises.push(window.app.pullDataById(document.pushEmployeeLeaveLink, {
+                        promises.push(window.app.serverRequest(document.pushEmployeeLeaveLink, {
                             leaveId: $scope.leaveList[index].LEAVE_ID,
                             employeeId: $scope.leaveList[index].EMPLOYEE_ID,
                             leave: leaveId,
@@ -72,14 +72,14 @@ angular.module('hris', [])
                 $scope.all = false;
                 $scope.leaveName = $('#leaveId>option:selected').text();
                 leaveId = $('#leaveId').val();
-                leaveYearId=$('#leaveYear').val();
+                leaveYearId = $('#leaveYear').val();
                 var q = document.searchManager.getSearchValues();
                 q['leaveId'] = leaveId;
                 q['leaveYear'] = leaveYearId;
                 window.app.serverRequest(document.pullEmployeeLeaveLink, q).then(function (success) {
                     $scope.$apply(function () {
-                        $scope.monthSelect=(success.data[0]['IS_MONTHLY']=='Y')?true:false;
-                        $scope.leaveMonthList=success.leaveMonthData;
+                        $scope.monthSelect = (success.data[0]['IS_MONTHLY'] == 'Y') ? true : false;
+                        $scope.leaveMonthList = success.leaveMonthData;
                         $scope.selectedLeaveMonth = $scope.leaveMonthList[0].LEAVE_YEAR_MONTH_NO;
                         $scope.leaveList = success.data;
                         for (var i = 0; i < $scope.leaveList.length; i++) {

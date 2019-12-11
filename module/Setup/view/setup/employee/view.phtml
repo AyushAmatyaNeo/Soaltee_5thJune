@@ -1,5 +1,7 @@
 <?php
-$this->headScript()->appendFile($this->basePath('js/setup/employee/view.js'))
+$this->headScript()->appendFile($this->basePath('jszip/dist/jszip.min.js'))
+        ->appendFile($this->basePath('telerik_kendoui/js/kendo.all.min.js'))
+        ->appendFile($this->basePath('js/setup/employee/view.js'))
         ->appendFile($this->basePath('assets/global/plugins/jsPDF-master/dist/jspdf.debug.js'));
 ?>
 
@@ -50,6 +52,8 @@ $addrTempStreetAddress = $formOne->get('addrTempStreetAddress');
 $addrTempVdcMunicipalityId = $formOne->get('addrTempVdcMunicipalityId');
 $addrTempDistrictId = $formOne->get('addrTempDistrictId');
 $addrTempZoneId = $formOne->get('addrTempZoneId');
+$addrPermProvinceId = $formOne->get('addrPermProvinceId');
+$addrTempProvinceId = $formOne->get('addrTempProvinceId');
 
 $famFatherName = $formTwo->get('famFatherName');
 $famFatherOccupation = $formTwo->get('famFatherOccupation');
@@ -88,7 +92,16 @@ $positionId = $formFour->get('positionId');
 $designationId = $formFour->get('designationId');
 $departmentId = $formFour->get('departmentId');
 $branchId = $formFour->get('branchId');
-
+$overtimeEligibility = $formFour->get('overtimeEligible');
+$overtimeEligibilityValue = [
+        'Y' => 'Yes',
+        'N' => 'No'
+];
+$wohFlag = $formFour->get('wohFlag');
+$wohFlagValue = [
+        'L' => 'Substitute Leave',
+        'O' => 'Overtime'
+];
 $employeeType = $formFour->get('employeeType');
 $employeeTypeValue = [
     'R' => 'Regular',
@@ -430,6 +443,19 @@ if ($this->messages) {
                     </div>
 
                 </div>
+                
+                <div class="col-xs-12 col-sm-6 col-md-4 col-box">
+                    <div class="row bottomgap">
+
+                        <div class="form-group  <?= empty($addrPermProvinceId->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign">
+                                <?php print $this->formLabel($addrPermProvinceId); ?></div>
+                            <div class="col-xs-6 col-sm-6 col-md-6 cgap">
+                                <?php print $perProvinceName; ?></div>
+                        </div>
+                    </div>
+
+                </div>
 
             </div>
         </div>
@@ -500,6 +526,17 @@ if ($this->messages) {
                                 <?php print $this->formLabel($addrTempVdcMunicipalityId); ?></div>
                             <div class="col-xs-6 col-sm-6 col-md-6 cgap">
                                 <?php print $employeeData['VDC_MUNICIPALITY_NAME_TEMP']; ?></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xs-12 col-sm-6 col-md-4 col-box">
+                    <div class="row bottomgap">
+                        <div class="form-group  <?= empty($addrTempProvinceId->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign">
+                                <?php print $this->formLabel($addrTempProvinceId); ?></div>
+                            <div class="col-xs-6 col-sm-6 col-md-6 cgap">
+                                <?php print $tempProvinceName; ?></div>
                         </div>
                     </div>
                 </div>
@@ -592,6 +629,29 @@ if ($this->messages) {
                         </div>
                     </div>
                 </div>
+                
+                <div class="col-xs-12 col-sm-4 col-md-4">
+                    <div class="row bottomgap">
+
+                        <div class="form-group <?= empty($famMotherName->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-2">
+                                <?php print $this->formLabel($famMotherName); ?></div>
+                            <div class="col-xs-6 col-sm-6 col-md-6 cgap-2">
+                                <?php print $employeeData[\Setup\Model\HrEmployees::FAM_MOTHER_NAME]; ?></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-4 col-md-4">
+                    <div class="row bottomgap">
+                        <div class="form-group <?= empty($famMotherOccupation->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-2">
+                                <?php print $this->formLabel($famMotherOccupation); ?></div>
+                            <div class="col-xs-6 col-sm-6 col-md-6 cgap-2">
+                                <?php print $employeeData[\Setup\Model\HrEmployees::FAM_MOTHER_OCCUPATION]; ?></div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="col-xs-12 col-sm-4 col-md-4">
                     <div class="row bottomgap">
@@ -603,6 +663,19 @@ if ($this->messages) {
                         </div>
                     </div>
                 </div>
+                
+                <div class="col-xs-12 col-sm-4 col-md-4">
+                    <div class="row bottomgap">
+
+                        <div class="form-group <?= empty($famGrandMotherName->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-2">
+                                <?php print $this->formLabel($famGrandMotherName); ?></div>
+                            <div class="col-xs-6 col-sm-6 col-md-6 cgap-2">
+                                <?php print $employeeData[\Setup\Model\HrEmployees::FAM_GRAND_MOTHER_NAME]; ?></div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="col-xs-12 col-sm-4 col-md-4">
                     <div class="row bottomgap">
 
@@ -644,39 +717,8 @@ if ($this->messages) {
 
                 </div>
 
-                <div class="col-xs-12 col-sm-4 col-md-4">
-                    <div class="row bottomgap">
-
-                        <div class="form-group <?= empty($famMotherName->getMessages()) ? "" : "error" ?>">
-                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-2">
-                                <?php print $this->formLabel($famMotherName); ?></div>
-                            <div class="col-xs-6 col-sm-6 col-md-6 cgap-2">
-                                <?php print $employeeData[\Setup\Model\HrEmployees::FAM_MOTHER_NAME]; ?></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-xs-12 col-sm-4 col-md-4">
-                    <div class="row bottomgap">
-                        <div class="form-group <?= empty($famMotherOccupation->getMessages()) ? "" : "error" ?>">
-                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-2">
-                                <?php print $this->formLabel($famMotherOccupation); ?></div>
-                            <div class="col-xs-6 col-sm-6 col-md-6 cgap-2">
-                                <?php print $employeeData[\Setup\Model\HrEmployees::FAM_MOTHER_OCCUPATION]; ?></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-4 col-md-4">
-                    <div class="row bottomgap">
-
-                        <div class="form-group <?= empty($famGrandMotherName->getMessages()) ? "" : "error" ?>">
-                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-2">
-                                <?php print $this->formLabel($famGrandMotherName); ?></div>
-                            <div class="col-xs-6 col-sm-6 col-md-6 cgap-2">
-                                <?php print $employeeData[\Setup\Model\HrEmployees::FAM_GRAND_MOTHER_NAME]; ?></div>
-                        </div>
-                    </div>
-                </div>
+                
+                
 
                 <div class="col-xs-12 col-sm-4 col-md-4">
                     <div class="row bottomgap">
@@ -1018,6 +1060,29 @@ if ($this->messages) {
 
 
                 </div>
+
+                <div class="col-xs-12 col-sm-4 col-md-4">
+                    <div class="row bottomgap">
+                        <div class="form-group<?= empty($overtimeEligibility->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-4">
+                                <?php print $this->formLabel($overtimeEligibility); ?></div>
+                            <div class="col-xs-6 col-sm-6 cgap-4">
+                                <?php print $overtimeEligibilityValue[$employeeData[\Setup\Model\HrEmployees::OVERTIME_ELIGIBLE]] ?></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-4 col-md-4">
+                    <div class="row bottomgap">
+                        <div class="form-group<?= empty($wohFlag->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-4">
+                                <?php print $this->formLabel($wohFlag); ?></div>
+                            <div class="col-xs-6 col-sm-6 cgap-4">
+                                <?php print $wohFlagValue[$employeeData[\Setup\Model\HrEmployees::WOH_FLAG]]; ?></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -1311,7 +1376,63 @@ if ($this->messages) {
                 </div>
             </div>
         </div>
+        
+        
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="status-info"> 
+                    <p><i class="fa fa-info-circle ticon ticon"></i>Relation Details</p>
+                    <div class="row clearfix e-setup">
+                        <div class="col-sm-12">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-bordered table-hover no-footer customtbl profile-table-header" id="assetTbl">
+                                    <tr>
+                                        <td><label>Name</label></td>
+                                        <td><label>Relation</label></td>
+                                        <td><label>DOB</label></td>
+                                        <td><label>Dependent</label></td>
+                                        <td><label>Nominee</label></td>
+                                    </tr>
+
+                                    <?php
+                                    foreach ($relationDetails as $relation) {
+                                        ?>
+                                        <tr>
+                                            <td>
+                                                <?php print $relation['PERSON_NAME']; ?>
+                                            </td>
+                                            <td>
+                                                <?php print $relation['RELATION_NAME']; ?>
+                                            </td>
+                                            <td>
+                                                <?php print $relation['DOB']; ?>
+                                            </td>
+                                            <td>
+                                                <?php print ($relation['IS_DEPENDENT'] == 'Y') ? 'Yes' : 'No';  ?>
+                                            </td>
+                                            <td>
+                                                <?php print ($relation['IS_NOMINEE'] == 'Y') ? 'Yes' : 'No';  ?>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
     </div>
+    
+    <div class="row">
+        <div class="cols-sm-4 col-sm-offset-4">
+            <button id="exportPdf" class="btn btn-success">Print</button>
+        </div>
+    </div>
+     
 </div>
 
 

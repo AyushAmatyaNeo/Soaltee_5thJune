@@ -13,6 +13,7 @@
                     $("#" + key).val(value).change();
                 });
             }
+//            $(".form-control").val("");
         });
     });
 })(window.jQuery, window.app);
@@ -90,6 +91,8 @@ angular.module('hris', [])
                                     template: "<span> #: (ATTENDANCE_DT_N == null) ? '-' : ATTENDANCE_DT_N #</span>"}]},
                         {field: "IN_TIME", title: "Check In"},
                         {field: "OUT_TIME", title: "Check Out"},
+                        {field: "START_TIME", title: "Start Time"},
+                        {field: "END_TIME", title: "End Time"},
                         {field: "TOTAL_HOUR", title: "Total Hour"},
                         {field: "STATUS", title: "Status"},
                         {field: "IN_REMARKS", title: "Late In Reason"},
@@ -107,6 +110,8 @@ angular.module('hris', [])
                             'ATTENDANCE_DT_N': ' Attendance Date(BS)',
                             'IN_TIME': 'In Time',
                             'OUT_TIME': 'Out Time',
+                            'START_TIME': 'Start Time',
+                            'END_TIME': 'End Time',
                             'TOTAL_HOUR': 'Total Hour',
                             'STATUS': 'Status',
                             'IN_REMARKS': 'In Remarks',

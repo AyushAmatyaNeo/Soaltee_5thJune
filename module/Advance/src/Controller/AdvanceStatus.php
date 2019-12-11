@@ -39,7 +39,7 @@ class AdvanceStatus extends HrisController {
             }
         }
 
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'status', 'class' => 'form-control', 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'status', 'class' => 'form-control reset-field', 'label' => 'Status']);
         return Helper::addFlashMessagesToArray($this, [
                 'status' => $statusSE,
                 'searchValues' => EntityHelper::getSearchData($this->adapter),

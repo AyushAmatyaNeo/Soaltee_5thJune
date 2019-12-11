@@ -41,12 +41,12 @@
             map['L' + leaveList[i]['LEAVE_ID'] + '_' + 'BALANCE'] = leaveList[i]['LEAVE_ENAME'] + '(Balance)';
         }
 
-        app.initializeKendoGrid($table, columns);
+        app.initializeKendoGrid($table, columns, null, null, null, 'Monthly Leave Balance Report.xlsx');
         app.searchTable($table, ['EMPLOYEE_ID', 'EMPLOYEE_CODE']);
         var months = null;
-        var $year = $('#fiscalYear');
-        var $month = $('#fiscalMonth');
-        app.setFiscalMonth($year, $month, function (yearList, monthList, currentMonth) {
+        var $year = $('#leaveYear');
+        var $month = $('#leaveMonth');
+        app.setLeaveMonth($year, $month, function (yearList, monthList, currentMonth) {
             months = monthList;
         });
 
@@ -61,7 +61,10 @@
                 return;
             }
             var q = document.searchManager.getSearchValues();
-            q['fiscalYearMonthNo'] = selectedMonthList[0]['FISCAL_YEAR_MONTH_NO'];
+            q['leaveYearMonthNo'] = selectedMonthList[0]['LEAVE_YEAR_MONTH_NO'];
+            
+            console.log(q);
+            
             app.pullDataById('', q).then(function (success) {
                 app.renderKendoGrid($table, success.data);
             }, function (failure) {

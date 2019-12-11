@@ -25,7 +25,7 @@ $this->headScript()
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
     document.getSearchDataLink = '<?php echo $this->url('allreport', ['action' => 'getSearchData']); ?>';
     document.getFiscalYearMonthLink = '<?php echo $this->url('allreport', ['action' => 'getFiscalYearMonth']); ?>';
-
+document.preference =<?php echo json_encode($preference) ?>;
 </script>
 
 
@@ -128,31 +128,31 @@ $this->headScript()
 
             <div class="row margin-top-10">
                 <div class="col-sm-2">
-                    <select class="form-control"  id="fiscalYearId" >
+                    <select class="form-control reset-field"  id="fiscalYearId" >
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <select class="form-control" id="monthId" >
+                    <select class="form-control reset-field" id="monthId" >
                     </select>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="fromDate" name="fromDate"  class="form-control" placeholder="From Date"/>
+                        <input type="text" id="fromDate" name="fromDate"  class="form-control reset-field" placeholder="From Date"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control" placeholder="From Date Nepali"/>
+                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control reset-field" placeholder="From Date Nepali"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="toDate" name="toDate"  class="form-control" placeholder="To Date"/>
+                        <input type="text" id="toDate" name="toDate"  class="form-control reset-field" placeholder="To Date"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
                     </div>
                 </div>
             </div>
@@ -171,7 +171,7 @@ $this->headScript()
                 <?php // print $this->formElement($fiscalYearSE); ?>
                                 </div>-->
                 <div class="col-sm-4 col-sm-offset-8">
-                    <button class="btn default btn-sm pull-right hris-filter-reset-btn">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

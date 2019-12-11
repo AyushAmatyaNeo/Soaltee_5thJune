@@ -26,7 +26,7 @@ class TrainingApplyController extends HrisController {
 
     
     public function addAction(){
-        
+         
          return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
 //                    'advance' => EntityHelper::getTableList($this->adapter, AdvanceSetupModel::TABLE_NAME, ['*'], [AdvanceSetupModel::STATUS => 'E']),

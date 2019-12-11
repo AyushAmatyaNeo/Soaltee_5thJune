@@ -205,11 +205,12 @@ class AttendanceStatusRepository extends HrisRepository {
         $serviceTypeId = $data['serviceTypeId'];
         $serviceEventTypeId = $data['serviceEventTypeId'];
         $employeeTypeId = $data['employeeTypeId'];
+        $functionalTypeId = $data['functionalTypeId'];
         $attendanceRequestStatusId = $data['attendanceRequestStatusId'];
         $fromDate = $data['fromDate'];
         $toDate = $data['toDate'];
 
-        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, null, null, $functionalTypeId);
         $statusCondition = "";
         $fromDateCondition = "";
         $toDateCondition = "";

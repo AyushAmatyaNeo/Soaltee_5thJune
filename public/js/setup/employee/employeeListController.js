@@ -100,7 +100,9 @@
             'EMERG_CONTACT_NO': 'Emergency Contact No',
             'ID_ACCOUNT_NO': 'Account No',
             'BANK_ACCOUNT': 'BANK',
-            'ID_THUMB_ID': 'THUMB ID'
+            'ID_THUMB_ID': 'THUMB ID',
+            'ID_PROVIDENT_FUND_NO':'Provident Fund',
+            'ID_PAN_NO':'Pan'
         }; 
 
         var exportColumnParameters = [];
@@ -155,5 +157,6 @@
                 app.showMessage(error, 'error');
             }); 
         });
+        
     }); 
 })(window.jQuery, window.app);

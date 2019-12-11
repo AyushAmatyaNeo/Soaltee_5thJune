@@ -21,7 +21,7 @@
             {field: "FULL_NAME", title: "Employee Name", width: 150},
             {field: "USER_NAME", title: "User Name", width: 150},
             {field: "STATUS", title: "Status", width: 150},
-            {field: ["USER_ID"], title: "Action", width: 120, template: app.genKendoActionTemplate(actiontemplateConfig)}
+            {field: "USER_ID", title: "Action", width: 120, template: app.genKendoActionTemplate(actiontemplateConfig)}
         ];
         var map = {
             'COMPANY_NAME': 'Company',

@@ -21,6 +21,7 @@ $this->headScript()
     document.datas =<?php echo json_encode($datas); ?>;
     document.getFiscalYearMonthLink = '<?php echo $this->url('payrollReport', ['action' => 'getFiscalYearMonth']); ?>';
     document.pullGradeBasicLink = '<?= $this->url("payrollReport", ["action" => "pullGradeBasic"]) ?>';
+    document.preference =<?php echo json_encode($preference) ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\monthlyValue')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -109,17 +110,17 @@ $this->headScript()
                         </div>
                         <div class="col-sm-2">
                             <label>Variables</label>
-                            <select multiple class="form-control" name="otVariable" id="otVariable">
+                            <select multiple class="form-control reset-field" name="otVariable" id="otVariable">
                             </select>
                         </div>
                         <div class="col-sm-2">
                             <label>Extra Fields</label>
-                            <select multiple class="form-control" name="extraFields" id="extraFields">
+                            <select multiple class="form-control reset-field" name="extraFields" id="extraFields">
                             </select>
                         </div>
                         <div class="col-sm-2">
                             <label>Report Type</label>
-                            <select class="form-control" name="reportType" id="reportType">
+                            <select class="form-control reset-field" name="reportType" id="reportType">
                                 <option value="B">Basic</option>
                                 <option value="D">Days</option>
                                 <option value="S">Summary</option>
@@ -127,8 +128,15 @@ $this->headScript()
                         </div>
                     </div>
                     <div class="row margin-top-10">
+                        <div class="col-sm-2">
+                            <label> To Month</label>
+                            <select id="extraMonth">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row margin-top-10">
                         <div class="col-sm-4 col-sm-offset-8">
-                            <button id="reset" class="btn default btn-sm pull-right">
+                            <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                                 Reset
                                 <i class="fa fa-refresh"></i>
                             </button>

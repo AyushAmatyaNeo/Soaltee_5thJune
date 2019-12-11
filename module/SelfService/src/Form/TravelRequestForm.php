@@ -47,12 +47,29 @@ class TravelRequestForm{
     
     /**
      * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Options({"label":"No of Days"})
+     * @Annotation\Required(true)
+     * @Annotation\Attributes({ "id":"noOfDays", "class":"form-control","readonly":"true"})
+     */
+    public $noOfDays;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Required(true)
      * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
      * @Annotation\Options({"label":"Destination"})
      * @Annotation\Attributes({ "class":"form-destination","class":"form-control"})
      */
     public $destination;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(true)
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"label":"Departure"})
+     * @Annotation\Attributes({ "class":"form-departure","class":"form-control"})
+     */
+    public $departure;
     
     /**
      * @Annotation\Type("Zend\Form\Element\Select")

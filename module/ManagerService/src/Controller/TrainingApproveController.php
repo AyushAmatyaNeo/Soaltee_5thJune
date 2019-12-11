@@ -1,4 +1,5 @@
 <?php
+
 namespace ManagerService\Controller;
 
 use Application\Controller\HrisController;
@@ -58,11 +59,11 @@ class TrainingApproveController extends HrisController {
         $trainingRequestModel->exchangeArrayFromDB($detail);
         $this->form->bind($trainingRequestModel);
         return Helper::addFlashMessagesToArray($this, [
-                'form' => $this->form,
-                'id' => $id,
-                'role' => $role,
-                'detail' => $detail,
-                'customRenderer' => Helper::renderCustomView()
+                    'form' => $this->form,
+                    'id' => $id,
+                    'role' => $role,
+                    'detail' => $detail,
+                    'customRenderer' => Helper::renderCustomView()
         ]);
     }
 
@@ -78,11 +79,11 @@ class TrainingApproveController extends HrisController {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'status', 'class' => 'form-control', 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'status', 'class' => 'form-control reset-field', 'label' => 'Status']);
         return $this->stickFlashMessagesTo([
-                'status' => $statusSE,
-                'recomApproveId' => $this->employeeId,
-                'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'status' => $statusSE,
+                    'recomApproveId' => $this->employeeId,
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
         ]);
     }
 
@@ -155,4 +156,5 @@ class TrainingApproveController extends HrisController {
         }
         return $this->trainingList;
     }
+
 }

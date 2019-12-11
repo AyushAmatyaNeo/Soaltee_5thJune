@@ -207,12 +207,12 @@ class AdvanceApprove extends HrisController {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'advanceRequestStatusId', 'class' => 'form-control', 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'advanceRequestStatusId', 'class' => 'form-control reset-field', 'label' => 'Status']);
         return $this->stickFlashMessagesTo([
                 'advanceStatus' => $statusSE,
                 'recomApproveId' => $this->employeeId,
                 'searchValues' => EntityHelper::getSearchData($this->adapter),
-        ]);
+         ]);
     }
 
     public function advancePaymentAdd($details) {

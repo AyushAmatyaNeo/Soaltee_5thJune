@@ -43,12 +43,15 @@ $addrPermStreetAddress = $formOne->get('addrPermStreetAddress');
 $addrPermVdcMunicipalityId = $formOne->get('addrPermVdcMunicipalityId');
 $addrPermDistrictId = $formOne->get('addrPermDistrictId');
 $addrPermZoneId = $formOne->get('addrPermZoneId');
+$addrPermProvinceId = $formOne->get('addrPermProvinceId');
+
 $addrTempHouseNo = $formOne->get('addrTempHouseNo');
 $addrTempWardNo = $formOne->get('addrTempWardNo');
 $addrTempStreetAddress = $formOne->get('addrTempStreetAddress');
 $addrTempVdcMunicipalityId = $formOne->get('addrTempVdcMunicipalityId');
 $addrTempDistrictId = $formOne->get('addrTempDistrictId');
 $addrTempZoneId = $formOne->get('addrTempZoneId');
+$addrTempProvinceId = $formOne->get('addrTempProvinceId');
 
 //Custom validation
 if (key($mobileNo->getMessages()) == "regexNotMatch") {
@@ -445,6 +448,20 @@ $formOne->prepare();
                 </div>
 
             </div>
+            
+            <div class="col-xs-12 col-sm-6 col-md-3 col-box">
+                <div class="row bottomgap">
+
+                    <div class="form-group  <?= empty($addrPermProvinceId->getMessages()) ? "" : "error" ?>">
+                        <div class="col-xs-6 col-sm-6 col-md-6 rightalign">
+                            <?php print $this->formLabel($addrPermProvinceId); ?></div>
+                        <div class="col-xs-6 col-sm-6 col-md-6 cgap">
+                            <?php print $this->formElement($addrPermProvinceId); ?></div>
+                        <?php print $this->formElementErrors()->render($addrPermProvinceId, ['class' => 'help-block error']); ?>
+                    </div>
+                </div>
+
+            </div>
 
         </div>
         <div class="Temporary-info">
@@ -526,6 +543,20 @@ $formOne->prepare();
                         </div>
                     </div>
                     <?php print $this->formElementErrors()->render($addrTempVdcMunicipalityId, ['class' => 'help-block error']); ?>
+
+                </div>
+                
+                <div class="col-xs-12 col-sm-6 col-md-3 col-box">
+                    <div class="row bottomgap">
+                        <div class="form-group  <?= empty($addrTempProvinceId->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign">
+                                <?php print $this->formLabel($addrTempProvinceId); ?></div>
+                            <div class="col-xs-6 col-sm-6 col-md-6 cgap">
+                                <?php print $this->formElement($addrTempProvinceId); ?></div>
+                            <?php print $this->formElementErrors()->render($addrTempProvinceId, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                    <?php print $this->formElementErrors()->render($addrTempProvinceId, ['class' => 'help-block error']); ?>
 
                 </div>
             </div>

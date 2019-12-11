@@ -13,6 +13,8 @@ $this->headScript()->appendFile($this->basePath('js/LeaveManagement/LeaveAssign/
     document.pullEmployeeLeaveLink = '<?php echo $this->url("leaveassign", ["action" => "pullEmployeeLeave"]) ?>';
     document.pushEmployeeLeaveLink = '<?php echo $this->url("leaveassign", ["action" => "pushEmployeeLeave"]) ?>';
     document.getSearchDataLink = '<?php echo $this->url('leaveassign', ['action' => 'getSearchData']); ?>';
+    document.acl =<?php echo json_encode($acl); ?>;
+    document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\leaveassign')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -103,7 +105,7 @@ $this->headScript()->appendFile($this->basePath('js/LeaveManagement/LeaveAssign/
             
             <div class="row margin-top-10">
                 <div class=" col-sm-offset-8 col-sm-4">
-                    <button class="btn default btn-sm pull-right">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn ">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

@@ -48,7 +48,10 @@ return [
     'MobileApi',
     'Customer',
     'Medical',
-    'PayrollApi'
+    'PayrollApi',
+    'Cafeteria',
+    'KioskApi',
+    'Cron'
 ];
 
 

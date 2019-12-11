@@ -27,6 +27,8 @@ $form->prepare();
 ?>
 <script>
     window.formulaData =<?php echo $formulaData ?>;
+    document.salaryTypes =<?php echo json_encode($salaryTypes); ?>;
+    document.specialRules =<?php echo json_encode($specialRules); ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\rules')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -132,6 +134,29 @@ $form->prepare();
                             <?php print $this->formElement($remarks); ?>
                             <?php print $this->formElementErrors()->render($remarks, ['class' => 'help-block']); ?>
                         </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3 col-lg-4" style="background-color: lightgray;">
+                    <div class="row">
+                    <div class="col-sm-6 col-md-6 col-lg-6">
+                        <div class="form-group">
+                            <label>Salary Type</label>
+                            <select class="form-control" name="salaryType" id="salaryType">
+                                <?php for($i = 0; $i < count($salaryTypes); $i++){ ?>
+                                    <option value="<?=$salaryTypes[$i]['SALARY_TYPE_ID']?>"><?=$salaryTypes[$i]['SALARY_TYPE_NAME']?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-6">
+                        <div class="form-group flagContainer">
+                            <label>Flag</label>
+                            <select class="form-control" name="flag" id="flag">
+                                <option selected="selected" value="N">No</option>
+                                <option value="Y">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    </div>
                     </div>
                     <div class="col-sm-12 col-md-12 col-lg-12">
                         <div class="form-group">

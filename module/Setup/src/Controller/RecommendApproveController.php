@@ -41,10 +41,10 @@ class RecommendApproveController extends HrisController {
         }
 
         $recommeders = EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["EMPLOYEE_CODE","FULL_NAME"], ["STATUS" => "E"], "FULL_NAME", "ASC", " - ", [-1 => "All Recommender"], true);
-        $recommenderSE = $this->getSelectElement(['name' => 'recommender', "id" => "recommenderId", "class" => "form-control", "label" => "Recommender"], $recommeders);
+        $recommenderSE = $this->getSelectElement(['name' => 'recommender', "id" => "recommenderId", "class" => "form-control reset-field", "label" => "Recommender"], $recommeders);
 
         $approvers = EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["EMPLOYEE_CODE","FULL_NAME"], ["STATUS" => "E"], "FULL_NAME", "ASC", " - ", [-1 => "All Approver"], true);
-        $approverSE = $this->getSelectElement(['name' => 'approver', "id" => "approverId", "class" => "form-control", "label" => "Approver"], $approvers);
+        $approverSE = $this->getSelectElement(['name' => 'approver', "id" => "approverId", "class" => "form-control reset-field", "label" => "Approver"], $approvers);
 
         return $this->stickFlashMessagesTo([
                     'approverFormElement' => $recommenderSE,

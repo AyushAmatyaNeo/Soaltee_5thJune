@@ -54,7 +54,7 @@ class ShiftRepository implements RepositoryInterface {
                     ShiftSetup::ACTUAL_WORKING_HR
                 ]), false);
         $select->from(['S' => ShiftSetup::TABLE_NAME]);
-        $select->join(['C' => Company::TABLE_NAME], "C." . Company::COMPANY_ID . "=S." . ShiftSetup::COMPANY_ID, [Company::COMPANY_NAME => new Expression('INITCAP(C.COMPANY_NAME)')], 'left');
+        $select->join(['C' => Company::TABLE_NAME], "C." . Company::COMPANY_ID . "=S." . ShiftSetup::COMPANY_ID, [Company::COMPANY_NAME => new Expression('(C.COMPANY_NAME)')], 'left');
         $select->where(["S." . ShiftSetup::STATUS . "='E'"]);
         $select->order("S." . ShiftSetup::SHIFT_ENAME . " ASC");
         $statement = $sql->prepareStatementForSqlObject($select);

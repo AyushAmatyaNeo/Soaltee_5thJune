@@ -109,6 +109,7 @@ class FlatValue extends HrisController {
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
                     'flatValues' => $flatValues,
                     'fiscalYears' => $fiscalYears,
+                    'acl' => $this->acl,
         ]);
     }
 
@@ -124,7 +125,7 @@ class FlatValue extends HrisController {
             $employeeFilter = $postedData['employeeFilter'];
             $detailRepo = new FlatValueDetailRepo($this->adapter);
             $result = $detailRepo->getFlatValuesDetailById($flatId, $fiscalYearId, $employeeFilter);
-
+            //echo '<pre>'; print_r(Helper::extractDbData($result)); die;
             return new JsonModel(['success' => true, 'data' => Helper::extractDbData($result), 'error' => '']);
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
@@ -231,7 +232,7 @@ class FlatValue extends HrisController {
                             $data['flatId'] = $importDetails['E'];
                             $data['flatValue'] = $importDetails['F'];
 
-                            if ($data['flatValue']) {
+                            if ($data['employeeId']) {
                                 $detailRepo->postFlatValuesDetail($data);
                             }
                         }
@@ -252,4 +253,118 @@ class FlatValue extends HrisController {
         }
     }
 
+    public function bulkDetailAction() {
+        $flatValues = EntityHelper::getTableList($this->adapter, FlatValueModel::TABLE_NAME, [FlatValueModel::FLAT_ID, FlatValueModel::FLAT_EDESC], [FlatValueModel::STATUS => EntityHelper::STATUS_ENABLED, FlatValueModel::ASSIGN_TYPE => 'E']);
+        $fiscalYears = EntityHelper::getTableList($this->adapter, FiscalYear::TABLE_NAME, [FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME]);
+        return $this->stickFlashMessagesTo([
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'flatValues' => $flatValues,
+                    'fiscalYears' => $fiscalYears,
+                    'acl' => $this->acl,
+        ]);
+    }
+
+    //From here flat value assign changes added
+    public function getBulkFlatValueDetailAction() {
+        try {
+            $request = $this->getRequest();
+            if (!$request->isPost()) {
+                throw new Exception("The request should be of type post");
+            }
+            $postedData = $request->getPost();
+            $flatId = $postedData['flatId'];
+            $pivotString = '';
+            for($i = 0; $i < count($flatId); $i++){
+                if($i != 0){ $pivotString.=','; }
+                $pivotString.= $flatId[$i].' AS F_'.$flatId[$i];
+            }
+            $fiscalYearId = $postedData['fiscalYearId'];
+            $employeeFilter = $postedData['employeeFilter'];
+            $detailRepo = new FlatValueDetailRepo($this->adapter);
+            $result = $detailRepo->getBulkFlatValuesDetailById($pivotString, $fiscalYearId, $employeeFilter);
+            $columns = $detailRepo->getColumns($flatId);
+            return new JsonModel(['success' => true, 'data' => Helper::extractDbData($result), 'error' => '', 'columns' => Helper::extractDbData($columns)]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function postBulkFlatValueDetailAction() {
+        try {
+            $request = $this->getRequest();
+            if (!$request->isPost()) {
+                throw new Exception("The request should be of type post");
+            }
+            $postedData = $request->getPost();
+            $data = $postedData['data'];
+            $fiscalYearId = $postedData['fiscalYearId'];
+            $detailRepo = new FlatValueDetailRepo($this->adapter);
+            foreach($data as $d){
+                if($d['employeeId'] == null || $d['employeeId'] == ''){
+                    continue;
+                }
+                $detailRepo->postBulkFlatValuesDetail($d, $fiscalYearId);
+            }
+            return new JsonModel(['success' => true, 'error' => '']);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function positionWiseFlatValueAction() {
+        $fiscalYears = EntityHelper::getTableList($this->adapter, FiscalYear::TABLE_NAME, [FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME]);
+        $flatValues = EntityHelper::getTableList($this->adapter, FlatValueModel::TABLE_NAME, [FlatValueModel::FLAT_ID, FlatValueModel::FLAT_EDESC], [FlatValueModel::STATUS => EntityHelper::STATUS_ENABLED, FlatValueModel::ASSIGN_TYPE => 'P']);
+        $positions = EntityHelper::getTableList($this->adapter, Position::TABLE_NAME, [Position::POSITION_ID, Position::POSITION_NAME, Position::LEVEL_NO]);
+        return $this->stickFlashMessagesTo([
+                    'fiscalYears' => $fiscalYears,
+                    'flatValues' => $flatValues,
+                    'positions' => $positions,
+        ]);
+    }
+
+    public function getPositionWiseFlatValueAction() {
+        try {
+            $request = $this->getRequest();
+            if (!$request->isPost()) {
+                throw new Exception("The request should be of type post");
+            }
+            $postedData = $request->getPost();
+            $flatId = $postedData['flatId'];
+            $positionId = $postedData['positionId'];
+            $pivotString = '';
+            for($i = 0; $i < count($flatId); $i++){
+                if($i != 0){ $pivotString.=','; }
+                $pivotString.= $flatId[$i].' AS F_'.$flatId[$i];
+            }
+            $fiscalYearId = $postedData['fiscalYearId'];
+            $detailRepo = new FlatValueDetailRepo($this->adapter);
+            $result = $detailRepo->getPositionWiseFlatValue($pivotString, $fiscalYearId, $postedData['positionId']);
+            $columns = $detailRepo->getColumns($flatId);
+            return new JsonModel(['success' => true, 'data' => Helper::extractDbData($result), 'error' => '', 'columns' => Helper::extractDbData($columns)]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function setPositionWiseFlatValueAction() {
+        try {
+            $request = $this->getRequest();
+            if (!$request->isPost()) {
+                throw new Exception("The request should be of type post");
+            }
+            $postedData = $request->getPost();
+            $data = $postedData['data'];
+            $fiscalYearId = $postedData['fiscalYearId'];
+            $detailRepo = new FlatValueDetailRepo($this->adapter);
+            foreach($data as $d){
+                if($d['positionId'] == null || $d['positionId'] == ''){
+                    continue;
+                }
+                $detailRepo->setPositionWiseFlatValue($d, $fiscalYearId);
+            } 
+            return new JsonModel(['success' => true, 'error' => '']);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'error' => $e->getMessage()]);
+        }
+    }
 }

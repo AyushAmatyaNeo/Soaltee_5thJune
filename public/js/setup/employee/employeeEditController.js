@@ -594,8 +594,8 @@
                                         relationId: $scope.relationList[tempIndex],
                                         personName: relationList[j].PERSON_NAME,
                                         dob: relationList[j].DOB,
-                                        isDependent: $scope.ConditionalType[relationList[j].IS_NOMINEE_DET],
-                                        isNominee: $scope.ConditionalType[relationList[j].IS_DEPENDENT_DET],
+                                        isDependent: $scope.ConditionalType[relationList[j].IS_DEPENDENT_DET],
+                                        isNominee: $scope.ConditionalType[relationList[j].IS_NOMINEE_DET],
                                         checkbox: "checkboxr"+ j,
                                         checked: false
                                     }));

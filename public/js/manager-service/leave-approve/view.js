@@ -1,6 +1,7 @@
 (function ($) {
     'use strict';
     $(document).ready(function (e) {
+      app.startEndDatePickerWithNepali('nepaliStartDate1', 'startDate', 'nepaliEndDate1', 'endDate');
         $("#approve").on("click", function () {
             try {
                 var recommendRemarksId = $("#form-recommendedRemarks");

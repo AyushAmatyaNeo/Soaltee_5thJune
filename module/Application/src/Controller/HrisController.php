@@ -192,10 +192,10 @@ class HrisController extends AbstractActionController {
             $sql = "SELECT {$postedData['columnName']}
                     FROM {$postedData['tableName']}
                     WHERE {$postedData['columnName']} = {$postedData['columnValue']}
-                    AND {$postedData['columnName']}  !=
+                    AND ( {$postedData['columnName']}  !=
                       (SELECT {$postedData['columnName']}
                       FROM {$postedData['tableName']}
-                      WHERE {$postedData['pkName']} = {$postedData['pkValue']})";
+                      WHERE {$postedData['pkName']} = {$postedData['pkValue']} ) or 1=1)";
             $result = EntityHelper::rawQueryResult($this->adapter, $sql);
             $data['notUnique'] = count($result) > 0;
             $data['message'] = "Already Reserved";

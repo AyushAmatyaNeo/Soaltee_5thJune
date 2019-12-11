@@ -10,6 +10,7 @@
                     $("#" + key).val(value).change();
                 });
             }
+             $(".form-control").val("");
         });
 
         var $table = $('#table');
@@ -60,7 +61,7 @@
             {field: "REQUESTED_AMOUNT", title: "Request Amt."},
             {field: "REQUESTED_TYPE", title: "Request For"},
             {field: "STATUS_DETAIL", title: "Status"},
-            {field: ["TRAVEL_ID", "ALLOW_EDIT", "ALLOW_DELETE"], title: "Action", template: action}
+            {field: "TRAVEL_ID", title: "Action", template: action}
         ]);
 
 

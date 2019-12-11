@@ -50,7 +50,7 @@ class PositionRepository implements RepositoryInterface {
         $select = $sql->select();
         $select->columns(EntityHelper::getColumnNameArrayWithOracleFns(Position::class, [Position::POSITION_NAME], NULL, NULL, NULL, NULL, 'P', FALSE, FALSE), false);
         $select->from(['P' => Position::TABLE_NAME]);
-        $select->join(['C' => Company::TABLE_NAME], "C." . Company::COMPANY_ID . "=P." . Position::COMPANY_ID, [Company::COMPANY_NAME => new Expression('INITCAP(C.COMPANY_NAME)')], 'left');
+        $select->join(['C' => Company::TABLE_NAME], "C." . Company::COMPANY_ID . "=P." . Position::COMPANY_ID, [Company::COMPANY_NAME => new Expression('(C.COMPANY_NAME)')], 'left');
         $select->where(["P." . Position::STATUS . "='E'"]);
         $select->order("P." . Position::LEVEL_NO . " ASC");
 

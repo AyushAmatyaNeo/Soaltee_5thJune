@@ -72,6 +72,24 @@ class RoleSetupForm {
      * @Annotation\Attributes({ "id":"selectOptions","class":"form-control","multiple":"True"})
      */
     public $selectOptions;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"Hr Approve"})
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({ "id":"hrApprove"})
+     */
+    public $hrApprove;
+  
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"Hr Cancel"})
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({ "id":"hrCancel"})
+     */
+    public $hrCancel;
   
     /**
      * @Annotation\Type("Zend\Form\Element\Submit")

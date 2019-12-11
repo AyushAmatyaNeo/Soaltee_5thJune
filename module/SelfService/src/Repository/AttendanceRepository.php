@@ -273,7 +273,10 @@ class AttendanceRepository implements RepositoryInterface {
                     THEN 'Present(Late In and Early Out)'
                     WHEN A.OVERALL_STATUS ='LA'
                     THEN 'Present(Third Day Late)'
-                  END)AS STATUS
+                  END)AS STATUS,
+                  SS.SHIFT_ENAME        AS SHIFT_NAME,
+                  SS.START_TIME AS START_TIME,
+                  SS.END_TIME AS END_TIME
                 FROM HRIS_ATTENDANCE_DETAIL A
                 LEFT JOIN HRIS_EMPLOYEES E
                 ON A.EMPLOYEE_ID=E.EMPLOYEE_ID
@@ -287,6 +290,14 @@ class AttendanceRepository implements RepositoryInterface {
                 ON (ETN.REQUEST_ID=A.TRAINING_ID AND A.TRAINING_TYPE ='R')
                 LEFT JOIN HRIS_EMPLOYEE_TRAVEL_REQUEST TVL
                 ON A.TRAVEL_ID      =TVL.TRAVEL_ID
+                LEFT JOIN
+                (SELECT SA.EMPLOYEE_ID, SA.SHIFT_ID, S.SHIFT_ENAME,
+                TO_CHAR(S.START_TIME, 'HH:MI AM') AS START_TIME,
+                TO_CHAR(S.END_TIME, 'HH:MI AM')   AS END_TIME
+                FROM HRIS_EMPLOYEE_SHIFT_ASSIGN SA
+                LEFT JOIN HRIS_SHIFTS S
+                ON (SA.SHIFT_ID        = S.SHIFT_ID)) SS 
+                ON SS.EMPLOYEE_ID = A.EMPLOYEE_ID
                 WHERE 1=1
                 {$employeeCondition}
                 {$fromDateCondition}

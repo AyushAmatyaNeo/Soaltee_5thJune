@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE HRIS_REATTENDANCE(
+create or replace PROCEDURE HRIS_REATTENDANCE(
     P_FROM_ATTENDANCE_DT HRIS_ATTENDANCE.ATTENDANCE_DT%TYPE,
     P_EMPLOYEE_ID HRIS_ATTENDANCE.EMPLOYEE_ID%TYPE:=NULL,
     P_TO_ATTENDANCE_DT DATE                       :=NULL)
@@ -35,6 +35,7 @@ AS
   V_HALF_INTERVAL      DATE;
   v_NEXT_HALF_INTERVAL DATE;
   v_training_id          number;
+  v_roaster_shift_id number;
 BEGIN
   IF P_TO_ATTENDANCE_DT IS NOT NULL THEN
     V_TO_ATTENDANCE_DT  :=P_TO_ATTENDANCE_DT;
@@ -88,15 +89,30 @@ BEGIN
       V_TWO_DAY_SHIFT  := employee.TWO_DAY_SHIFT;
       V_IGNORE_TIME    :=employee.IGNORE_TIME;
       V_SHIFT_ID       := employee.SHIFT_ID;
+      v_roaster_shift_id := null;
+      
+      begin
+      select CASE when  shift_id > 0 then shift_id else null end into v_roaster_shift_id
+      from HRIS_EMPLOYEE_SHIFT_ROASTER where employee_id=employee.EMPLOYEE_ID and FOR_DATE=employee.ATTENDANCE_DT;
+      EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+          null;
+        END;
+      
       --
       DELETE
       FROM HRIS_ATTENDANCE_DETAIL
       WHERE ATTENDANCE_DT= TRUNC(employee.ATTENDANCE_DT)
       AND EMPLOYEE_ID    = employee.EMPLOYEE_ID ;
       --
+      if(v_roaster_shift_id is null)then
       V_SHIFT_ID    :=HRIS_BEST_CASE_SHIFT(employee.EMPLOYEE_ID,TRUNC(employee.ATTENDANCE_DT));
+      end if;
+      
       IF(V_SHIFT_ID IS NULL)THEN
         V_SHIFT_ID  :=employee.SHIFT_ID;
+      ELSE
+      select two_day_shift into V_TWO_DAY_SHIFT from hris_shifts where shift_id=V_SHIFT_ID;
       END IF;
       HRIS_PRELOAD_ATTENDANCE(employee.ATTENDANCE_DT,employee.EMPLOYEE_ID,V_SHIFT_ID);
       --
@@ -382,7 +398,9 @@ BEGIN
           OVERALL_STATUS    = V_OVERALL_STATUS,
           LATE_STATUS       = V_LATE_STATUS,
           TOTAL_HOUR        = V_DIFF_IN_MIN,
-          OT_MINUTES        = (V_DIFF_IN_MIN - V_TOTAL_WORKING_MIN)
+          OT_MINUTES        = (V_DIFF_IN_MIN - V_TOTAL_WORKING_MIN),
+          IN_REMARKS  = (select remarks from HRIS_ATTENDANCE where EMPLOYEE_ID = employee.EMPLOYEE_ID and ATTENDANCE_TIME=V_IN_TIME AND ROWNUM=1),
+          OUT_REMARKS = (select remarks from HRIS_ATTENDANCE where EMPLOYEE_ID = employee.EMPLOYEE_ID and ATTENDANCE_TIME=V_OUT_TIME AND ROWNUM=1)
         WHERE ATTENDANCE_DT = TO_DATE (employee.ATTENDANCE_DT, 'DD-MON-YY')
         AND EMPLOYEE_ID     = employee.EMPLOYEE_ID;
         --
@@ -441,7 +459,7 @@ BEGIN
                      EXCEPTION
                 WHEN no_data_found THEN
                     dbms_output.put('NO training for the day ON DAYOFF FOUND');
-            
+
 
 
                      IF v_training_id IS NOT NULL

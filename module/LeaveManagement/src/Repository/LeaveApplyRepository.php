@@ -75,5 +75,6 @@ class LeaveApplyRepository implements RepositoryInterface {
     public function delete($id) {
         // TODO: Implement delete() method.
     }
+    
 
 }

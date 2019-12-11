@@ -13,6 +13,7 @@ use Zend\Db\Sql\Predicate\Expression;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\TableGateway\TableGateway;
+use Setup\Model\HrEmployees;
 
 class BranchRepository implements RepositoryInterface {
 
@@ -48,7 +49,7 @@ class BranchRepository implements RepositoryInterface {
         $select->columns(EntityHelper::getColumnNameArrayWithOracleFns(Branch::class, [Branch::BRANCH_NAME], null, null, null, null, 'B'), false);
         $companyIdKey = Company::COMPANY_ID;
         $companyNameKey = Company::COMPANY_NAME;
-        $select->join(['C' => Company::TABLE_NAME], "C.{$companyIdKey} = B.{$companyIdKey}", [Company::COMPANY_NAME => new Expression("INITCAP(C.{$companyNameKey})")], Join::JOIN_LEFT);
+        $select->join(['C' => Company::TABLE_NAME], "C.{$companyIdKey} = B.{$companyIdKey}", [Company::COMPANY_NAME => new Expression("(C.{$companyNameKey})")], Join::JOIN_LEFT);
         $select->where(['B.' . Branch::STATUS => EntityHelper::STATUS_ENABLED]);
         $select->order([
             'B.' . Branch::BRANCH_NAME => Select::ORDER_ASCENDING,
@@ -66,6 +67,28 @@ class BranchRepository implements RepositoryInterface {
 
     public function delete($id) {
         $this->tableGateway->update([Branch::STATUS => 'D'], [Branch::BRANCH_ID => $id]);
+    }
+    
+    public function fetchAllWithBranchManager() {
+        $sql = new Sql($this->adapter);
+        $select = $sql->select();
+        $select->from(['B' => Branch::TABLE_NAME]);
+        $select->columns(EntityHelper::getColumnNameArrayWithOracleFns(Branch::class, [Branch::BRANCH_NAME], null, null, null, null, 'B'), false);
+        $companyIdKey = Company::COMPANY_ID;
+        $companyNameKey = Company::COMPANY_NAME;
+        $employeeIdKey = HrEmployees::EMPLOYEE_ID;
+        $branchManagerIdKey = Branch::BRANCH_MANAGER_ID;
+        $employeeNameKey = HrEmployees::FULL_NAME;
+        $select->join(['C' => Company::TABLE_NAME], "C.{$companyIdKey} = B.{$companyIdKey}", [Company::COMPANY_NAME => new Expression("INITCAP(C.{$companyNameKey})")], Join::JOIN_LEFT);
+        $select->join(['E' => HrEmployees::TABLE_NAME],"E.{$employeeIdKey} = B.{$branchManagerIdKey}",[HrEmployees::FULL_NAME => new Expression("INITCAP(E.{$employeeNameKey})")], Join::JOIN_LEFT);
+        $select->where(['B.' . Branch::STATUS => EntityHelper::STATUS_ENABLED]);
+        $select->order([
+            'B.' . Branch::BRANCH_NAME => Select::ORDER_ASCENDING,
+            'C.' . Company::COMPANY_NAME => Select::ORDER_ASCENDING
+        ]);
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        return $result;
     }
 
 }

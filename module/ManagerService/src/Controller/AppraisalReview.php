@@ -57,7 +57,7 @@ class AppraisalReview extends HrisController {
                     'appraisals' => $appraisalSE,
                     'appraisalStages' => $appraisalStageSE,
                     'userId' => $this->employeeId,
-                    'searchValues' => EntityHelper::getSearchData($this->adapter)
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
         ]);
     }
 
@@ -259,7 +259,7 @@ class AppraisalReview extends HrisController {
                         $appraisalStatusRepo->updateColumnByEmpAppId([AppraisalStatus::REVIEWER_AGREE => $reviewerAgree, AppraisalStatus::REVIEWED_BY => $this->employeeId], $appraisalId, $employeeId);
 //                        $nextStageId = ($reviewerAgree=='N')?5:AppraisalHelper::getNextStageId($this->adapter,$assignedAppraisalDetail['STAGE_ORDER_NO']+1);
                         //to directly send to hr
-                        $nextStageId = ($reviewerAgree=='N')?5:AppraisalHelper::getNextStageId($this->adapter,$assignedAppraisalDetail['STAGE_ORDER_NO']+2);
+                        $nextStageId = ($reviewerAgree == 'N') ? 5 : AppraisalHelper::getNextStageId($this->adapter, $assignedAppraisalDetail['STAGE_ORDER_NO'] + 2);
 //                        $nextStageId = ($reviewerAgree == 'N') ? 5 : 6; //super reviewer evaluation : appraisee stage
                         $appraisalAssignRepo->updateCurrentStageByAppId($nextStageId, $appraisalId, $employeeId);
 
@@ -293,7 +293,7 @@ class AppraisalReview extends HrisController {
         $returnData['appraiserRatingDtlNum'] = $appraiserRatingDtlNum;
         $returnData['appCompetenciesRatingDtlNum'] = $appCompetenciesRatingDtlNum;
         $returnData['defaultRatingDtl'] = $defaultRatingDtl;
-        $returnData['stagesInstrunction'] =  EntityHelper::getTableKVListWithSortOption($this->adapter, Stage::TABLE_NAME, Stage::STAGE_ID, [Stage::INSTRUCTION]);
+        $returnData['stagesInstrunction'] = EntityHelper::getTableKVListWithSortOption($this->adapter, Stage::TABLE_NAME, Stage::STAGE_ID, [Stage::INSTRUCTION]);
         $returnData['listUrl'] = $this->url()->fromRoute("appraisal-review", $action);
         return Helper::addFlashMessagesToArray($this, $returnData);
     }

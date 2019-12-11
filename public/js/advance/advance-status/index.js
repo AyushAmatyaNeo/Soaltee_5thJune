@@ -48,7 +48,7 @@
             {field: "REQUESTED_AMOUNT", title: "Request Amt."},
             {field: "STATUS_DETAIL", title: "Status"},
             {field: "VOUCHER_NO", title: "Voucher"},
-            {field: ["ADVANCE_REQUEST_ID"], title: "Action", template: action}
+            {field: "ADVANCE_REQUEST_ID", title: "Action", template: action}
         ];
 
         var pk = 'ADVANCE_REQUEST_ID';
@@ -119,6 +119,10 @@
 
             });
         });
+        
+//        $('#reset').on('click', function (){
+//            $('.form-control').val("");
+//        })
 
     });
 })(window.jQuery, window.app);

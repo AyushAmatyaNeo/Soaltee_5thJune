@@ -46,6 +46,7 @@ class PayslipPreviousRepository extends HrisRepository {
                     AND HSS.BRANCH_CODE      ='{$companyCode}.01'
                     AND HES.EMPLOYEE_CODE    ='{$employeeCode}'
                     AND HSS.SALARY_TYPE ='{$salaryType}'
+                    AND HSS.CONFIRM_FLAG ='Y'
 					AND SSD.SHEET_NO= HSS.SHEET_NO
                     AND SSD.EMPLOYEE_CODE= HES.EMPLOYEE_CODE
                     AND SSD.COMPANY_CODE= HSS.COMPANY_CODE
@@ -72,6 +73,7 @@ class PayslipPreviousRepository extends HrisRepository {
                     AND HSS.BRANCH_CODE      ='{$companyCode}.01'
                     AND HES.EMPLOYEE_CODE    ='{$employeeCode}'
                     AND HSS.SALARY_TYPE ='{$salaryType}'
+                    AND HSS.CONFIRM_FLAG ='Y'
 					AND SSD.SHEET_NO= HSS.SHEET_NO
                     AND SSD.EMPLOYEE_CODE= HES.EMPLOYEE_CODE
                     AND SSD.COMPANY_CODE= HSS.COMPANY_CODE

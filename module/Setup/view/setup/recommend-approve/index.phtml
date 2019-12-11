@@ -110,6 +110,11 @@ $this->headScript()
                 </select>
             </div>
             <div class="col-sm-2">
+                <label>Functional Type</label>
+                <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                </select>
+            </div>
+            <div class="col-sm-2">
                 <label>Employee</label>
                 <select multiple class="form-control" name="employee" id="employeeId">
                 </select>
@@ -117,13 +122,15 @@ $this->headScript()
         </div>
         <div class="row margin-top-10">
             <div class="col-sm-2">
+                <?php print $this->formLabel($approverFormElement); ?>
                 <?php print $this->formElement($approverFormElement); ?>
             </div>   
             <div class="col-sm-2">
+                <?php print $this->formLabel($recommenderFormElement); ?>
                 <?php print $this->formElement($recommenderFormElement); ?>
             </div>   
             <div class="col-sm-4 col-sm-offset-4">
-                <button id="reset" class="btn default btn-sm pull-right">
+                <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                     Reset
                     <i class="fa fa-refresh"></i>
                 </button>

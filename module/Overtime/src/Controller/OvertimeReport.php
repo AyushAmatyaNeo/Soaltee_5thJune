@@ -1,7 +1,9 @@
 <?php
+
 namespace Overtime\Controller;
 
 use Application\Controller\HrisController;
+use Application\Helper\EntityHelper;
 use Exception;
 use Overtime\Repository\OvertimeReportRepo;
 use Zend\Authentication\Storage\StorageInterface;
@@ -35,17 +37,17 @@ class OvertimeReport extends HrisController {
             'data' => json_encode($data),
             'acl' => $this->acl,
             'employeeDetail' => $this->storageData['employee_detail']
-            ];
+        ];
     }
 
     public function pvmReadAction() {
         $request = $this->getRequest();
         $postData = $request->getPost();
-        $calenderType='N';
-        if(isset($this->preference['calendarView'])){
-        $calenderType=$this->preference['calendarView'];
+        $calenderType = 'N';
+        if (isset($this->preference['calendarView'])) {
+            $calenderType = $this->preference['calendarView'];
         }
-        $data = $this->repository->fetchMonthlyForGrid($postData,$calenderType);
+        $data = $this->repository->fetchMonthlyForGrid($postData, $calenderType);
 
         return new JsonModel($data);
     }
@@ -57,22 +59,63 @@ class OvertimeReport extends HrisController {
         $data = json_decode($postData->models);
 
         $dataToUpdate = [];
+        $addDedData = [];
         foreach ($data as $value) {
             $item = (array) $value;
-            $common = ['EMPLOYEE_ID' => $item['EMPLOYEE_ID'], 'MONTH_ID' => $monthId];
+            $common = ['EMPLOYEE_ID' => $item['EMPLOYEE_ID'], 'MONTH_ID' => $monthId,'ADDITION' => $item['ADDITION'], 'DEDUCTION' => $item['DEDUCTION']];
+            array_push($addDedData,$common);
+
             foreach ($item as $k => $v) {
-                if (!in_array($k, ['EMPLOYEE_CODE','EMPLOYEE_ID', 'FULL_NAME', 'MONTH_ID'])) {
+                if (!in_array($k, ['EMPLOYEE_CODE', 'EMPLOYEE_ID', 'FULL_NAME', 'MONTH_ID','ADDITION','DEDUCTION'])) {
 //                    if ($v != null) {
-                        $monthDay = str_replace('D_', '', $k);
-                        $dataUnit = array_merge($common, []);
-                        $dataUnit['MONTH_DAY'] = $monthDay;
-                        $dataUnit['OVERTIME_HOUR'] = $v;
-                        array_push($dataToUpdate, $dataUnit);
+                    $monthDay = str_replace('D_', '', $k);
+                    $dataUnit = array_merge($common, []);
+                    $dataUnit['MONTH_DAY'] = $monthDay;
+                    $dataUnit['OVERTIME_HOUR'] = $v;
+                    array_push($dataToUpdate, $dataUnit);
 //                    }
                 }
             }
         }
-        $this->repository->bulkEdit($dataToUpdate);
+        $this->repository->bulkEdit($dataToUpdate,$addDedData);
         return new JsonModel($data);
     }
+
+    public function overtimeReportAction() {
+
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            try {
+                $postedData = $request->getPost();
+                $from_date = date("d-M-y", strtotime($postedData['fromDate']));
+                $to_date = date("d-M-y", strtotime($postedData['toDate']));
+
+                $begin = new \DateTime($from_date);
+                $end = new \DateTime($to_date);
+                $end->modify('+1 day');
+                
+                $interval = \DateInterval::createFromDateString('1 day');
+                $period = new \DatePeriod($begin, $interval, $end);
+
+                $dates = array();
+                
+                foreach ($period as $dt) {
+                    array_push($dates, $dt->format("d-M-y"));
+                }
+                $data = $this->repository->fetchOvertimeReport($postedData, $dates);
+                
+                return new JsonModel(['success' => true, 'data' => $data, 'dates' => $dates, 'error' => '']);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+            }
+        }
+
+        return [
+            'data' => json_encode($data),
+            'searchValues' => EntityHelper::getSearchData($this->adapter),
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail']
+        ];
+    }
+
 }

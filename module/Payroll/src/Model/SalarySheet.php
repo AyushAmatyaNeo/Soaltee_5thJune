@@ -19,6 +19,7 @@ class SalarySheet extends Model {
     const END_DATE = "END_DATE";
     const COMPANY_ID = "COMPANY_ID";
     const GROUP_ID = "GROUP_ID";
+    const SALARY_TYPE_ID = "SALARY_TYPE_ID";
 
     public $sheetNo;
     public $monthId;
@@ -32,6 +33,7 @@ class SalarySheet extends Model {
     public $endDate;
     public $companyId;
     public $groupId;
+    public $salaryTypeId;
     public $mappings = [
         'sheetNo' => self::SHEET_NO,
         'monthId' => self::MONTH_ID,
@@ -45,6 +47,7 @@ class SalarySheet extends Model {
         'endDate' => self::END_DATE,
         'companyId' => self::COMPANY_ID,
         'groupId' => self::GROUP_ID,
+        'salaryTypeId' => self::SALARY_TYPE_ID,
     ];
 
 }

@@ -16,9 +16,9 @@
                 template: "<input type='checkbox' id='#:ID#' role-id='#:ROLE#'  class='k-checkbox row-checkbox'><label class='k-checkbox-label' for='#:ID#'></label>",
                 width: 40
             },
-            {field: "EMPLOYEE_CODE", title: "Code", width: 150},
-            {field: "FULL_NAME", title: "Employee", width: 150},
-            {field: "HOLIDAY_ENAME", title: "Holiday", width: 120},
+            {field: "EMPLOYEE_CODE", title: "Code"},
+            {field: "FULL_NAME", title: "Employee"},
+            {field: "HOLIDAY_ENAME", title: "Holiday"},
             {title: "Requested Date",
                 columns: [{
                         field: "REQUESTED_DATE",
@@ -43,8 +43,8 @@
                     {field: "TO_DATE_N",
                         title: "Nepali",
                         template: "<span>#: (TO_DATE_N == null) ? '-' : TO_DATE_N #</span>"}]},
-            {field: "DURATION", title: "Duration", width: 120},
-            {field: "YOUR_ROLE", title: "Your Role", width: 120},
+            {field: "DURATION", title: "Duration"},
+            {field: "YOUR_ROLE", title: "Your Role"},
             {field: ["ID", "ROLE"], title: "Action", template: `
                 <span>  
                     <a class="btn-edit" href=" ` + document.viewLink + `/#:ID #/#:ROLE #" style="height:17px;" title="view">

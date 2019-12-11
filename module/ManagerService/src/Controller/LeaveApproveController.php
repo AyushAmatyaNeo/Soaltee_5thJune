@@ -80,9 +80,16 @@ class LeaveApproveController extends HrisController {
                 $recommenderId = $detail['RECOMMENDER_ID'];
             }
         } else {
+            
+            
             $getData = $request->getPost();
             $action = $getData->submit;
 
+            $checkSameDateApproved = $this->repository->getSameDateApprovedStatus($detail['EMPLOYEE_ID'],$detail['START_DATE'],$detail['END_DATE']);
+            if($checkSameDateApproved['LEAVE_COUNT']>0 && $action == "Approve"){
+                return $this->redirect()->toRoute("leaveapprove");
+            }
+            
             if ($detail['STATUS'] == 'RQ' || $detail['STATUS'] == 'RC') {
                 if ($role == 2) {
                     $leaveApply->recommendedDt = Helper::getcurrentExpressionDate();
@@ -167,7 +174,8 @@ class LeaveApproveController extends HrisController {
                     'subApprovedFlag' => $detail['SUB_APPROVED_FLAG'],
                     'employeeList' => EntityHelper::getTableKVListWithSortOption($this->adapter, HrEmployees::TABLE_NAME, HrEmployees::EMPLOYEE_ID, [HrEmployees::FIRST_NAME, HrEmployees::MIDDLE_NAME, HrEmployees::LAST_NAME], [HrEmployees::STATUS => "E", HrEmployees::RETIRED_FLAG => "N"], HrEmployees::FIRST_NAME, "ASC", " ", FALSE, TRUE)
                     , 'gp' => $detail['GRACE_PERIOD'],
-                    'files' => $fileDetails
+                    'files' => $fileDetails,
+                    'subLeaveName' => $detail['LEAVE_ENAME']
         ]); 
     }
 
@@ -177,7 +185,7 @@ class LeaveApproveController extends HrisController {
         $leaves = EntityHelper::getTableKVListWithSortOption($this->adapter, LeaveMaster::TABLE_NAME, LeaveMaster::LEAVE_ID, [LeaveMaster::LEAVE_ENAME], [LeaveMaster::STATUS => 'E'], LeaveMaster::LEAVE_ENAME, "ASC", NULL, FALSE, TRUE);
         $leaves1 = [-1 => "All"] + $leaves;
         $leaveFormElement->setValueOptions($leaves1);
-        $leaveFormElement->setAttributes(["id" => "leaveId", "class" => "form-control"]);
+        $leaveFormElement->setAttributes(["id" => "leaveId", "class" => "form-control reset-field"]);
         $leaveFormElement->setLabel("Type");
 
         $leaveStatus = [
@@ -193,7 +201,7 @@ class LeaveApproveController extends HrisController {
         $leaveStatusFormElement = new Select();
         $leaveStatusFormElement->setName("leaveStatus");
         $leaveStatusFormElement->setValueOptions($leaveStatus);
-        $leaveStatusFormElement->setAttributes(["id" => "leaveRequestStatusId", "class" => "form-control"]);
+        $leaveStatusFormElement->setAttributes(["id" => "leaveRequestStatusId", "class" => "form-control reset-field"]);
         $leaveStatusFormElement->setLabel("Status");
 
 
@@ -202,7 +210,7 @@ class LeaveApproveController extends HrisController {
                     'leaves' => $leaveFormElement,
                     'leaveStatus' => $leaveStatusFormElement,
                     'recomApproveId' => $this->employeeId,
-                    'searchValues' => EntityHelper::getSearchData($this->adapter)
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
         ]);
     }
 
@@ -232,6 +240,11 @@ class LeaveApproveController extends HrisController {
 
                     $detail = $this->repository->fetchById($id);
                     $requestedEmployeeID = $detail['EMPLOYEE_ID'];
+                    
+                    $checkSameDateApproved = $this->repository->getSameDateApprovedStatus($detail['EMPLOYEE_ID'],$detail['START_DATE'],$detail['END_DATE']);
+                    if($checkSameDateApproved['LEAVE_COUNT']>0 && $action == "Approve"){
+                        continue;
+                    }
 
                     if ($detail['STATUS'] == 'RQ' || $detail['STATUS'] == 'RC') {
                         if ($role == 2) {

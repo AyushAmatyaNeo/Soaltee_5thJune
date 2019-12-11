@@ -27,6 +27,7 @@ $this->headScript()
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
     document.allowShiftChange ='<?php echo $allowShiftChange; ?>';
     document.allowTimeChange ='<?php echo $allowTimeChange; ?>';
+    document.preference =<?php echo json_encode($preference) ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\attendancebyhr')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -79,6 +80,18 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                         <a href="javascript:;" id="pdfExport">
                             <i class="fa fa-file-pdf-o" ></i> 
                             Export to PDF 
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" id="excelExportDaily">
+                            <i class="fa fa-file-pdf-o" ></i> 
+                            Export to Excel Daily 
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:;" id="pdfExportDaily">
+                            <i class="fa fa-file-pdf-o" ></i> 
+                            Export to Pdf Daily 
                         </a>
                     </li>
                 </ul>
@@ -144,7 +157,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <select multiple class="form-control" name="employee" id="employeeId">
                 </select>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2 ">
                 <?php print $this->formLabel($status); ?>
                 <?php print $this->formElement($status); ?>
             </div> 
@@ -153,38 +166,45 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
             <div class="col-sm-2">
                 <div class="form-group">
                     <label>From Date(AD)</label>
-                    <input type="text" id="fromDate" name="fromDate"  class="form-control" placeholder="From Date"/>
+                    <input type="text" id="fromDate" name="fromDate"  class="form-control reset-field" placeholder="From Date"/>
                 </div>
             </div>
             <div class="col-sm-2">
                 <div class="form-group">
                     <label>From Date(BS)</label>
-                    <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control" placeholder="From Date Nepali"/>
+                    <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control reset-field" placeholder="From Date Nepali"/>
                 </div>
             </div>
             <div class="col-sm-2">
                 <div class="form-group">
                     <label>To Date(AD)</label>
-                    <input type="text" id="toDate" name="toDate"  class="form-control" placeholder="To Date"/>
+                    <input type="text" id="toDate" name="toDate"  class="form-control reset-field" placeholder="To Date"/>
                 </div>
             </div>
             <div class="col-sm-2">
                 <div class="form-group">
                     <label>To Date(BS)</label>
-                    <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                    <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
                 </div>
             </div>
             <div class="col-sm-2">
                 <?php print $this->formLabel($presentStatus); ?>
                 <?php print $this->formElement($presentStatus); ?>
-            </div> 
+            </div>
+            <div class="col-sm-2">
+                <label>Filter by</label>
+                <select id="presentType">
+                    <option value="A">All</option>
+                    <option value="P">Present now</option>
+                </select>
+            </div>
         </div>
         <div class="row margin-top-10">
             <div class="col-sm-4">
                 <label><input id="impact_other_days" type="checkbox">Impact Other Days</label>
             </div>
             <div class="col-sm-offset-4 col-sm-4">
-                <button id="reset" class="btn default btn-sm pull-right">
+                <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                     Reset
                     <i class="fa fa-refresh"></i>
                 </button>
@@ -200,7 +220,9 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 
 <div id="table">
 </div>
+    
 <div style="display: none;" class="row margin-top-20" id="acceptRejectDiv" >
+    <?php  if($acl['HR_APPROVE']=='Y'){  ?>
     <div class="col-sm-2 ">
         <button id="A" class="btn btn-danger btnApproveReject">Absent</button>
     </div>
@@ -239,4 +261,5 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
     <div class="col-sm-2 pull-right">
         <button id="P" class="btn btn-info btnApproveReject pull-right">Present</button>
     </div>
+    <?php }      ?>
 </div>

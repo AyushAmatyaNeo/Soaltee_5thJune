@@ -19,6 +19,8 @@ $this->headScript()
     document.data =<?php echo $data; ?>;
     document.data['loading-icon'] = '<?php echo $this->basePath('img/payroll-icon.png'); ?>';
     document.getFiscalYearMonthLink = '<?php echo $this->url('salarySheet', ['action' => 'getFiscalYearMonth']); ?>';
+    document.pullGroupEmployeeLink = '<?php echo $this->url('salarySheet', ['action' => 'pullGroupEmployee']); ?>';
+    document.deleteLink = '<?= $this->url("salarySheet", ["action" => "deleteSheet"]); ?>';
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\salarySheet')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -47,6 +49,13 @@ $this->headScript()
                             Export to PDF 
                         </a>
                     </li>
+                    <li >
+                        
+                        <a href="<?php echo $this->basePath('uploads/PAYROLL_LOG.txt'); ?>" download="log.txt">
+                            <i class="fa fa-file-pdf-o" ></i> 
+                            Download payroll log 
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -55,13 +64,23 @@ $this->headScript()
     <div class="portlet-body">
         <div class="row">
             <div class="col-sm-2">
+                <label>Salary Type</label>
+                <select class="form-control" name="salaryType" id="salaryTypeId">
+                </select>
+            </div>
+            <div class="col-sm-2">
                 <label>Company</label>
                 <select  class="form-control" name="company" id="companyId">
                 </select>
             </div>
             <div class="col-sm-2">
                 <label>Group</label>
-                <select class="form-control" name="group" id="groupId">
+                <select multiple="multiple" class="form-control" name="group" id="groupId">
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <label>Sheet</label>
+                <select class="form-control" name="allSheetId" id="allSheetId">
                 </select>
             </div>
         </div>
@@ -101,11 +120,29 @@ $this->headScript()
 
         </div>
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-sm-2">
+                 <label>Pay Heads</label>
+                 <select multiple class="form-control reset-field" name="allPayHeads" id="allPayHeads">
+                            </select>
+            </div>
+            <div class="col-sm-10">
                 <button id="generateBtn" class="btn blue-hoki pull-right">Generate</button>
                 <button id="viewBtn" class="btn yellow-saffron pull-right">View</button>
             </div>
         </div>
+        
+        <!--<div id="employeeTableDiv" class="row" style="height:200px;overflow:auto;">-->
+        <div id="employeeTableDiv" class="row">
+            <div class="col-lg-6 col-ms-6 col-sm-6">
+                <div id="employeeTable">
+                </div>
+            </div>
+            <div class="col-lg-6 col-ms-6 col-sm-6 margin-top-30">
+                <div id="sheetTable">
+                </div>
+            </div>
+        </div>
+        
         <div id="table" class="margin-top-10">
         </div>
     </div>

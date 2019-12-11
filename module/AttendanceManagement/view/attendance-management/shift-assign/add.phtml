@@ -20,6 +20,8 @@ $this->headScript()->appendFile($this->basePath('js/AttendanceManagement/ShiftAs
     document.employeeListWS = '<?= $this->url("shiftassign", ["action" => "employeeListWS"]) ?>';
     document.addWs = '<?= $this->url("shiftassign", ["action" => "addWs"]) ?>';
     document.employeeShiftsWS = '<?= $this->url("shiftassign", ["action" => "employeeShiftsWS"]) ?>';
+    document.acl =<?php echo json_encode($acl); ?>;
+    document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
 </script>sear
 <div class="page-bar">
 <?= $this->navigation('Zend\Navigation\shiftassign')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>

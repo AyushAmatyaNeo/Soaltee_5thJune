@@ -36,6 +36,11 @@ class LeaveRepository extends HrisRepository {
                   AND ELR.STATUS IN ('AP','CP','CR')
                    AND ELR.START_DATE BETWEEN LY.START_DATE AND LY.END_DATE
                   ) AS LEAVE_TAKEN,
+                  (SELECT SUM(HS.ENCASH_DAYS)
+                  FROM HRIS_EMP_SELF_LEAVE_CLOSING HS
+                  WHERE HS.EMPLOYEE_ID=LA.EMPLOYEE_ID
+                  AND HS.LEAVE_ID     =LA.LEAVE_ID
+                  ) AS ENCASHED,
                   (SELECT SUM(EPD.NO_OF_DAYS)
                   FROM HRIS_EMPLOYEE_PENALTY_DAYS EPD
                   WHERE EPD.EMPLOYEE_ID=LA.EMPLOYEE_ID

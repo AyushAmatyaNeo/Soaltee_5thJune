@@ -11,6 +11,7 @@
             {field: "TELEPHONE", title: "Telephone", width: 120},
             {field: "EMAIL", title: "Email", width: 140},
             {field: "COMPANY_NAME", title: "Company", width: 120},
+            {field: "FULL_NAME", title: "Branch Manager", width: 120},
             {field: "BRANCH_ID", title: "Action", width: 120, template: action}
         ]);
 

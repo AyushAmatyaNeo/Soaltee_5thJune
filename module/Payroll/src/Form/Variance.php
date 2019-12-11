@@ -50,9 +50,18 @@ class Variance {
     /**
      * @Annotation\Type("Zend\Form\Element\Radio")
      * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
-     * @Annotation\Options({"value_options":{"V":"Variance","O":"Other"},"label":"Variable Type"})
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":" Calc Sum"})
      * @Annotation\Required(false)
-     * @Annotation\Attributes({"id":"variableType","value":"V"})
+     * @Annotation\Attributes({"id":"isSum","value":"N"})
+     */
+    public $isSum;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required({"required":"fa"})
+     * @Annotation\Filter({"name":"StripTags","name":"StringTrim"})
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Variable Type"})
+     * @Annotation\Attributes({ "id":"variableType","class":"form-control"})
      */
     public $variableType;
 
@@ -71,5 +80,24 @@ class Variance {
      * @Annotation\Attributes({"value":"Submit","class":"btn btn-success"})
      */
     public $submit;
+    
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Required(false)
+     * @Annotation\Filter({"name":"StripTags","name":"StringTrim"})
+     * @Annotation\Options({"label":"Order No"})
+     * @Annotation\Attributes({ "id":"orderNo","class":"form-control","min":"0"})
+     */
+    public $orderNo;
 
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Required({"required":"false"})
+     * @Annotation\Filter({"name":"StripTags","name":"StringTrim"})
+     * @Annotation\Options({"disable_inarray_validator":"true","label":"Heads"})
+     * @Annotation\Attributes({ "id":"vHeads","class":"form-control"})
+     */
+    public $vHeads;
+    
 }

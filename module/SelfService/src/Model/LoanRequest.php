@@ -15,6 +15,7 @@ class LoanRequest extends Model{
     const REASON = "REASON";
     const STATUS = "STATUS";
     const APPROVED_AMOUNT = "APPROVED_AMOUNT";
+    const INTEREST_RATE = "INTEREST_RATE";
     const RECOMMENDED_BY = "RECOMMENDED_BY";
     const RECOMMENDED_DATE = "RECOMMENDED_DATE";
     const RECOMMENDED_REMARKS = "RECOMMENDED_REMARKS";
@@ -36,6 +37,7 @@ class LoanRequest extends Model{
     public $deductOnSalary;
     public $recommendedBy;
     public $recommendedDate;
+    public $interestRate;
     public $recommendedRemarks;
     public $approvedBy;
     public $approvedDate;
@@ -52,6 +54,7 @@ class LoanRequest extends Model{
         'status'=>self::STATUS,
         'repaymentMonths' => self::REPAYMENT_MONTHS,
         'approvedAmount'=>self::APPROVED_AMOUNT,
+        'interestRate'=>self::INTEREST_RATE,
         'recommendedBy'=>self::RECOMMENDED_BY,
         'recommendedDate'=>self::RECOMMENDED_DATE,
         'recommendedRemarks'=>self::RECOMMENDED_REMARKS,

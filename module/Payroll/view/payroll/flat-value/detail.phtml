@@ -22,6 +22,7 @@ $this->headScript()
     document.flatValues =<?php echo json_encode($flatValues); ?>;
     document.fiscalYears =<?php echo json_encode($fiscalYears); ?>;
     document.searchValues =<?php echo json_encode($searchValues); ?>;
+    document.acl =<?php echo json_encode($acl); ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\flatValue')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -99,15 +100,15 @@ $this->headScript()
                     </div>
                     <div class="row margin-top-10">
                         <div class="col-sm-2">
-                            <select class="form-control" id="fiscalYearId" >
+                            <select class="form-control reset-field" id="fiscalYearId" >
                             </select>
                         </div>
                         <div class="col-sm-2">
-                            <select class="form-control" id="flatValueId" >
+                            <select class="form-control reset-field" id="flatValueId" >
                             </select>
                         </div>
                         <div class="col-sm-4 col-sm-offset-4">
-                            <button id="reset" class="btn default btn-sm pull-right">
+                            <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                                 Reset
                                 <i class="fa fa-refresh"></i>
                             </button>

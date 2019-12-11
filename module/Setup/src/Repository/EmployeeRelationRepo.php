@@ -81,8 +81,10 @@ class EmployeeRelationRepo implements RepositoryInterface {
             new Expression("ER.IS_DEPENDENT AS IS_DEPENDENT"),
             new Expression("CASE ER.IS_NOMINEE WHEN 'Y' THEN 1   WHEN 'N' THEN 0 END AS IS_NOMINEE_DET"),
             new Expression("CASE ER.IS_DEPENDENT WHEN 'Y' THEN 1   WHEN 'N' THEN 0 END AS IS_DEPENDENT_DET"),
+            new Expression("R.RELATION_NAME AS RELATION_NAME"),
             new Expression("ER.STATUS AS STATUS")],TRUE);
-        $select->from(['ER'=> EmployeeRelation::TABLE_NAME]); 
+        $select->from(['ER'=> EmployeeRelation::TABLE_NAME]);
+        $select->join(['R'=> "Hris_Relations"], "ER.RELATION_ID=R.RELATION_ID");
         $select->where(["ER." . EmployeeRelation::EMPLOYEE_ID . "=$employeeId"]);
         $select->where(["ER." . EmployeeRelation::STATUS . "='E'"]);
         $select->order("ER.".EmployeeRelation::E_R_ID);

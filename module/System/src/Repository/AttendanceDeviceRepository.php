@@ -71,4 +71,25 @@ class AttendanceDeviceRepository implements RepositoryInterface {
         return iterator_to_array($iterator, false);
     }
 
+    public function fetchAllWithBranchManager() {
+
+        $sql = "select ad.DEVICE_ID, 
+            ad.DEVICE_NAME, 
+            ad.DEVICE_IP, 
+            ad.DEVICE_LOCATION, 
+            ad.ISACTIVE, 
+            ad.COMPANY_ID, 
+            ad.BRANCH_ID, 
+            ad.DEVICE_COMPANY, 
+            ad.STATUS, 
+            ad.PURPOSE, 
+            (select FULL_NAME from hris_employees 
+            where employee_id = ad.BRANCH_MANAGER_ID) as FULL_NAME 
+            from HRIS_ATTD_DEVICE_MASTER ad";
+
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return $result;
+    }
+
 }

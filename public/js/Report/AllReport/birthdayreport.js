@@ -11,7 +11,7 @@
 
         app.initializeKendoGrid($employeeTable, [
             {field: "EMPLOYEE_CODE", title: "Code", locked: true, width: 70},
-            {field: "FULL_NAME", title: "Full Name", locked: true, width: 150},
+            {field: "FULL_NAME", title: "Full Name", locked: true, width: 120},
             {field: "MOBILE_NO", title: "Mobile No", locked: true, width: 100},
             {title: "Birth Date", locked: true, columns: [
                     {field: "BIRTH_DATE_AD", title: "AD", width: 80},
@@ -21,16 +21,17 @@
                     {field: "JOIN_DATE_AD", title: "AD", width: 80},
                     {field: "JOIN_DATE_BS", title: "BS", width: 80}
                 ]},
-            {field: "COMPANY_NAME", title: "Company", width: 150},
-            {field: "BRANCH_NAME", title: "Branch", width: 150},
-            {field: "DEPARTMENT_NAME", title: "Department", width: 150},
-            {field: "DESIGNATION_TITLE", title: "Designation", width: 150},
-            {field: "POSITION_NAME", title: "Position", width: 150},
+//            {field: "COMPANY_NAME", title: "Company", width: 150},
+//            {field: "BRANCH_NAME", title: "Branch", width: 150},
+            {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 120},
+            {field: "DEPARTMENT_NAME", title: "Department", width: 120},
+            {field: "DESIGNATION_TITLE", title: "Designation", width: 120},
+            {field: "POSITION_NAME", title: "Position", width: 120},
             /*{field: "LEVEL_NO", title: "Level", width: 150},
             {field: "LOCATION_EDESC", title: "Location", width: 150},
             {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 150},
             {field: "FUNCTIONAL_LEVEL_EDESC", title: "Functional Level", width: 150}*/
-        ]);
+        ], null, null, null, 'Birthday Report.xlsx');
 
         app.searchTable('employeeTable', ['EMPLOYEE_CODE', 'FULL_NAME', 'MOBILE_NO', 'BIRTH_DATE', 'COMPANY_NAME', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'DESIGNATION_TITLE'], false);
   
@@ -114,5 +115,10 @@
                 app.showMessage(error, 'error');
             });  
         });
+        
+//        $("#reset").on("click", function () {
+//            $(".form-control").val("");
+//            document.searchManager.reset();
+//        });
     }); 
 })(window.jQuery, window.app);

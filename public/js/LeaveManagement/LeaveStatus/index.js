@@ -8,6 +8,7 @@
         var $search = $('#search');
         var $bulkActionDiv = $('#bulkActionDiv');
         var $bulkBtns = $(".btnApproveReject");
+        var $superpower = $("#super_power");
 
         $.each(document.searchManager.getIds(), function (key, value) {
             $('#' + value).select2();
@@ -44,10 +45,11 @@
                         title: "BS",
                         template: "<span>#: (END_DATE_BS == null) ? '-' : END_DATE_BS #</span>"}]},
             {field: "NO_OF_DAYS", title: "Duration"},
+            {field: "HALF_DAY_DETAIL", title: "Type"},
             {field: "STATUS", title: "Status"},
-            {field: ["ID"], title: "Action", template: `
+            {field: "ID", title: "Action", template: `
             <span>                                  
-                <a class="btn  btn-icon-only btn-success" href="${document.viewLink}/#: ID #" style="height:17px;" title="view">
+                <a class="btn  btn-icon-only btn-success" href="${document.viewLink}/#: ID #" style="height:17px; width:13px" title="view">
                 <i class="fa fa-search-plus"></i>
                 </a>
             </span>`}
@@ -60,12 +62,13 @@
                 } else {
                     $bulkActionDiv.hide();
                 }
-            }});
+            }}, null, 'Leave Status Report.xlsx');
         app.searchTable($tableContainer, ["FULL_NAME", "EMPLOYEE_CODE"]);
   
         var map = {
             'EMPLOYEE_CODE': 'Code',
             'FULL_NAME': 'Name',
+            'FUNCTIONAL_TYPE_EDESC': 'Functional Type',
             'LEAVE_ENAME': 'Leave',
             'APPLIED_DATE_AD': 'Applied Date(AD)',
             'APPLIED_DATE_BS': 'Applied Date(BS)',
@@ -107,16 +110,17 @@
             app.excelExport($tableContainer, map, "Leave Request List.xlsx");
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($tableContainer, map, "Leave Request List.pdf");
+            app.exportToPDF($tableContainer, map, "Leave Request List.pdf", 'A2');
         });
 
         $bulkBtns.bind("click", function () {
             var list = grid.getSelected();
             var action = $(this).attr('action');
+            var superPower = $superpower.prop('checked');
 
             var selectedValues = [];
             for (var i in list) {
-                selectedValues.push({id: list[i][pk], action: action});
+                selectedValues.push({id: list[i][pk], action: action, status: list[i]['STATUS'], super_power: superPower});
             }
             app.bulkServerRequest(document.bulkLink, selectedValues, function () {
                 $search.trigger('click');
@@ -124,6 +128,7 @@
 
             });
         });
+        
 
     });
 })(window.jQuery, window.app);

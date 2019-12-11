@@ -70,7 +70,7 @@ class ManagerReportController extends AbstractActionController{
         );
         
         $statusFormElement->setValueOptions($status);
-        $statusFormElement->setAttributes(["id" => "statusId", "class" => "form-control"]);
+        $statusFormElement->setAttributes(["id" => "statusId", "class" => "form-control reset-field"]);
         $statusFormElement->setLabel("Status");
         
         
@@ -79,7 +79,7 @@ class ManagerReportController extends AbstractActionController{
         $employeeFormElement= new Select();
         $employeeFormElement->setName('Employee');
         $employeeFormElement->setValueOptions($employees);
-        $employeeFormElement->setAttributes(["id" => "employeeId", "class" => "form-control"]);
+        $employeeFormElement->setAttributes(["id" => "employeeId", "class" => "form-control reset-field"]);
         $employeeFormElement->setLabel("Employee");
         
 
@@ -88,7 +88,7 @@ class ManagerReportController extends AbstractActionController{
                     'employeeId' => $this->employeeId,
                     'status' => $statusFormElement,
                     'employeeFromElement'=>$employeeFormElement,
-                    'currentEmployeeId'=>$this->employeeId
+                    'currentEmployeeId'=>$this->employeeId,
             
         ]);
     }

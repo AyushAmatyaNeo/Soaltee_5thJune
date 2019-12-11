@@ -158,5 +158,87 @@ class AttendanceRequest extends HrisController {
                     'requestedDt' => $detail['REQUESTED_DT'],
         ]);
     }
+    
+    public function checkInAction() {
+        $id = (int) $this->params()->fromRoute("id", 0);
+        if ($id !== 0) {
+            $attendanceDetailRepo = new AttendanceDetailRepository($this->adapter);
+            $attendanceData = $attendanceDetailRepo->fetchById($id);
+            $model = new AttendanceRequestModel();
+            $model->attendanceDt = $attendanceData['ATTENDANCE_DT'];
+            $model->inTime = $attendanceData['IN_TIME'];
+            $this->form->bind($model);
+        }
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $this->form->setData($request->getPost());
+            if ($this->form->isValid()) {
+                $model = new AttendanceRequestModel();
+                $model->exchangeArrayFromForm($this->form->getData());
+                $model->employeeId = $this->employeeId;
+                $model->attendanceDt = Helper::getExpressionDate($model->attendanceDt);
+                $model->id = ((int) Helper::getMaxId($this->adapter, $model::TABLE_NAME, "ID")) + 1;
+                $model->inTime = Helper::getExpressionTime($model->inTime);
+                $model->status = "RQ";
+                
+                $this->repository->add($model);
+                $this->flashmessenger()->addMessage("Attendance Request Submitted Successfully!!");
+                try {
+                    HeadNotification::pushNotification(NotificationEvents::ATTENDANCE_APPLIED, $model, $this->adapter, $this);
+                } catch (Exception $e) {
+                    $this->flashmessenger()->addMessage($e->getMessage());
+                }
+
+                return $this->redirect()->toRoute("attendancerequest");
+            }
+        }
+        return Helper::addFlashMessagesToArray($this, [
+                    'employeeId' => $this->employeeId,
+                    'form' => $this->form
+                        ]
+        );
+    }
+    
+    public function checkOutAction() {
+        $id = (int) $this->params()->fromRoute("id", 0);
+        if ($id !== 0) {
+            $attendanceDetailRepo = new AttendanceDetailRepository($this->adapter);
+            $attendanceData = $attendanceDetailRepo->fetchById($id);
+            $model = new AttendanceRequestModel();
+            $model->attendanceDt = $attendanceData['ATTENDANCE_DT'];
+            $model->outTime = $attendanceData['OUT_TIME'];
+            $this->form->bind($model);
+        }
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $this->form->setData($request->getPost());
+            if ($this->form->isValid()) {
+                $model = new AttendanceRequestModel();
+                $model->exchangeArrayFromForm($this->form->getData());
+                $model->employeeId = $this->employeeId;
+                $model->attendanceDt = Helper::getExpressionDate($model->attendanceDt);
+                $model->id = ((int) Helper::getMaxId($this->adapter, $model::TABLE_NAME, "ID")) + 1;
+                $model->outTime = Helper::getExpressionTime($model->outTime);
+                $model->status = "RQ";
+
+                $this->repository->add($model);
+                $this->flashmessenger()->addMessage("Attendance Request Submitted Successfully!!");
+                try {
+                    HeadNotification::pushNotification(NotificationEvents::ATTENDANCE_APPLIED, $model, $this->adapter, $this);
+                } catch (Exception $e) {
+                    $this->flashmessenger()->addMessage($e->getMessage());
+                }
+
+                return $this->redirect()->toRoute("attendancerequest");
+            }
+        }
+        return Helper::addFlashMessagesToArray($this, [
+                    'employeeId' => $this->employeeId,
+                    'form' => $this->form
+                        ]
+        );
+    }
 
 }

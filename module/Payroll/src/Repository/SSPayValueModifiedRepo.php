@@ -128,4 +128,95 @@ class SSPayValueModifiedRepo extends HrisRepository {
         }
         return null;
     }
+
+    public function setModifiedPayValue($data, $monthId) {
+        if($data['value'] == null || $data['value'] == ''){
+          $sql = "DELETE FROM HRIS_SS_PAY_VALUE_MODIFIED
+                  WHERE PAY_ID       = {$data['payId']}
+                  AND EMPLOYEE_ID    = {$data['employeeId']}
+                  AND MONTH_ID = {$monthId}";
+        }
+        else{
+          $sql = "
+                DECLARE
+                  V_PAY_ID HRIS_SS_PAY_VALUE_MODIFIED.PAY_ID%TYPE := {$data['payId']};
+                  V_EMPLOYEE_ID HRIS_SS_PAY_VALUE_MODIFIED.EMPLOYEE_ID%TYPE := {$data['employeeId']};
+                  V_PAY_VALUE HRIS_SS_PAY_VALUE_MODIFIED.VAL%TYPE := {$data['value']};
+                  V_MONTH_ID HRIS_SS_PAY_VALUE_MODIFIED.MONTH_ID%TYPE := {$monthId};
+                  V_OLD_FLAT_VALUE HRIS_SS_PAY_VALUE_MODIFIED.VAL%TYPE;
+                BEGIN
+                  SELECT VAL
+                  INTO V_OLD_FLAT_VALUE
+                  FROM HRIS_SS_PAY_VALUE_MODIFIED
+                  WHERE PAY_ID       = V_PAY_ID
+                  AND EMPLOYEE_ID    = V_EMPLOYEE_ID
+                  AND MONTH_ID = V_MONTH_ID;
+                  
+                  UPDATE HRIS_SS_PAY_VALUE_MODIFIED
+                  SET VAL      = V_PAY_VALUE
+                  WHERE PAY_ID       = V_PAY_ID
+                  AND EMPLOYEE_ID    = V_EMPLOYEE_ID
+                  AND MONTH_ID = V_MONTH_ID;
+                  
+                EXCEPTION
+                WHEN NO_DATA_FOUND THEN
+                  INSERT
+                  INTO HRIS_SS_PAY_VALUE_MODIFIED
+                    (
+                      PAY_ID,
+                      EMPLOYEE_ID,
+                      MONTH_ID,
+                      VAL
+                    )
+                    VALUES
+                    (
+                      V_PAY_ID,
+                      V_EMPLOYEE_ID,
+                      V_MONTH_ID,
+                      V_PAY_VALUE
+                    );
+                END;";
+        } 
+        $statement = $this->adapter->query($sql);
+        return $statement->execute();
+    }
+
+    public function getColumns($payHeadId){
+      $payHeadId = implode(',', $payHeadId);
+      $sql = "select pay_id, pay_edesc, 'H_'||pay_id as title from hris_pay_setup where pay_id in ($payHeadId)
+      order by pay_id";
+      $statement = $this->adapter->query($sql);
+      return $statement->execute();
+    }
+
+    public function modernFilter($monthId, $companyId = null, $groupId = null, $payId) {
+        $csv = $payId;
+        $employeeCondition = "";
+        if ($companyId != null) {
+            $employeeCondition = " AND E.COMPANY_ID = {$companyId}";
+        }
+
+        if ($groupId != null) {
+            $employeeCondition = " AND E.GROUP_ID = {$groupId}";
+        }
+        $sql = "SELECT E.EMPLOYEE_ID,
+                  E.FULL_NAME,
+                  C.COMPANY_ID,
+                  C.COMPANY_NAME,
+                  SSG.GROUP_ID,
+                  SSG.GROUP_NAME,
+                  PV.*
+                FROM HRIS_EMPLOYEES E
+                LEFT JOIN HRIS_COMPANY C ON (E.COMPANY_ID=C.COMPANY_ID)
+                LEFT JOIN HRIS_SALARY_SHEET_GROUP SSG ON (E.GROUP_ID=SSG.GROUP_ID)
+                LEFT JOIN
+                  (SELECT *
+                  FROM
+                    (SELECT MONTH_ID, PAY_ID, EMPLOYEE_ID AS E_ID,VAL FROM HRIS_SS_PAY_VALUE_MODIFIED WHERE MONTH_ID ={$monthId}
+                    order by pay_id ) PIVOT (MAX(VAL) FOR PAY_ID IN ({$csv}))
+                  ) PV
+                ON (E.EMPLOYEE_ID=PV.E_ID)
+                WHERE E.STATUS   ='E' {$employeeCondition} ORDER BY C.COMPANY_NAME,SSG.GROUP_NAME,E.FULL_NAME";
+        return $this->rawQuery($sql);
+    }
 }

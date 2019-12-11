@@ -21,7 +21,9 @@ $this->headScript()->appendFile($this->basePath('js/AttendanceManagement/ShiftAs
     document.listWS = '<?= $this->url("shiftassign", ["action" => "listWS"]) ?>';
     document.editWs = '<?= $this->url("shiftassign", ["action" => "editWs"]) ?>';
     document.deleteWs = '<?= $this->url("shiftassign", ["action" => "deleteWs"]) ?>';
-</script>sear
+    document.acl =<?php echo json_encode($acl); ?>;
+    document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
+</script>
 <div class="page-bar">
 <?= $this->navigation('Zend\Navigation\shiftassign')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
 </div>
@@ -119,7 +121,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                     </select>
                 </div>
                 <div class="col-sm-4">
-                    <button id="reset" class="btn default btn-sm pull-right">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

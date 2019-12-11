@@ -135,13 +135,13 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 </div> 
                 <div class="col-sm-2">
                     <label>Export Parameters</label>
-                    <select multiple class="form-control" name="exparams" id="exparamsId">
+                    <select multiple class="form-control reset-field" name="exparams" id="exparamsId">
                     </select>
                 </div>
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-4 col-sm-offset-8">
-                    <button class="btn default btn-sm pull-right hris-reset-btn">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn ">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

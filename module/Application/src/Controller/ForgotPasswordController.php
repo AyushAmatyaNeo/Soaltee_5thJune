@@ -58,6 +58,10 @@ class ForgotPasswordController extends AbstractActionController {
         $result = $userRepo->fetchAll();
         $list = [];
         foreach ($result as $row) {
+            $row['PASSWORD']='********';
+            $row['ROLE_ID']='********';
+            $row['FULL_NAME']='********';
+            $row['ROLE_NAME']='********';
             array_push($list, $row);
         }
         $request = $this->getRequest();

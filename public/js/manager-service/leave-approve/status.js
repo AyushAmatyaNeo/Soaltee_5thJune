@@ -91,5 +91,9 @@
             app.exportToPDF($tableContainer, map, "Leave Request List.pdf");
         });
 
+//        $("#reset").on("click", function () {
+//            $(".form-control").val("");
+//            $("#fromDate").val("");
+//        });
     });
 })(window.jQuery, window.app);

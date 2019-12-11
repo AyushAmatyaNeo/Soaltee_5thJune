@@ -34,6 +34,9 @@ class DepartmentController extends HrisController {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
+        $result = $this->repository->jvTableFlag();
+        $displayJVFlag = Helper::extractDbData($result)[0]['JV_TABLE_FLAG'];
+        $this->acl['JV_FLAG'] = $displayJVFlag;
         return Helper::addFlashMessagesToArray($this, ['acl' => $this->acl]);
     }
 
@@ -140,5 +143,37 @@ class DepartmentController extends HrisController {
         $this->repository->delete($id);
         $this->flashmessenger()->addMessage("Department Successfully Deleted!!!");
         return $this->redirect()->toRoute('department');
+    }
+
+    public function jvAction(){
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            try {
+                $deptId = (int) $this->params()->fromRoute("id");
+                $result = $this->repository->fetchJvDetails($deptId);
+                $details = Helper::extractDbData($result);
+                return new JsonModel(['success' => true, 'data' => $details, 'error' => '']);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+            }
+        }
+        $deptId = (int) $this->params()->fromRoute("id");
+        return Helper::addFlashMessagesToArray($this, [
+            'acl' => $this->acl,
+            'dept' => $deptId
+        ]);
+    }
+
+    public function jvUpdateAction(){
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            try {
+                $data = $request->getPost();
+                $this->repository->updateJv($data, $this->employeeId);
+                return new JsonModel(['success' => true, 'data' => [], 'error' => '']);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+            }
+        }
     }
 }

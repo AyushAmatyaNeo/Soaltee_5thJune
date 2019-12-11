@@ -21,6 +21,7 @@ $this->headScript()
     document.otVariables =<?php echo json_encode($otVariables); ?>;
     document.getFiscalYearMonthLink = '<?php echo $this->url('payrollReport', ['action' => 'getFiscalYearMonth']); ?>';
     document.basicMonthlyLink = '<?= $this->url("payrollReport", ["action" => "basicMonthly"]) ?>';
+    document.preference =<?php echo json_encode($preference) ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\monthlyValue')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -114,11 +115,11 @@ $this->headScript()
                         </div>-->
                         <div class="col-sm-2">
                             <label>Extra Fields</label>
-                            <select multiple class="form-control" name="extraFields" id="extraFields">
+                            <select multiple class="form-control reset-field" name="extraFields" id="extraFields">
                             </select>
                         </div>
                         <div class="col-sm-4 col-sm-offset-4">
-                            <button id="reset" class="btn default btn-sm pull-right">
+                            <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                                 Reset
                                 <i class="fa fa-refresh"></i>
                             </button>

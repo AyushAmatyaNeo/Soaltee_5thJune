@@ -94,18 +94,18 @@ $this->headScript()->appendFile($this->basePath('js/overtime/report/index.js'));
                 <div class="row">
                     <div class="col-sm-2">
                         <label>&nbsp;</label>
-                        <select class="form-control" id="fiscalYearId" >
+                        <select class="form-control reset-field" id="fiscalYearId" >
                         </select>
                     </div>
                     <div class="col-sm-2">
                         <label>&nbsp;</label>
-                        <select class="form-control" id="monthId" >
+                        <select class="form-control reset-field" id="monthId" >
                         </select>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <button class="btn default btn-sm pull-right hris-filter-reset-btn">
+                        <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                             Reset
                             <i class="fa fa-refresh"></i>
                         </button>

@@ -161,11 +161,86 @@
                 return values;
             },
             reset: function () {
-                $.each(this.ids, function (key, value) {
-                    if (typeof value !== "undefined") {
-                        $('#' + value).val(-1).change();
-                    }
-                });
+                let acl = document.acl;
+                let aclControlVal='F';
+                    
+                    $.each(this.ids, function (key, value) {
+//                    console.log(value);
+                        let $company = $('#' + 'companyId');
+                        let $branch = $('#' + 'branchId');
+                        let $department = $('#' + 'departmentId');
+                        let $designation = $('#' + 'designationId');
+                        let $position = $('#' + 'positionId');
+//                    let $serviceType = $('#' + 'serviceTypeId');
+//                    let $serviceEventType = $('#' + 'serviceEventTypeId');
+//                    let $employee = $('#' + 'employeeId');
+//                    
+                        let populateValues = [];
+                    if (typeof acl !== 'undefined') {
+                        console.log('sdfsd');
+                        aclControlVal = acl['CONTROL'];
+
+                        $.each(acl['CONTROL_VALUES'], function (k, v) {
+                            if (v.CONTROL == acl['CONTROL']) {
+                                populateValues.push(v.VAL);
+                            }
+                        });
+//                console.log(acl['CONTROL']);
+                    }  //end if
+                        if (typeof value !== "undefined") {
+                            if (value == 'companyId' || value == 'branchId' || value == 'designationId' || value == 'departmentId' || value == 'positionId') {
+                                switch (aclControlVal) {
+                                    case 'F':
+                                        $('#' + value).val(-1).change();
+                                        break;
+                                    case 'C':
+                                        if (value == 'companyId') {
+                                            $company.val(populateValues);
+                                            $company.trigger('change');
+                                        } else {
+                                            $('#' + value).val(-1).change();
+                                        }
+                                        break;
+                                    case 'B':
+                                        if (value == 'branchId') {
+                                            $branch.val(populateValues);
+                                            $branch.trigger('change');
+                                        } else {
+                                            $('#' + value).val(-1).change();
+                                        }
+                                        break;
+                                    case 'DS':
+                                        if (value == 'designationId') {
+                                            $designation.val(populateValues);
+                                            $designation.trigger('change');
+                                        } else {
+                                            $('#' + value).val(-1).change();
+                                        }
+                                        break;
+                                    case 'DP':
+                                        if (value == 'departmentId') {
+                                            $department.val(populateValues);
+                                            $department.trigger('change');
+                                        } else {
+                                            $('#' + value).val(-1).change();
+                                        }
+                                        break;
+                                    case 'P':
+                                        if (value == 'positionId') {
+                                            $position.val(populateValues);
+                                            $position.trigger('change');
+                                        } else {
+                                            $('#' + value).val(-1).change();
+                                        }
+                                        break;
+                                }
+                            } else {
+                                $('#' + value).val(-1).change();
+                            }
+                        }
+                    });
+                
+                
                 if (this.resetEvent !== null) {
                     this.resetEvent();
                 }
@@ -201,6 +276,7 @@
         (function () {
             $('.hris-reset-btn').on('click', function () {
                 document.searchManager.reset();
+                app.resetField();
             });
         })();
 

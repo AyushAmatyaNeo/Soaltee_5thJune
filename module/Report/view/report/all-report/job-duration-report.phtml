@@ -18,6 +18,7 @@ $this->headScript()
     document.pullEmployeeListForEmployeeTableLink = '<?= $this->url("allreport", ["action" => "jobDurationReport"]) ?>';
     document.acl =<?php echo json_encode($acl); ?>;
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
+    document.preference =<?php echo json_encode($preference) ?>;
 </script> 
 
 <div class="page-bar">
@@ -123,9 +124,9 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <label>Location</label>
-                    <select multiple class="form-control" name="location" id="locationId">
-                    </select>
+                            <label>Functional Type</label>
+                            <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                            </select>
                 </div>
                 <div class="col-sm-2">
                     <label>Employee</label>
@@ -135,7 +136,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-4 col-sm-offset-8">
-                    <button class="btn default btn-sm pull-right hris-reset-btn">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

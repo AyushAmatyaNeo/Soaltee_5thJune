@@ -53,12 +53,13 @@
                     {field: "REQUESTED_DATE_BS",
                         title: "Nepali",
                     }]},
+            {field: "DEPARTURE", title: "Departure"},
             {field: "DESTINATION", title: "Destination"},
             {field: "REQUESTED_AMOUNT", title: "Request Amt."},
             {field: "REQUESTED_TYPE", title: "Request For"},
             {field: "TRANSPORT_TYPE_DETAIL", title: "Transport"},
             {field: "STATUS_DETAIL", title: "Status"},
-            {field: ["TRAVEL_ID", "ALLOW_EDIT", "ALLOW_DELETE", "ALLOW_EXPENSE_APPLY"], title: "Action", template: action}
+            {field: "TRAVEL_ID", title: "Action", template: action}
         ]);
 
 
@@ -86,7 +87,7 @@
         });
 
 
-        app.searchTable($table, ['DESTINATION']);
+        app.searchTable($table, ['EMPLOYEE_NAME', 'EMPLOYEE_CODE']);
         var exportMap = {
             'FROM_DATE_AD': 'From Date(AD)',
             'FROM_DATE_BS': 'From Date(BS)',
@@ -95,6 +96,7 @@
             'REQUESTED_DATE_AD': 'Request Date(AD)',
             'REQUESTED_DATE_BS': 'Request Date(BS)',
             'DESTINATION': 'Destination',
+            'DEPARTURE': 'Departure',
             'REQUESTED_AMOUNT': 'Request Amt',
             'REQUESTED_TYPE_DETAIL': 'Request Type',
             'TRANSPORT_TYPE_DETAIL': 'Transport',

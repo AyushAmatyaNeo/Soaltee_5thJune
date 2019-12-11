@@ -24,13 +24,13 @@ class AttendanceStatus extends HrisController {
     }
 
     public function indexAction() {
-        $statusSE = $this->getStatusSelectElement(['name' => 'attendanceStatus', 'id' => 'attendanceRequestStatusId', "class" => "form-control", 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'attendanceStatus', 'id' => 'attendanceRequestStatusId', "class" => "form-control reset-field", 'label' => 'Status']);
         return $this->stickFlashMessagesTo([
-                'searchValues' => EntityHelper::getSearchData($this->adapter),
-                'attendanceStatus' => $statusSE,
-                'acl' => $this->acl,
-                'employeeDetail' => $this->storageData['employee_detail'],
-                'preference' => $this->preference
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'attendanceStatus' => $statusSE,
+                    'acl' => $this->acl,
+                    'employeeDetail' => $this->storageData['employee_detail'],
+                    'preference' => $this->preference
         ]);
     }
 
@@ -75,24 +75,26 @@ class AttendanceStatus extends HrisController {
                 return $this->redirect()->toRoute("attendancestatus");
             }
             return Helper::addFlashMessagesToArray($this, [
-                    'form' => $this->form,
-                    'id' => $id,
-                    'employeeName' => $employeeName,
-                    'approver' => $authApprover,
-                    'employeeId' => $employeeId,
-                    'status' => $status,
-                    'requestedDt' => $detail['REQUESTED_DT'],
+                        'form' => $this->form,
+                        'id' => $id,
+                        'employeeName' => $employeeName,
+                        'approver' => $authApprover,
+                        'employeeId' => $employeeId,
+                        'status' => $status,
+                        'requestedDt' => $detail['REQUESTED_DT'],
+                        'acl' => $this->acl
             ]);
         } catch (\Exception $e) {
             $this->flashmessenger()->addMessage($e->getMessage());
             return Helper::addFlashMessagesToArray($this, [
-                    'form' => $this->form,
-                    'id' => $id,
-                    'employeeName' => $employeeName,
-                    'approver' => $authApprover,
-                    'employeeId' => $employeeId,
-                    'status' => $status,
-                    'requestedDt' => $detail['REQUESTED_DT'],
+                        'form' => $this->form,
+                        'id' => $id,
+                        'employeeName' => $employeeName,
+                        'approver' => $authApprover,
+                        'employeeId' => $employeeId,
+                        'status' => $status,
+                        'requestedDt' => $detail['REQUESTED_DT'],
+                        'acl' => $this->acl
             ]);
         }
     }
@@ -117,7 +119,11 @@ class AttendanceStatus extends HrisController {
         $request = $this->getRequest();
         try {
             $postData = $request->getPost();
-            $this->makeDecision($postData['id'], $postData['action'] == "approve");
+            if ($postData['status'] == 'Rejected' || $postData['status'] == 'Cancelled' || $postData['status'] == 'Approved') {
+                
+            } else {
+                $this->makeDecision($postData['id'], $postData['action'] == "approve");
+            }
             return new JsonModel(['success' => true, 'data' => null]);
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'error' => $e->getMessage()]);
@@ -133,7 +139,7 @@ class AttendanceStatus extends HrisController {
         $model->approvedDate = Helper::getcurrentExpressionDate();
         $model->approvedBy = $this->employeeId;
         $model->status = $approve ? "AP" : "R";
-        $message = $approve ? "Leave Request Approved" : "Leave Request Rejected";
+        $message = $approve ? "Attendance Request Approved" : "Attendance Request Rejected";
         $notificationEvent = $approve ? NotificationEvents::ATTENDANCE_APPROVE_ACCEPTED : NotificationEvents::ATTENDANCE_APPROVE_REJECTED;
         $attendanceRequestRepository = new AttendanceApproveRepository($this->adapter);
         $attendanceRequestRepository->edit($model, $id);

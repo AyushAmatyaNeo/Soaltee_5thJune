@@ -55,7 +55,7 @@
             {field: "DURATION", title: "Duration"},
             {field: "TRAINING_TYPE_DETAIL", title: "Training Type"},
             {field: "STATUS_DETAIL", title: "Status"},
-            {field: ["REQUEST_ID", "ALLOW_EDIT", "ALLOW_DELETE"], title: "Action", template: action}
+            {field: "REQUEST_ID", title: "Action", template: action}
         ]);
 
         app.pullDataById("", {}).then(function (response) {

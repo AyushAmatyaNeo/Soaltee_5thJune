@@ -72,76 +72,90 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
         <div class="portlet-body">
             <div class="row">
                 <div class="col-sm-2">
-                    <select class="form-control" name="company" id="companyId">
+                    <label>Company</label>
+                    <select multiple class="form-control" name="company" id="companyId">
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <select class="form-control" name="branchId" id="branchId">
+                    <label>Branch</label>
+                    <select multiple class="form-control" name="branchId" id="branchId">
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <select class="form-control" name="department" id="departmentId">
+                    <label>Department</label>
+                    <select multiple class="form-control" name="department" id="departmentId">
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <select class="form-control" name="designation" id="designationId">
+                    <label>Designation</label>
+                    <select multiple class="form-control" name="designation" id="designationId">
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <select class="form-control" name="position" id="positionId">
+                    <label>Position</label>
+                    <select multiple class="form-control" name="position" id="positionId">
                     </select>
                 </div>
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-2">
-                    <select class="form-control" name="serviceType" id="serviceTypeId">
+                    <label>Service Type</label>
+                    <select multiple class="form-control" name="serviceType" id="serviceTypeId">
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <select class="form-control" name="serviceEventType" id="serviceEventTypeId">
+                    <label>Service Event Type</label>
+                    <select multiple class="form-control" name="serviceEventType" id="serviceEventTypeId">
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <select class="form-control" name="employee" id="employeeId">
+                    <label>Employee</label>
+                    <select multiple class="form-control" name="employee" id="employeeId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Status</label>
                     <?php print $this->formElement($status); ?>
                 </div>
                 <div class="col-sm-2">
+                    <label>Employee Type</label>
                     <?php print $this->formElement($employeeType); ?>
                 </div>
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="fromDate" name="fromDate" ng-model="fromDate" class="form-control" placeholder="From Date"/>
+                        <label>From Date</label>
+                        <input type="text" id="fromDate" name="fromDate" ng-model="fromDate" class="form-control reset-field" placeholder="From Date"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control" placeholder="From Date Nepali"/>
+                        <label>From Date Nepali</label>
+                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control reset-field" placeholder="From Date Nepali"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="toDate" name="toDate" ng-model="toDate" class="form-control" placeholder="To Date"/>
+                        <label>To Date</label>
+                        <input type="text" id="toDate" name="toDate" ng-model="toDate" class="form-control reset-field" placeholder="To Date"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                        <label>To Date Nepali</label>
+                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
                     </div>
                 </div>
                 <div class="col-sm-4 ">
                     <div style="float: left;margin-top: 1%;font-size: 12px;">
                         <label>Overtime Only</label>
                         <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
-                            <input class="" type="checkbox" id="overtimeOnly" name="overtimeOnly"/>
+                            <input class="reset-field" type="checkbox" id="overtimeOnly" name="overtimeOnly"/>
                             <span></span>
                         </label>
                     </div>
-                    <button id="reset" class="btn default btn-sm pull-right">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

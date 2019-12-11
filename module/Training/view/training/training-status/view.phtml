@@ -213,8 +213,10 @@ $form->prepare();
                     </div>
                     <div class="col-sm-12">
                         <?php if ($showBtns): ?>
+                        <?php  if($acl['HR_APPROVE']=='Y'){  ?>
                             <input type="submit" name="submit" class="btn btn-info pull-right" value="Approve">
                             <input type="submit" name="submit" class="btn btn-danger pull-left" value="Reject">
+                        <?php }      ?>
                         <?php endif; ?>
                     </div>
                 </div>

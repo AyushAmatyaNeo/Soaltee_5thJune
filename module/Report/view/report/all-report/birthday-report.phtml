@@ -21,6 +21,7 @@ $this->headScript()
     document.pullEmployeeListForEmployeeTableLink = '<?= $this->url("allreport", ["action" => "birthdayReport"]) ?>';
     document.acl =<?php echo json_encode($acl); ?>;
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
+    document.preference =<?php echo json_encode($preference) ?>;
 </script> 
 
 <div class="page-bar">
@@ -126,8 +127,8 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <label>Location</label>
-                    <select multiple class="form-control" name="location" id="locationId">
+                    <label>Functional Type</label>
+                    <select multiple class="form-control" name="functionalType" id="functionalTypeId">
                     </select>
                 </div>
                 <div class="col-sm-2">
@@ -140,29 +141,29 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label>From Date(AD)</label>
-                        <input type="text" id="fromDate" name="fromDate" class="input-sm" class="form-control" placeholder="From Date"/>
+                        <input type="text" id="fromDate" name="fromDate" class="input-sm" class="form-control reset-field" placeholder="From Date"/>
                     </div>
                 </div> 
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label>From Date(BS)</label>
-                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="input-sm" class="form-control" placeholder="From Date Nepali"/>
+                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="input-sm" class="form-control reset-field" placeholder="From Date Nepali"/>
                     </div>
                 </div>  
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label>To Date(AD)</label>
-                        <input type="text" id="toDate" name="toDate" class="input-sm" class="form-control" placeholder="To Date"/>
+                        <input type="text" id="toDate" name="toDate" class="input-sm" class="form-control reset-field" placeholder="To Date"/>
                     </div>
                 </div> 
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label>To Date(BS)</label>
-                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="input-sm" class="form-control" placeholder="To Date Nepali"/>
+                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="input-sm" class="form-control reset-field" placeholder="To Date Nepali"/>
                     </div>
                 </div>
                 <div class="col-sm-4 col-sm-offset-8">
-                    <button class="btn default btn-sm pull-right hris-reset-btn">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

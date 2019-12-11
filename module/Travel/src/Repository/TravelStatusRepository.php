@@ -13,7 +13,7 @@ class TravelStatusRepository extends HrisRepository {
 
     public function getFilteredRecord($search):array {
         $condition = "";
-        $condition = EntityHelper::getSearchConditon($search['companyId'], $search['branchId'], $search['departmentId'], $search['positionId'], $search['designationId'], $search['serviceTypeId'], $search['serviceEventTypeId'], $search['employeeTypeId'], $search['employeeId']);
+        $condition = EntityHelper::getSearchConditon($search['companyId'], $search['branchId'], $search['departmentId'], $search['positionId'], $search['designationId'], $search['serviceTypeId'], $search['serviceEventTypeId'], $search['employeeTypeId'], $search['employeeId'], null, null, $search['functionalTypeId']);
         if (isset($search['fromDate']) && $search['fromDate'] != null) {
             $condition .= " AND TR.FROM_DATE>=TO_DATE('{$search['fromDate']}','DD-MM-YYYY') ";
         }
@@ -41,6 +41,7 @@ class TravelStatusRepository extends HrisRepository {
         $sql = "SELECT TR.TRAVEL_ID                        AS TRAVEL_ID,
                   TR.TRAVEL_CODE                           AS TRAVEL_CODE,
                   TR.EMPLOYEE_ID                           AS EMPLOYEE_ID,
+                  (CASE WHEN TR.STATUS = 'RQ' THEN 'Y' ELSE 'N' END) AS ALLOW_EDIT,
                   E.EMPLOYEE_CODE                          AS EMPLOYEE_CODE,
                   E.FULL_NAME                              AS EMPLOYEE_NAME,
                   TO_CHAR(TR.REQUESTED_DATE,'DD-MON-YYYY') AS REQUESTED_DATE_AD,
@@ -50,6 +51,7 @@ class TravelStatusRepository extends HrisRepository {
                   TO_CHAR(TR.TO_DATE,'DD-MON-YYYY')        AS TO_DATE_AD,
                   BS_DATE(TR.TO_DATE)                      AS TO_DATE_BS,
                   TR.DESTINATION                           AS DESTINATION,
+                  TR.DEPARTURE                             AS DEPARTURE,
                   TR.PURPOSE                               AS PURPOSE,
                   TR.VOUCHER_NO                            AS VOUCHER_NO,
                   TR.REQUESTED_TYPE                        AS REQUESTED_TYPE,
@@ -97,6 +99,7 @@ class TravelStatusRepository extends HrisRepository {
                 LEFT JOIN HRIS_EMPLOYEES RAA
                 ON(RA.APPROVED_BY=RAA.EMPLOYEE_ID)
                 WHERE 1          =1 {$condition}";
+
         $finalSql = $this->getPrefReportQuery($sql);
         return $this->rawQuery($finalSql);
     }
@@ -114,6 +117,7 @@ class TravelStatusRepository extends HrisRepository {
                   TO_CHAR(TR.TO_DATE,'DD-MON-YYYY')   AS TO_DATE_AD,
                   BS_DATE(TR.TO_DATE)                 AS TO_DATE_BS,
                   TR.DESTINATION                      AS DESTINATION,
+                  TR.DEPARTURE                        AS DEPARTURE,
                   TR.PURPOSE                          AS PURPOSE,
                   TR.REASON                           AS REASON,
                   TR.REQUESTED_TYPE                   AS REQUESTED_TYPE,
@@ -130,6 +134,8 @@ class TravelStatusRepository extends HrisRepository {
                     THEN 'Taxi'
                     WHEN TR.TRANSPORT_TYPE = 'BS'
                     THEN 'Bus'
+                    WHEN TR.TRANSPORT_TYPE = 'OF'
+                    THEN 'On Foot'
                   END)                                                            AS TRANSPORT_TYPE_DETAIL,
                   TO_CHAR(TR.DEPARTURE_DATE)                                      AS DEPARTURE_DATE_AD,
                   BS_DATE(TR.DEPARTURE_DATE)                                      AS DEPARTURE_DATE_BS,
@@ -184,5 +190,18 @@ class TravelStatusRepository extends HrisRepository {
                 LEFT JOIN HRIS_EMPLOYEES RAA
                 ON(RA.APPROVED_BY=RAA.EMPLOYEE_ID) ORDER BY TR.REQUESTED_DATE DESC";
         return $this->rawQuery($sql);
+    }
+    
+    public function getSameDateApprovedStatus($employeeId, $fromDate, $toDate) {
+        $sql = "SELECT COUNT(*) as TRAVEL_COUNT
+  FROM HRIS_EMPLOYEE_TRAVEL_REQUEST
+  WHERE (('{$fromDate}' BETWEEN FROM_DATE AND TO_DATE)
+  OR ('{$toDate}' BETWEEN FROM_DATE AND TO_DATE))
+  AND STATUS  IN ('AP','CP','CR')
+  AND EMPLOYEE_ID = $employeeId
+                ";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return $result->current();
     }
 }

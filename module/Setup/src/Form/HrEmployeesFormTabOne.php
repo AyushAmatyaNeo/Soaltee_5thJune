@@ -263,6 +263,15 @@ class HrEmployeesFormTabOne extends Model {
      * @Annotation\Attributes({ "id":"addrPermZoneId","class":"form-control"})
      */
     public $addrPermZoneId;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Required(false)
+     * @Annotation\Options({"disable_inarray_validator":"true","label":" Province"})
+     * @Annotation\Attributes({ "id":"addrPermProvinceId","class":"form-control"})
+     */
+    public $addrPermProvinceId;
 
     /**
      * @Annotation\Type("Zend\Form\Element\Text")
@@ -319,6 +328,15 @@ class HrEmployeesFormTabOne extends Model {
      * @Annotation\Attributes({ "id":"addrTempZoneId","class":"form-control"})
      */
     public $addrTempZoneId;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Select")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Required(false)
+     * @Annotation\Options({"disable_inarray_validator":"true","label":" Province"})
+     * @Annotation\Attributes({ "id":"addrTempProvinceId","class":"form-control"})
+     */
+    public $addrTempProvinceId;
     
     /**
      * @Annotation\Type("Zend\Form\Element\Textarea")
@@ -381,6 +399,8 @@ class HrEmployeesFormTabOne extends Model {
         'modifiedBy' => 'MODIFIED_BY',
         'modifiedDt' => 'MODIFIED_DT',
         'abroadAddress' => 'ABROAD_ADDRESS',
+        'addrPermProvinceId' => 'ADDR_PERM_PROVINCE_ID',
+        'addrTempProvinceId' => 'ADDR_TEMP_PROVINCE_ID',
     ];
 
 }

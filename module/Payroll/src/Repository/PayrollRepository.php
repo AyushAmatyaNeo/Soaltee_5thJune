@@ -204,15 +204,16 @@ class PayrollRepository extends HrisRepository {
         $sql = "
                 SELECT (
                   CASE
-                    WHEN TO_SERVICE_TYPE_ID =3
+                    WHEN TYPE ='CONTRACT'
                     THEN 1
                     ELSE 0
                   END) AS IS_PERMANENT
                 FROM
                   (SELECT *
                   FROM
-                    (SELECT JH.*
-                    FROM HRIS_JOB_HISTORY JH,
+                    (SELECT JH.*,ST.TYPE
+                    FROM HRIS_JOB_HISTORY JH
+                     left join Hris_Service_Types ST ON (ST.SERVICE_TYPE_ID=JH.TO_SERVICE_TYPE_ID),
                       (SELECT * FROM HRIS_MONTH_CODE WHERE MONTH_ID = {$monthId}
                       ) M
                     WHERE JH.EMPLOYEE_ID = {$employeeId}
@@ -300,7 +301,7 @@ class PayrollRepository extends HrisRepository {
     }
 
     public function getMonthNo($monthId) {
-        $sql = "select FISCAL_YEAR_ID from hris_month_code where month_id={$monthId}";
+        $sql = "select FISCAL_YEAR_MONTH_NO from hris_month_code where month_id={$monthId}";
         $resultList = $this->rawQuery($sql);
         if (!(sizeof($resultList) == 1)) {
             throw new Exception('Result not found.');
@@ -308,4 +309,98 @@ class PayrollRepository extends HrisRepository {
         return $resultList[0]['FISCAL_YEAR_ID'];
     }
 
+    
+     public function getBranch($employeeId) {
+        $sql = "SELECT BRANCH_ID FROM HRIS_EMPLOYEES WHERE  EMPLOYEE_ID={$employeeId}";
+        $resultList = $this->rawQuery($sql);
+        if (!(sizeof($resultList) == 1)) {
+            throw new Exception('No Report Found.');
+        }
+        return $resultList[0]['BRANCH_ID'];
+    }
+
+    public function getCafeMealPrevious($employeeId, $monthId){
+        $sql = "select case
+when sum(total_amount) is not null
+then sum(total_amount)
+else 0 END as AMT
+ from (SELECT
+    hcms.menu_name AS menu_name,
+    e.employee_id AS employee_id,
+    e.full_name AS full_name,
+    SUM(held.quantity) AS quantity,
+    SUM(held.total_amount) AS total_amount
+FROM
+    hris_cafeteria_log_detail held
+    JOIN hris_employees e ON (
+        e.employee_id = held.employee_id
+    )
+    JOIN hris_cafeteria_menu_setup hcms ON (
+        held.menu_code = hcms.menu_id
+    )
+    left join (select * from 
+(
+select to_char( add_months (from_date,-1),'DD-Mon-YY') as from_date
+, to_char( add_months (to_date,-1),'DD-Mon-YY') as to_date
+from hris_month_code where month_id={$monthId}
+)) mc on (1=1)
+WHERE
+held.log_date BETWEEN mc.from_date AND mc.to_date and 
+e.employee_id={$employeeId}
+GROUP BY
+    hcms.menu_name,
+    e.employee_id,
+    e.full_name)";
+        $resultList = $this->rawQuery($sql);
+        if (!(sizeof($resultList) == 1)) {
+            throw new Exception('No Report Found.');
+        }
+        return $resultList[0]['AMT'];
+    }
+    
+    public function getCafeMealCurrent($employeeId, $monthId){
+        $sql = "select case
+when sum(total_amount) is not null
+then sum(total_amount)
+else 0 END as AMT
+ from (SELECT
+    hcms.menu_name AS menu_name,
+    e.employee_id AS employee_id,
+    e.full_name AS full_name,
+    SUM(held.quantity) AS quantity,
+    SUM(held.total_amount) AS total_amount
+FROM
+    hris_cafeteria_log_detail held
+    JOIN hris_employees e ON (
+        e.employee_id = held.employee_id
+    )
+    JOIN hris_cafeteria_menu_setup hcms ON (
+        held.menu_code = hcms.menu_id
+    )
+    left join hris_month_code mc on (month_id={$monthId})
+WHERE
+held.log_date BETWEEN mc.from_date AND mc.to_date and 
+e.employee_id={$employeeId}
+GROUP BY
+    hcms.menu_name,
+    e.employee_id,
+    e.full_name)";
+        $resultList = $this->rawQuery($sql);
+        if (!(sizeof($resultList) == 1)) {
+            throw new Exception('No Report Found.');
+        }
+        return $resultList[0]['AMT'];
+    }
+    
+    
+    public function getPayEmpType($employeeId){
+           $sql = "SELECT PAY_EMP_TYPE FROM HRIS_EMPLOYEES WHERE  EMPLOYEE_ID={$employeeId}";
+        $resultList = $this->rawQuery($sql);
+        if (!(sizeof($resultList) == 1)) {
+            throw new Exception('No Report Found.');
+        }
+        return $resultList[0]['PAY_EMP_TYPE'];
+        
+    }
+    
 }

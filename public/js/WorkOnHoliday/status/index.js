@@ -7,6 +7,8 @@
         var $search = $('#search');
         var $bulkActionDiv = $('#bulkActionDiv');
         var $bulkBtns = $(".btnApproveReject");
+        var $superpower = $("#super_power");
+        
         var columns = [
             {field: "EMPLOYEE_CODE", title: "Code"},
             {field: "FULL_NAME", title: "Employee"},
@@ -37,7 +39,7 @@
                         template: "<span>#: (TO_DATE_BS == null) ? '-' : TO_DATE_BS #</span>"}]},
             {field: "DURATION", title: "Duration"},
             {field: "STATUS", title: "Status"},
-            {field: ["ID"], title: "Action", template: `<span> <a class="btn  btn-icon-only btn-success"
+            {field: "ID", title: "Action", template: `<span> <a class="btn  btn-icon-only btn-success"
         href="${document.viewLink}/#: ID #" style="height:17px;" title="view">
         <i class="fa fa-search-plus"></i></a>
         </span>`}
@@ -99,10 +101,11 @@
         $bulkBtns.bind("click", function () {
             var list = grid.getSelected();
             var action = $(this).attr('action');
+            var superPower = $superpower.prop('checked');
 
             var selectedValues = [];
             for (var i in list) {
-                selectedValues.push({id: list[i][pk], action: action});
+                selectedValues.push({id: list[i][pk], action: action, status: list[i]['STATUS'], super_power: superPower});
             }
             app.bulkServerRequest(document.bulkLink, selectedValues, function () {
                 $search.trigger('click');

@@ -10,6 +10,7 @@ $deviceLocation = $form->get('deviceLocation');
 $isActive = $form->get('isActive');
 $purpose = $form->get('purpose');
 $submit = $form->get('submit');
+$branchManager= $form->get('branchManager');
 $form->setAttribute('action', $this->url('AttendanceDevice', ['action' => 'add']));
 $form->prepare();
 ?>
@@ -89,6 +90,13 @@ $form->prepare();
                             <?php print $this->formLabel($purpose); ?>
                             <?php print $this->formElement($purpose); ?>
                             <?php print $this->formElementErrors()->render($purpose, ['class' => 'help-block']); ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <?php print $this->formLabel($branchManager); ?>
+                            <?php print $this->formElement($branchManager); ?>
+                            <?php print $this->formElementErrors()->render($branchManager, ['class' => 'help-block']); ?>
                         </div>
                     </div>
                 </div>

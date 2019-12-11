@@ -81,7 +81,7 @@ angular.module('hris', [])
                                     title: "BS",
                                     template: "<span>#: (END_DATE_N == null) ? '-' : END_DATE_N #</span>"}]},
                         {field: "HALFDAY", title: "Interval"},
-                        {field: ["HOLIDAY_ID"], title: "Action", template: `
+                        {field: "HOLIDAY_ID", title: "Action", template: `
                                 <span>
                                     <a class="btn btn-icon-only yellow" href="${document.editLink}/#:HOLIDAY_ID#" style="height:17px;" title="Edit">
                                         <i class="fa fa-edit"></i>

@@ -1,8 +1,10 @@
 <?php
+
 namespace Payroll\Service;
 
 use Application\Model\Months;
 use Application\Repository\MonthRepository;
+use Payroll\Repository\RulesRepository;
 use Payroll\Repository\SalarySheetDetailRepo;
 use Setup\Repository\EmployeeRepository;
 
@@ -17,6 +19,7 @@ class SystemRuleProcessor {
     private $multiplicationFactor;
     private $prevSummedSSD;
     private $ruleId;
+    private $ssdRepo;
 
     public function __construct($adapter, $employeeId, $ruleDetailList = null, int $monthId = null, int $ruleId = null) {
         $this->adapter = $adapter;
@@ -30,6 +33,7 @@ class SystemRuleProcessor {
         $this->multiplicationFactor = 12 - $this->month->fiscalYearMonthNo;
 
         $ssdRepo = new SalarySheetDetailRepo($adapter);
+        $this->ssdRepo = $ssdRepo;
         $prevSummedRaw = $ssdRepo->fetchPrevSumPayValue($employeeId, $this->month->fiscalYearId, $this->month->fiscalYearMonthNo);
         $this->prevSummedSSD = $this->listValueToKV($prevSummedRaw, "PAY_ID", "PREV_SUM_VAL");
         $this->ruleId = $ruleId;
@@ -107,6 +111,38 @@ class SystemRuleProcessor {
             case PayrollGenerator::SYSTEM_RULE[3]:
                 $processedValue = $this->multiplicationFactor;
                 break;
+            //LOAN_AMT for soaltee loan variable
+            case PayrollGenerator::SYSTEM_RULE[4]:
+                $ruleRepo = new RulesRepository($this->adapter);
+                $ruleDetails = $ruleRepo->fetchById($this->ruleId);
+                $ruleFormula = $ruleDetails['FORMULA'];
+                //$id=$this->getFistParamenters($systemRule, $ruleFormula, 9);
+                $processedValue = $this->ssdRepo->fetchEmployeeLoanAmt($this->monthId, $this->employeeId, $this->ruleId);
+                break;
+            //LOAN_INT for soaltee loan variable
+            case PayrollGenerator::SYSTEM_RULE[5]:
+                $ruleRepo = new RulesRepository($this->adapter);
+                $ruleDetails = $ruleRepo->fetchById($this->ruleId);
+                $ruleFormula = $ruleDetails['FORMULA'];
+               // $id=$this->getFistParamenters($systemRule, $ruleFormula, 9);
+                $processedValue = $this->ssdRepo->fetchEmployeeLoanIntrestAmt($this->monthId, $this->employeeId, $this->ruleId);
+                break;
+            //PREVIOUS_TOTAL
+            case PayrollGenerator::SYSTEM_RULE[6]:
+                $ruleRepo = new RulesRepository($this->adapter);
+                $ruleDetails = $ruleRepo->fetchById($this->ruleId);
+                $ruleFormula = $ruleDetails['FORMULA'];
+                $id=$this->getFistParamenters($systemRule, $ruleFormula, 9);
+                $processedValue = $this->ssdRepo->fetchEmployeePreviousSum($this->monthId, $this->employeeId, $id);
+                break;
+            //PREVIOUS_MONTH_AMOUNT
+            case PayrollGenerator::SYSTEM_RULE[7]:
+                $ruleRepo = new RulesRepository($this->adapter);
+                $ruleDetails = $ruleRepo->fetchById($this->ruleId);
+                $ruleFormula = $ruleDetails['FORMULA'];
+                $id=$this->getFistParamenters($systemRule, $ruleFormula, 9);
+                $processedValue = $this->ssdRepo->fetchEmployeePreviousMonthAmount($this->monthId, $this->employeeId, $id);
+                break;
         }
         return $processedValue;
     }
@@ -125,4 +161,21 @@ class SystemRuleProcessor {
         }
         return null;
     }
+
+    public function getFistParamenters($key, $stringVal, $extraParam) {
+        $endPos = strpos($stringVal, $key);
+        $stringVal = substr($stringVal, $endPos + $extraParam);
+        return trim($this->get_string_between($stringVal, "PARS", "PARE"));
+    }
+
+    function get_string_between($string, $start, $end) {
+        $string = ' ' . $string;
+        $ini = strpos($string, $start);
+        if ($ini == 0)
+            return '';
+        $ini += strlen($start);
+        $len = strpos($string, $end, $ini) - $ini;
+        return substr($string, $ini, $len);
+    }
+
 }

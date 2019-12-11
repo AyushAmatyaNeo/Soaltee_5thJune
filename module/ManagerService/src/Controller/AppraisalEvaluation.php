@@ -59,7 +59,7 @@ class AppraisalEvaluation extends HrisController {
                     'appraisals' => $appraisalSE,
                     'appraisalStages' => $appraisalStageSE,
                     'userId' => $this->employeeId,
-                    'searchValues' => EntityHelper::getSearchData($this->adapter)
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
         ]);
     }
 

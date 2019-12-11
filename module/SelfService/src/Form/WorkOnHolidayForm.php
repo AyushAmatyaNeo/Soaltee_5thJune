@@ -57,7 +57,7 @@ class WorkOnHolidayForm {
 
     /**
      * @Annotation\Type("Zend\Form\Element\Textarea")
-     * @Annotation\Required(false)
+     * @Annotation\Required(true)
      * @Annotation\Filter({"name":"StripTags","name":"StringTrim"})
      * @Annotation\Options({"label":"Remarks"})
      * @Annotation\Attributes({"id":"remarks","class":"form-control","style":"height: 50px; font-size:12px"})

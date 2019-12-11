@@ -4,6 +4,7 @@ $this->headScript()->appendFile($this->basePath('js/Payroll/salary-sheet/payslip
 <script>
     document.getFiscalYearMonthLink = '<?php echo $this->url('salarySheet', ['action' => 'getFiscalYearMonth']); ?>';
     document.getSearchDataLink = '<?php echo $this->url('salarySheet', ['action' => 'getSearchData']); ?>';
+    document.salaryType =<?php echo $salaryType; ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\salarySheet')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -51,7 +52,12 @@ $this->headScript()->appendFile($this->basePath('js/Payroll/salary-sheet/payslip
                 <select id="employeeId">
                 </select>
             </div>
-            <div class="col-sm-2 col-sm-offset-4">
+            <div class="col-sm-2">
+                <!--<label>Salary Type</label>-->
+                <select class="form-control" name="salaryType" id="salaryTypeId">
+                </select>
+            </div>
+            <div class="col-sm-2 col-sm-offset-2">
                 <button id="viewBtn" class="btn btn-info pull-right">View</button>
             </div>
         </div>

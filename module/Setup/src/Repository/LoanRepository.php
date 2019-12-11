@@ -3,6 +3,7 @@
 namespace Setup\Repository;
 
 use Application\Helper\EntityHelper;
+use Application\Helper\Helper;
 use Application\Model\Model;
 use Application\Repository\RepositoryInterface;
 use Setup\Model\Company;
@@ -47,7 +48,7 @@ class LoanRepository implements RepositoryInterface {
         $select = $sql->select();
         $select->columns(EntityHelper::getColumnNameArrayWithOracleFns(Loan::class, [Loan::LOAN_NAME],NULL,NULL,NULL,NULL,'L',FALSE,FALSE), false);
         $select->from(['L' => Loan::TABLE_NAME]);
-        $select->join(['C' => Company::TABLE_NAME], "C.".Company::COMPANY_ID."=L.". Loan::COMPANY_ID, [Company::COMPANY_NAME => new Expression('INITCAP(C.COMPANY_NAME)')], 'left');
+        $select->join(['C' => Company::TABLE_NAME], "C.".Company::COMPANY_ID."=L.". Loan::COMPANY_ID, [Company::COMPANY_NAME => new Expression('(C.COMPANY_NAME)')], 'left');
         $select->where(["L.".Loan::STATUS."='E'"]);
         $select->order("L.".Loan::LOAN_NAME . " ASC");
         $statement = $sql->prepareStatementForSqlObject($select);
@@ -81,4 +82,24 @@ class LoanRepository implements RepositoryInterface {
         return $row->current();
     }
 
+    public function getPayCodesList(){
+        $sql = "SELECT PAY_ID, PAY_EDESC FROM HRIS_PAY_SETUP";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return Helper::extractDbData($result);
+    }
+
+    public function getSelectedPayCodes($id){
+        $sql = "SELECT PAY_ID_AMT, PAY_ID_INT FROM hris_loan_master_setup WHERE LOAN_ID = $id";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return Helper::extractDbData($result);
+    }
+
+    public function getRateFlexibleFlag($id){
+        $sql = "SELECT IS_RATE_FLEXIBLE FROM hris_loan_master_setup WHERE LOAN_ID = $id";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return Helper::extractDbData($result)[0]['IS_RATE_FLEXIBLE'];
+    }
 }

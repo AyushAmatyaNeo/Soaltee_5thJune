@@ -6,6 +6,7 @@ use Overtime\Controller\OvertimeApply;
 use Overtime\Controller\OvertimeAutomation;
 use Overtime\Controller\OvertimeReport;
 use Overtime\Controller\OvertimeStatus;
+use Overtime\Controller\OvertimeBulkSetup;
 use Zend\Router\Http\Segment;
 
 return [
@@ -63,6 +64,20 @@ return [
                     ],
                     'defaults' => [
                         'controller' => OvertimeReport::class,
+                        'action' => 'index'
+                    ],
+                ],
+            ],
+            'overtime-bulk-setup' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/overtime/bulkSetup[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => OvertimeBulkSetup::class,
                         'action' => 'index'
                     ],
                 ],
@@ -170,6 +185,7 @@ return [
             OvertimeApply::class => ControllerFactory::class,
             OvertimeAutomation::class => ControllerFactory::class,
             OvertimeReport::class => ControllerFactory::class,
+            OvertimeBulkSetup::class => ControllerFactory::class,
         ],
     ],
     'view_manager' => [

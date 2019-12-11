@@ -11,13 +11,16 @@
         var map = {
             'EMPLOYEE_CODE': 'Code',
             'EMPLOYEE_ID': 'Id', 
-            'FULL_NAME': 'Name'
+            'FULL_NAME': 'Name',
+            'DEPARTMENT_NAME': 'Department',
+            'FUNCTIONAL_TYPE_EDESC': 'Functional Type'
         };
 
         var columnOptions = [];
         columnOptions.push({'VALUES' : '0', 'COLUMNS' : 'Previous'});
         columnOptions.push({'VALUES' : '1', 'COLUMNS' : 'Total'});
         columnOptions.push({'VALUES' : '2', 'COLUMNS' : 'Taken'});
+        columnOptions.push({'VALUES' : '3', 'COLUMNS' : 'Encashed'});
 
         var $options = $('#options');
         app.populateSelect($options, columnOptions, 'VALUES', 'COLUMNS');
@@ -25,9 +28,12 @@
         var leaveList = document.leaves;
 
         function reinitializeKendo(optionalColumns){
+            console.log('oplist',optionalColumns);
             columns = [
-                {field: "EMPLOYEE_CODE", title: "Code", width: 150, locked: true},
-                {field: "FULL_NAME", title: "Employee", width: 150, locked: true},
+                {field: "EMPLOYEE_CODE", title: "Code", width: 70, locked: true},
+                {field: "FULL_NAME", title: "Employee", width: 100, locked: true},
+                {field: "DEPARTMENT_NAME", title: "Department", width: 100, locked: true},
+                {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 100, locked: true},
             ];
             var flag, flag2;
             var columnsList;
@@ -48,6 +54,11 @@
                             width: 100
                         },
                         {
+                            title: 'Encashed',
+                            field: 'L' + leaveList[i]['LEAVE_ID'] + '_' + 'ENCASHED',
+                            width: 100
+                        },
+                        {
                             title: 'Taken',
                             field: 'L' + leaveList[i]['LEAVE_ID'] + '_' + 'TAKEN',
                             width: 100
@@ -59,6 +70,11 @@
                         }
                     ]
                 };
+                
+                
+                console.log('aaa1',optionalColumns.indexOf("0"));
+                console.log('aaa2',optionalColumns.indexOf("1"));
+                console.log('aaa3',optionalColumns.indexOf("2"));
                 
                 if(optionalColumns.indexOf("0") == -1){
                     columnsList.columns.splice(0,1);
@@ -84,6 +100,18 @@
                         columnsList.columns.splice(1,1);
                     }
                 }
+                if(optionalColumns.indexOf("3") == -1){
+                    if(flag == true && flag2 == true){
+                        columnsList.columns.splice(0,1);
+                    }
+                    else if(flag == false && flag2 == false){
+                        columnsList.columns.splice(2,1);
+                    }
+                    else{
+                        columnsList.columns.splice(1,1);
+                    }
+                }
+                
                 
                 columns.push(columnsList);
 
@@ -98,7 +126,7 @@
             } 
         }
         reinitializeKendo([]);
-        app.initializeKendoGrid($table, columns);
+        app.initializeKendoGrid($table, columns,null,null,null,'LeaveBalance.xlsx');
         app.searchTable($table, ['EMPLOYEE_ID', 'EMPLOYEE_CODE','FULL_NAME']);
 
         $search.on('click', function () {
@@ -107,7 +135,7 @@
             
             if(optionalColumns != null){ reinitializeKendo(optionalColumns); }
             else{ reinitializeKendo([]); }
-            app.initializeKendoGrid($table, columns);
+            app.initializeKendoGrid($table, columns,null,null,null,'Leave Balance Report.xlsx');
 
             var q = document.searchManager.getSearchValues();
             App.blockUI({target: "#hris-page-content"});
@@ -125,6 +153,11 @@
         $('#pdfExport').on("click", function () {
             app.exportToPDF($table, map, "Employee Leave Balance Report.pdf", 'A2');
         });
+        
+//        $("#reset").on("click", function () {
+//            $(".form-control").val("");
+//            document.searchManager.reset();
+//        });
 
     });
 })(window.jQuery, window.app);

@@ -78,68 +78,78 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
         <div class="portlet-body">
             <div class="row">
                 <div class="col-sm-2">
+                    <label>Company</label>
                     <select class="form-control" name="company" id="companyId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Branch</label>
                     <select class="form-control" name="branchId" id="branchId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Department</label>
                     <select class="form-control" name="department" id="departmentId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Designation</label>
                     <select class="form-control" name="designation" id="designationId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Holiday</label>
                     <select class="form-control" name="position" id="positionId">
                     </select>
                 </div>
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-2">
+                    <label>Service Type</label>
                     <select class="form-control" name="serviceType" id="serviceTypeId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Service Event</label>
                     <select class="form-control" name="serviceEventType" id="serviceEventTypeId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Employee</label>
                     <select class="form-control" name="employee" id="employeeId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Appraisals</label>
                     <?php print $this->formElement($appraisals); ?>
                 </div>
                 <div class="col-sm-2">
+                    <label>Appraisal Stages</label>
                     <?php print $this->formElement($appraisalStages); ?>
                 </div> 
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-2">
                     <div class="input-group date" id="fromDate">
-                        <input type="text" placeholder="From Date" id="fromDate" name="fromDate"  class="form-control"/>
+                        <input type="text" placeholder="From Date" id="fromDate" name="fromDate"  class="form-control reset-field"/>
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="input-group date" id="nepaliFromDate">
-                        <input type="text" placeholder="From Date Nepali" id="nepaliFromDate" name="fromDate" class="form-control"/>
+                        <input type="text" placeholder="From Date Nepali" id="nepaliFromDate" name="fromDate" class="form-control reset-field"/>
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="input-group date" id="toDate">
-                        <input type="text" placeholder="To Date" id="toDate" name="toDate"  class="form-control"/>
+                        <input type="text" placeholder="To Date" id="toDate" name="toDate"  class="form-control reset-field"/>
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="input-group date" id="nepaliToDate">
-                        <input type="text" placeholder="To Date Nepali" id="nepaliToDate" name="toDate"  class="form-control"/>
+                        <input type="text" placeholder="To Date Nepali" id="nepaliToDate" name="toDate"  class="form-control reset-field"/>
                         <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                     </div>
                 </div>

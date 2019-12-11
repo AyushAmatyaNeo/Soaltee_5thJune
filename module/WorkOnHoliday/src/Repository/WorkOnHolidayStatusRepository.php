@@ -29,9 +29,9 @@ class WorkOnHolidayStatusRepository extends HrisRepository {
         $fromDateCondition = '';
         $toDateCondition = '';
         if ($requestStatusId != -1) {
-            $statusCondition = " AND  WH.STATUS='{$requestStatusId}') ";
+            $statusCondition = " AND  WH.STATUS='{$requestStatusId}' ";
         }
-
+        
         if ($holidayId != -1) {
             $holidayCondition = " AND WH.HOLIDAY_ID ='{$holidayId}'";
         }
@@ -53,8 +53,14 @@ class WorkOnHolidayStatusRepository extends HrisRepository {
                   INITCAP(TO_CHAR(WH.REQUESTED_DATE, 'DD-MON-YYYY'))              AS REQUESTED_DATE_AD,
                   BS_DATE(TO_CHAR(WH.REQUESTED_DATE, 'DD-MON-YYYY'))              AS REQUESTED_DATE_BS,
                   LEAVE_STATUS_DESC(WH.STATUS)                                    AS STATUS,
-                  REC_APP_ROLE(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY)      AS ROLE,
-                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE,
+                  REC_APP_ROLE(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  )      AS ROLE,
+                    REC_APP_ROLE_NAME(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  ) AS YOUR_ROLE,
                   WH.EMPLOYEE_ID                                                  AS EMPLOYEE_ID,
                   E.EMPLOYEE_CODE                                                 AS EMPLOYEE_CODE,
                   WH.ID                                                           AS ID,
@@ -87,35 +93,17 @@ class WorkOnHolidayStatusRepository extends HrisRepository {
                 ON RECM.EMPLOYEE_ID = RA.RECOMMEND_BY
                 LEFT OUTER JOIN HRIS_EMPLOYEES APRV
                 ON APRV.EMPLOYEE_ID = RA.APPROVED_BY
+                LEFT JOIN HRIS_ALTERNATE_R_A ALR
+                    ON (ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=WH.EMPLOYEE_ID AND ALR.R_A_ID={$recomApproveId})
+                    LEFT JOIN HRIS_ALTERNATE_R_A ALA
+                    ON (ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=WH.EMPLOYEE_ID AND ALA.R_A_ID={$recomApproveId})
                 LEFT OUTER JOIN HRIS_EMPLOYEES U
                 ON (U.EMPLOYEE_ID = RA.RECOMMEND_BY
-                OR U.EMPLOYEE_ID  =RA.APPROVED_BY)
+                OR U.EMPLOYEE_ID  =RA.APPROVED_BY
+                OR U.EMPLOYEE_ID   =ALR.R_A_ID
+                OR U.EMPLOYEE_ID   =ALA.R_A_ID)
                 WHERE H.STATUS    ='E'
                 AND E.STATUS      ='E'
-                AND (E1.STATUS    =
-                  CASE
-                    WHEN E1.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR E1.STATUS  IS NULL)
-                AND (E2.STATUS =
-                  CASE
-                    WHEN E2.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR E2.STATUS    IS NULL)
-                AND (RECM.STATUS =
-                  CASE
-                    WHEN RECM.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR RECM.STATUS  IS NULL)
-                AND (APRV.STATUS =
-                  CASE
-                    WHEN APRV.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR APRV.STATUS  IS NULL)
                 AND U.EMPLOYEE_ID= {$recomApproveId}
                 {$searchCondition}
                 {$statusCondition}
@@ -138,13 +126,14 @@ class WorkOnHolidayStatusRepository extends HrisRepository {
         $positionId = $data['positionId'];
         $serviceTypeId = $data['serviceTypeId'];
         $serviceEventTypeId = $data['serviceEventTypeId'];
+        $functionalTypeId = $data['functionalTypeId'];
         $employeeTypeId = $data['employeeTypeId'];
         $holidayId = $data['holidayId'];
         $requestStatusId = $data['requestStatusId'];
         $fromDate = $data['fromDate'];
         $toDate = $data['toDate'];
 
-        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, null, null, $functionalTypeId);
         $statusCondition = '';
         $holidayCondition = '';
         $fromDateCondition = '';

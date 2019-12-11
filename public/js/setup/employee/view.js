@@ -32,5 +32,19 @@
             });
             doc.save('sample-file.pdf');
         });
+        
+        
+   
+        $('#exportPdf').on('click', function () {
+            kendo.drawing.drawDOM($("#rootwizard")).then(function (group) {
+                kendo.drawing.pdf.saveAs(group, "EmployeeDetails.pdf");
+            });
+        });
+        
+        
+        
+        
+        
+        
     });
 })(window.jQuery, window.app);

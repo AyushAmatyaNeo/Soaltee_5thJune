@@ -7,18 +7,21 @@ use Application\Helper\Helper;
 use Exception;
 use Payroll\Form\Rules as RuleForm;
 use Payroll\Model\Rules as RulesModel;
+use Payroll\Model\SpecialRules as SpecialRulesModel;
 use Payroll\Repository\FlatValueRepository;
 use Payroll\Repository\MonthlyValueRepository;
 use Payroll\Repository\RulesRepository;
+use Payroll\Repository\SpecialRulesRepo;
 use Payroll\Service\PayrollGenerator;
 use Zend\Authentication\Storage\StorageInterface;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\View\Model\JsonModel;
 
 class Rules extends HrisController {
-
+protected $adapter;
     public function __construct(AdapterInterface $adapter, StorageInterface $storage) {
         parent::__construct($adapter, $storage);
+        $this->adapter = $adapter;
         $this->initializeRepository(RulesRepository::class);
         $this->initializeForm(RuleForm::class);
     }
@@ -94,15 +97,35 @@ class Rules extends HrisController {
             return $this->redirect()->toRoute('rules');
         }
         $ruleModel = new RulesModel();
+        $specialRuleRepo = new SpecialRulesRepo($this->adapter);
         if ($request->isPost()) {
             $this->form->setData($request->getPost());
             if ($this->form->isValid()) {
                 $ruleModel->exchangeArrayFromForm($this->form->getData());
+                if($_POST['salaryType'] != 1){
+                    $specialRuleModel = new SpecialRulesModel();
+                    $specialRuleModel->formula = $ruleModel->formula;
+                    $specialRuleModel->flag = $_POST['flag'];
+                    $specialRuleExists = Helper::extractDbData($specialRuleRepo->checkSpecialRuleExists($_POST['salaryType'], $id))[0]['RECORD_EXISTS'];
+                    if($specialRuleExists == 'N'){
+                        $specialRuleModel->payId = $id;
+                        $specialRuleModel->status = 'E';
+                        $specialRuleModel->salaryTypeId = $_POST['salaryType'];
+                        $specialRuleModel->createdBy = $this->employeeId;
+                        $specialRuleRepo->add($specialRuleModel);
+                    }
+                    else{
+                        $specialRuleModel->modifiedDt = Helper::getcurrentExpressionDate();
+                        $specialRuleModel->modifiedBy = $this->employeeId;
+                        $specialRuleRepo->update($specialRuleModel, $id, $_POST['salaryType']);
+                    }
+                    $this->flashmessenger()->addMessage("Rule successfully edited.");
+                    return $this->redirect()->toRoute("rules");
+                }
+                
                 $ruleModel->modifiedDt = Helper::getcurrentExpressionDate();
                 $ruleModel->modifiedBy = $this->employeeId;
-
                 $this->repository->edit($ruleModel, $id);
-
                 $this->flashmessenger()->addMessage("Rule successfully edited.");
                 return $this->redirect()->toRoute("rules");
             }
@@ -114,9 +137,14 @@ class Rules extends HrisController {
         $formulaData['variableList'] = PayrollGenerator::VARIABLES;
         $formulaData['systemRuleList'] = PayrollGenerator::SYSTEM_RULE;
         $formulaData['referencingRuleList'] = $this->getReferencingRules($id);
-
+        
+        $salaryTypes = Helper::extractDbData($specialRuleRepo->fetchSalaryTypes());
+        $specialRules = Helper::extractDbData($specialRuleRepo->fetchSpecialRules($id));
+        
         return [
             'id' => $id,
+            'salaryTypes' => $salaryTypes,
+            'specialRules' => $specialRules,
             'form' => $this->form,
             'customRenderer' => Helper::renderCustomView(),
             'formulaData' => json_encode($formulaData),

@@ -113,8 +113,8 @@ class LeaveAssignRepository extends HrisRepository {
     }
     
     
-    public function editMonthlyLeave($employeeId,$leaveDetails,$monthId,$totalDays=null){
-        $monthlyDays=($totalDays !=null && $totalDays !=0)?$totalDays:$leaveDetails['DEFAULT_DAYS'];
+    public function editMonthlyLeave($employeeId,$leaveDetails,$monthId,$totalDays=null,$previousBalance=null){
+        $monthlyDays=($totalDays !=null )?$totalDays:$leaveDetails['DEFAULT_DAYS'];
         $sql="DECLARE
             V_DEFAULT_LEAVE_DAYS NUMBER:={$monthlyDays};
             V_LEAVE_ID NUMBER:={$leaveDetails['LEAVE_ID']};
@@ -123,7 +123,13 @@ class LeaveAssignRepository extends HrisRepository {
      V_EMPLOYEE_ID NUMBER:={$employeeId};
          V_MONTH_COUNT NUMBER:=1;
          V_CARRY_FORWARD CHAR(1 BYTE):='{$leaveDetails['CARRY_FORWARD']}';
+         V_PREVIOUS_YEAR_BAL NUMBER:={$previousBalance};
     BEGIN
+    
+            IF(V_PREVIOUS_YEAR_BAL IS NULL)
+            THEN
+            V_PREVIOUS_YEAR_BAL:=0;
+            END IF;
     
         DELETE  FROM HRIS_EMPLOYEE_LEAVE_ASSIGN WHERE 
         EMPLOYEE_ID=V_EMPLOYEE_ID 
@@ -147,9 +153,9 @@ class LeaveAssignRepository extends HrisRepository {
                   (
                     V_EMPLOYEE_ID,
                     V_LEAVE_ID,
-                    0,
-                    V_DEFAULT_LEAVE_DAYS*V_MONTH_COUNT,
-                    V_DEFAULT_LEAVE_DAYS*V_MONTH_COUNT,
+                    V_PREVIOUS_YEAR_BAL,
+                    (V_DEFAULT_LEAVE_DAYS*V_MONTH_COUNT)+V_PREVIOUS_YEAR_BAL,
+                    (V_DEFAULT_LEAVE_DAYS*V_MONTH_COUNT)+V_PREVIOUS_YEAR_BAL,
                     i,
                     TRUNC(SYSDATE)
                   );

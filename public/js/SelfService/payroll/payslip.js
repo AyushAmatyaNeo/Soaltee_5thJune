@@ -25,6 +25,9 @@
             var deductionCounter = 0;
             var deductionSum = 0;
             var netSum = 0;
+            var net=0;
+            var add=0;
+            var sub=0;
             $.each($data, function (index, item) {
                 switch (item['PAY_TYPE_FLAG']) {
                     case 'A':
@@ -41,6 +44,10 @@
                 }
                         netSum = additionSum - deductionSum;
             });
+                add = parseFloat(additionSum).toFixed(2);
+                sub = parseFloat(deductionSum).toFixed(2);
+                net= parseFloat(netSum).toFixed(2);
+
             var maxRows = (additionCounter > deductionCounter) ? additionCounter : deductionCounter;
             for (var i = 0; i < maxRows; i++) {
                 var $row = $(`<tr>
@@ -53,11 +60,11 @@
             }
             $paySlipBody.append($(`<tr>
                                 <td>Total Addition:</td>
-                                <td>${additionSum}</td>
+                                <td>${add}</td>
                                 <td>Total Deduction:</td>
-                                <td>${deductionSum}</td>
+                                <td>${sub}</td>
                                 </tr> <td>Net Salary:</td>
-                                 <td>${netSum}</td>`));
+                                 <td>${net}</td>`));
 
         };
         var showEmpDetail = function ($data) {

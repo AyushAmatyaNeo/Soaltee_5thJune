@@ -104,7 +104,8 @@ class AppraisalAssignController extends AbstractActionController {
                     'appraisals' => $appraisalFormElement,
                     'stages' => EntityHelper::getTableKVListWithSortOption($this->adapter, Stage::TABLE_NAME, Stage::STAGE_ID, [Stage::STAGE_EDESC], [Stage::STATUS => 'E'], Stage::ORDER_NO, "ASC", NULL, FALSE, TRUE),
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
-                    'employeeList' => $employeeList
+                    'employeeList' => $employeeList,
+                    'acl' => $this->acl,
         ]);
     }
 

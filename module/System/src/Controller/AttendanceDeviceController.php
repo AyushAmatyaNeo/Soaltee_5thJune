@@ -14,6 +14,7 @@ use System\Repository\AttendanceDeviceRepository;
 use Zend\Authentication\Storage\StorageInterface;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\View\Model\JsonModel;
+use Setup\Model\HrEmployees;
 
 class AttendanceDeviceController extends HrisController {
 
@@ -27,7 +28,8 @@ class AttendanceDeviceController extends HrisController {
         $request = $this->getRequest();
         if ($request->isPost()) {
             try {
-                $list = $this->repository->fetchAll();
+//                $list = $this->repository->fetchAll();
+                $list = $this->repository->fetchAllWithBranchManager(); //use where BranchManager is required
                 $attendanceDevice = [];
                 foreach ($list as $row) {
                     $row['PING_STATUS'] = '---';
@@ -55,10 +57,10 @@ class AttendanceDeviceController extends HrisController {
                 $sameIp = EntityHelper::rawQueryResult($this->adapter, "SELECT * FROM HRIS_ATTD_DEVICE_MASTER 
                 WHERE DEVICE_IP='{$attendanceDevice->deviceIp}' ")->current();
                 if (!$sameIp) {
-
+                  
                     $attendanceDevice->deviceId = ((int) Helper::getMaxId($this->adapter, AttendanceDevice::TABLE_NAME, AttendanceDevice::DEVICE_ID)) + 1;
                     $attendanceDevice->status = 'E';
-                    $attendanceDevice->branchId = $attendanceDevice->deviceId;
+//                    $attendanceDevice->branchId = $attendanceDevice->deviceId;
                     $this->repository->add($attendanceDevice);
 
                     $this->flashmessenger()->addMessage("Attendance Device Successfully Added!!!");
@@ -115,6 +117,10 @@ class AttendanceDeviceController extends HrisController {
         $branchList = EntityHelper::getTableKVListWithSortOption($this->adapter, Branch::TABLE_NAME, Branch::BRANCH_ID, [Branch::BRANCH_NAME], ["STATUS" => "E"], Branch::BRANCH_NAME, "ASC", null, true, TRUE);
         $branchSE = $this->form->get('branchId');
         $branchSE->setValueOptions($branchList);
+        
+        $employeeList = EntityHelper::getTableKVListWithSortOption($this->adapter, HrEmployees::TABLE_NAME, HrEmployees::EMPLOYEE_ID, [HrEmployees::EMPLOYEE_ID ,   HrEmployees::FULL_NAME], ["STATUS" => "E"], HrEmployees::FULL_NAME, "ASC", null, true, TRUE);
+        $employeeSE = $this->form->get('branchManager');
+        $employeeSE->setValueOptions($employeeList);
     }
 
     public function deleteAction() {

@@ -4,6 +4,7 @@ namespace Loan;
 use Application\Controller\ControllerFactory;
 use Loan\Controller\LoanStatus;
 use Loan\Controller\LoanApply;
+use Loan\Controller\LoanReport;
 use Zend\Router\Http\Segment;
 
 return [
@@ -33,6 +34,20 @@ return [
                     ],
                     'defaults' => [
                         'controller' => LoanApply::class,
+                        'action' => 'index'
+                    ],
+                ],
+            ],
+            'loanReport' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/loan/report[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => LoanReport::class,
                         'action' => 'index'
                     ],
                 ],
@@ -98,7 +113,8 @@ return [
     'controllers' => [
         'factories' => [
             Controller\LoanStatus::class => ControllerFactory::class,
-            Controller\LoanApply::class => ControllerFactory::class
+            Controller\LoanApply::class => ControllerFactory::class,
+            Controller\LoanReport::class => ControllerFactory::class
         ],
     ],
     'view_manager' => [

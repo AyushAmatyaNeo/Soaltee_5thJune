@@ -27,11 +27,13 @@
                         template: "<span>#: (ATTENDANCE_DT_BS == null) ? '-' : ATTENDANCE_DT_BS #</span>"}]},
             {field: "IN_TIME", title: "Check In"},
             {field: "OUT_TIME", title: "Check Out"},
+            {field: "START_TIME", title: "Start Time"},
+            {field: "END_TIME", title: "End Time"},
             {field: "TOTAL_HOUR", title: "Total Hour"},
             {field: "STATUS", title: "Status"},
             {field: "IN_REMARKS", title: "Late In Reason"},
             {field: "OUT_REMARKS", title: "Early Out Reason"},
-            {field: ["ID", "LATE_STATUS"], title: "Action", template: actionTemplate},
+            {field: ["ID", "LATE_STATUS"], title: "Action", template: actionTemplate}
         ]);
 
 
@@ -73,6 +75,8 @@
             'ATTENDANCE_DT_BS': ' Attendance Date(BS)',
             'IN_TIME': 'In Time',
             'OUT_TIME': 'Out Time',
+            'START_TIME': 'Start Time',
+            'END_TIME': 'End Time',
             'TOTAL_HOUR': 'Total Hour',
             'STATUS': 'Status',
             'IN_REMARKS': 'In Remarks',

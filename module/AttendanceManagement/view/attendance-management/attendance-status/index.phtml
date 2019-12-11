@@ -76,12 +76,6 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                                 Export to PDF
                             </a>
                         </li>
-                        <li>
-                            <a href="javascript:;" id="export">
-                                <i class="fa fa-file-excel-o" ></i>
-                                Export to Excel
-                            </a>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -131,37 +125,43 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Functional Type</label>
+                    <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                    </select>
+                </div>
+                <div class="col-sm-2">
                     <label>Employee</label>
                     <select multiple class="form-control" name="employee" id="employeeId">
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Status</label>
                     <?php print $this->formElement($attendanceStatus); ?>
                 </div> 
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="fromDate" name="fromDate"  class="form-control" placeholder="From Date"/>
+                        <input type="text" id="fromDate" name="fromDate"  class="form-control reset-field" placeholder="From Date"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control" placeholder="From Date Nepali"/>
+                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control reset-field" placeholder="From Date Nepali"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="toDate" name="toDate" class="form-control" placeholder="To Date"/>
+                        <input type="text" id="toDate" name="toDate" class="form-control reset-field" placeholder="To Date"/>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-group">
-                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <button class="btn default btn-sm pull-right hris-reset-btn">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>
@@ -181,7 +181,9 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <button action="reject" class="btn btn-danger btnApproveReject">Reject</button>
             </div>
             <div class="col-sm-2 col-sm-offset-8">
+                <?php  if($acl['HR_APPROVE']=='Y'){  ?>
                 <button action="approve" class="btn btn-info btnApproveReject pull-right">Approve</button>
+                <?php }      ?>
             </div>
         </div>
     </div>

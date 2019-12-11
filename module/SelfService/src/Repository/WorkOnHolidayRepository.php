@@ -23,18 +23,28 @@ class WorkOnHolidayRepository implements RepositoryInterface {
     }
 
     public function add(Model $model) {
-        $this->tableGateway->insert($model->getArrayCopyForDB());
+        $addData=$model->getArrayCopyForDB();
+        $this->tableGateway->insert($addData);
+        
+
+        if ($addData['STATUS']=='AP' && date('Y-m-d', strtotime($model->fromDate)) <= date('Y-m-d')) {
+            $sql = "BEGIN 
+            HRIS_REATTENDANCE('{$model->fromDate}',$model->employeeId,'{$model->toDate}');
+               END; ";
+
+            EntityHelper::rawQueryResult($this->adapter, $sql);
+        }
     }
 
     public function delete($id) {
-        $sql="BEGIN
+        $sql = "BEGIN
 UPDATE HRIS_EMPLOYEE_WORK_HOLIDAY SET STATUS='C',MODIFIED_DATE=TRUNC(SYSDATE) WHERE ID={$id};
 DELETE FROM HRIS_EMPLOYEE_LEAVE_ADDITION WHERE WOH_ID={$id};
 DELETE FROM HRIS_OVERTIME_DETAIL WHERE WOH_ID= {$id};
 DELETE FROM HRIS_OVERTIME WHERE WOH_ID = {$id};
 END;";
 
-EntityHelper::rawQueryResult($this->adapter, $sql);
+        EntityHelper::rawQueryResult($this->adapter, $sql);
     }
 
     public function edit(Model $model, $id) {

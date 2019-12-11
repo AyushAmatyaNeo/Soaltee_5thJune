@@ -107,7 +107,7 @@ class OvertimeApproveController extends HrisController {
                 return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
             }
         }
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'requestStatusId', 'class' => 'form-control', 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', 'id' => 'requestStatusId', 'class' => 'form-control reset-field', 'label' => 'Status']);
         return Helper::addFlashMessagesToArray($this, [
                     'status' => $statusSE,
                     'recomApproveId' => $this->employeeId,

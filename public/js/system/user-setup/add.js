@@ -29,16 +29,17 @@
         }
 
 
-        $userName.on("blur", function () {
+        $userName.on("blur input", function () {
             checkIsUserAvailable();
         });
 
         $employeeId.on("change", function () {
             window.app.floatingProfile.setDataFromRemote($(this).val());
         });
+        
 
 
-
+$userName.blur();
         $("#btnSubmit").click(function () {
             $userName.blur();
             if (typeof userNameAvailable == 'undefined' || userNameAvailable == false) {

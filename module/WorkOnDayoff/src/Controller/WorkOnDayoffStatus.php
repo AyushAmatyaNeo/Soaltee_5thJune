@@ -1,4 +1,5 @@
 <?php
+
 namespace WorkOnDayoff\Controller;
 
 use Application\Controller\HrisController;
@@ -28,13 +29,13 @@ class WorkOnDayoffStatus extends HrisController {
     }
 
     public function indexAction() {
-        $statusSE = $this->getStatusSelectElement(['name' => 'status', "id" => "requestStatusId", "class" => "form-control", 'label' => 'Status']);
+        $statusSE = $this->getStatusSelectElement(['name' => 'status', "id" => "requestStatusId", "class" => "form-control reset-field", 'label' => 'Status']);
         return $this->stickFlashMessagesTo([
-                'status' => $statusSE,
-                'searchValues' => EntityHelper::getSearchData($this->adapter),
-                'acl' => $this->acl,
-                'employeeDetail' => $this->storageData['employee_detail'],
-                'preference'=>$this->preference
+                    'status' => $statusSE,
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'acl' => $this->acl,
+                    'employeeDetail' => $this->storageData['employee_detail'],
+                    'preference' => $this->preference
         ]);
     }
 
@@ -86,17 +87,18 @@ class WorkOnDayoffStatus extends HrisController {
             return $this->redirect()->toRoute("workOnDayoffStatus");
         }
         return Helper::addFlashMessagesToArray($this, [
-                'form' => $this->form,
-                'id' => $id,
-                'employeeId' => $employeeId,
-                'employeeName' => $employeeName,
-                'requestedDt' => $detail['REQUESTED_DATE'],
-                'recommender' => $authRecommender,
-                'approvedDT' => $detail['APPROVED_DATE'],
-                'approver' => $authApprover,
-                'status' => $status,
-                'customRenderer' => Helper::renderCustomView(),
-                'recommApprove' => $recommApprove
+                    'form' => $this->form,
+                    'id' => $id,
+                    'employeeId' => $employeeId,
+                    'employeeName' => $employeeName,
+                    'requestedDt' => $detail['REQUESTED_DATE'],
+                    'recommender' => $authRecommender,
+                    'approvedDT' => $detail['APPROVED_DATE'],
+                    'approver' => $authApprover,
+                    'status' => $status,
+                    'customRenderer' => Helper::renderCustomView(),
+                    'recommApprove' => $recommApprove,
+                    'acl' => $this->acl,
         ]);
     }
 
@@ -123,7 +125,15 @@ class WorkOnDayoffStatus extends HrisController {
         $request = $this->getRequest();
         try {
             $postData = $request->getPost();
-            $this->makeDecision($postData['id'], $postData['action'] == "approve");
+            if ($postData['super_power'] == 'true') {
+                $this->makeSuperDecision($postData['id'], $postData['action'] == "approve");
+            } else {
+                if ($postData['status'] == 'Rejected' || $postData['status'] == 'Cancelled' || $postData['status'] == 'Approved') {
+                    
+                } else {
+                    $this->makeDecision($postData['id'], $postData['action'] == "approve");
+                }
+            }
             return new JsonModel(['success' => true, 'data' => null]);
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'error' => $e->getMessage()]);
@@ -131,6 +141,7 @@ class WorkOnDayoffStatus extends HrisController {
     }
 
     private function makeDecision($id, $approve, $remarks = null, $enableFlashNotification = false) {
+
         $model = new WorkOnDayoff();
         $model->id = $id;
         $model->recommendedDate = Helper::getcurrentExpressionDate();
@@ -151,4 +162,31 @@ class WorkOnDayoffStatus extends HrisController {
             $this->flashmessenger()->addMessage($e->getMessage());
         }
     }
+
+    private function makeSuperDecision($id, $approve, $remarks = null, $enableFlashNotification = false) {
+        $dayoffWorkApproveRepository = new DayoffWorkApproveRepository($this->adapter);
+        $detail = $dayoffWorkApproveRepository->fetchById($id);
+        if ($detail['STATUS'] == 'AP') {
+            $model = new WorkOnDayoff();
+            $model->id = $id;
+            $model->recommendedDate = Helper::getcurrentExpressionDate();
+            $model->recommendedBy = $this->employeeId;
+            $model->approvedRemarks = $remarks;
+            $model->approvedDate = Helper::getcurrentExpressionDate();
+            $model->approvedBy = $this->employeeId;
+            $model->status = $approve ? "AP" : "R";
+            $message = $approve ? "WOD Request Approved" : "WOD Request Rejected";
+            $notificationEvent = $approve ? NotificationEvents::WORKONDAYOFF_APPROVE_ACCEPTED : NotificationEvents::WORKONDAYOFF_APPROVE_REJECTED;
+            $this->dayoffWorkApproveRepository->edit($model, $id);
+            if ($enableFlashNotification) {
+                $this->flashmessenger()->addMessage($message);
+            }
+            try {
+                HeadNotification::pushNotification($notificationEvent, $model, $this->adapter, $this);
+            } catch (Exception $e) {
+                $this->flashmessenger()->addMessage($e->getMessage());
+            }
+        }
+    }
+
 }

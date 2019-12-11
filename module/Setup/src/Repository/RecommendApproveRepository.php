@@ -24,7 +24,7 @@ class RecommendApproveRepository implements RepositoryInterface {
     }
 
     public function getDesignationList($employeeId) {
-        $sql = "SELECT  DESIGNATION_ID, INITCAP(DESIGNATION_TITLE) AS DESIGNATION_TITLE, PARENT_DESIGNATION, WITHIN_BRANCH, WITHIN_DEPARTMENT, LEVEL 
+        $sql = "SELECT  DESIGNATION_ID, (DESIGNATION_TITLE) AS DESIGNATION_TITLE, PARENT_DESIGNATION, WITHIN_BRANCH, WITHIN_DEPARTMENT, LEVEL 
                 FROM HRIS_DESIGNATIONS WHERE (LEVEL=2 OR LEVEL=3)
                 START WITH DESIGNATION_ID = (SELECT E.DESIGNATION_ID FROM HRIS_EMPLOYEES E WHERE E.EMPLOYEE_ID=" . $employeeId . ")
                 CONNECT BY PRIOR  PARENT_DESIGNATION=DESIGNATION_ID";
@@ -209,7 +209,7 @@ class RecommendApproveRepository implements RepositoryInterface {
 
     public function getFilteredList($search) {
         $condition = "";
-        $condition .= EntityHelper::getSearchConditon($search['companyId'], $search['branchId'], $search['departmentId'], $search['positionId'], $search['designationId'], $search['serviceTypeId'], $search['serviceEventTypeId'], $search['employeeTypeId'], $search['employeeId']);
+        $condition .= EntityHelper::getSearchConditon($search['companyId'], $search['branchId'], $search['departmentId'], $search['positionId'], $search['designationId'], $search['serviceTypeId'], $search['serviceEventTypeId'], $search['employeeTypeId'], $search['employeeId'], null, null, $search['functionalTypeId']);
         if (isset($search['recommenderId']) && $search['recommenderId'] != null && $search['recommenderId'] != -1) {
             if (gettype($search['recommenderId']) === 'array') {
                 $csv = "";

@@ -188,15 +188,19 @@ class LoanStatusRepository implements RepositoryInterface {
         $loanId = $data['loanId'];
         $loanRequestStatusId = $data['loanRequestStatusId'];
         $employeeTypeId = $data['employeeTypeId'];
+        $loanStatus = $data['loanStatus'];
 
-
-        $sql = "SELECT INITCAP(L.LOAN_NAME) AS LOAN_NAME,
+        $sql = "SELECT
+                  E.EMPLOYEE_CODE as EMPLOYEE_CODE, 
+                  INITCAP(L.LOAN_NAME) AS LOAN_NAME,
                   LR.REQUESTED_AMOUNT,
                   INITCAP(TO_CHAR(LR.LOAN_DATE, 'DD-MON-YYYY'))                   AS LOAN_DATE_AD,
+                  (CASE WHEN LR.STATUS = 'AP' AND LR.LOAN_STATUS = 'OPEN' THEN 'Y' ELSE 'N' END)              AS ALLOW_EDIT,
                   BS_DATE(TO_CHAR(LR.LOAN_DATE, 'DD-MON-YYYY'))                   AS LOAN_DATE_BS,
                   INITCAP(TO_CHAR(LR.REQUESTED_DATE, 'DD-MON-YYYY'))              AS REQUESTED_DATE_AD,
                   BS_DATE(TO_CHAR(LR.REQUESTED_DATE, 'DD-MON-YYYY'))              AS REQUESTED_DATE_BS,
                   LEAVE_STATUS_DESC(LR.STATUS)                                    AS STATUS,
+                  LR.LOAN_STATUS                                                  AS LOAN_STATUS,
                   LR.EMPLOYEE_ID                                                  AS EMPLOYEE_ID,
                   LR.LOAN_REQUEST_ID                                              AS LOAN_REQUEST_ID,
                   INITCAP(TO_CHAR(LR.RECOMMENDED_DATE, 'DD-MON-YYYY'))            AS RECOMMENDED_DATE,
@@ -229,18 +233,18 @@ class LoanStatusRepository implements RepositoryInterface {
                 ON APRV.EMPLOYEE_ID = RA.APPROVED_BY
                 WHERE L.STATUS   ='E'
                 AND E.STATUS     ='E'
-                AND (E1.STATUS   =
-                  CASE
-                    WHEN E1.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR E1.STATUS  IS NULL)
-                AND (E2.STATUS =
-                  CASE
-                    WHEN E2.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR E2.STATUS    IS NULL)
+                --AND (E1.STATUS   =
+                 -- CASE
+                --    WHEN E1.STATUS IS NOT NULL
+                --    THEN ('E')
+                --  END
+               -- OR E1.STATUS  IS NULL)
+               -- AND (E2.STATUS =
+               --   CASE
+                --    WHEN E2.STATUS IS NOT NULL
+               --     THEN ('E')
+                --  END
+               -- OR E2.STATUS    IS NULL)
                 AND (RECM.STATUS =
                   CASE
                     WHEN RECM.STATUS IS NOT NULL
@@ -298,9 +302,11 @@ class LoanStatusRepository implements RepositoryInterface {
         if ($serviceEventTypeId != -1) {
             $sql .= " AND E." . HrEmployees::EMPLOYEE_ID . " IN (SELECT " . HrEmployees::EMPLOYEE_ID . " FROM " . HrEmployees::TABLE_NAME . " WHERE " . HrEmployees::SERVICE_EVENT_TYPE_ID . "= $serviceEventTypeId)";
         }
+        if ($loanStatus != 'BOTH') {
+          $sql .= " AND LR.LOAN_STATUS = '".$loanStatus."'";
+        }
 
         $sql .= " ORDER BY LR.LOAN_REQUEST_ID DESC";
-        
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result;
@@ -331,6 +337,13 @@ class LoanStatusRepository implements RepositoryInterface {
       $statement = $this->adapter->query($sql); 
       $statement->execute(); 
     }
+
+    public function getPaidStatus($requestId, $id){
+      $sql = "SELECT PAID_FLAG, AMOUNT FROM HRIS_LOAN_PAYMENT_DETAIL WHERE PAYMENT_ID = $id";
+
+      $statement = $this->adapter->query($sql); 
+      return $statement->execute();
+    }
  
     public function getLoanRequestId($id){
       $sql = "SELECT DISTINCT LOAN_REQUEST_ID FROM HRIS_LOAN_PAYMENT_DETAIL WHERE 
@@ -341,27 +354,32 @@ class LoanStatusRepository implements RepositoryInterface {
       return $result;
     }
 
-    public function getLoanRequestDetails($ids){
+    // public function getLoanRequestDetails($ids){
 
-      $ids = implode($ids, ',');
+    //   $ids = implode($ids, ',');
 
-      $sql = "SELECT (CASE WHEN (SELECT COUNT(*) FROM HRIS_LOAN_PAYMENT_DETAIL 
-      WHERE LOAN_REQUEST_ID IN ($ids)
-      AND PAID_FLAG = 'N') > 0 
-      THEN 'OPEN' 
-      ELSE 'CLOSED' END) 
-      AS STATUS,
-      SUM(CASE WHEN PAID_FLAG = 'N' THEN AMOUNT ELSE 0 END) 
-      AS BALANCE,
-      SUM(CASE WHEN PAID_FLAG = 'Y' THEN AMOUNT ELSE 0 END) 
-      AS PAID_AMOUNT
-      FROM HRIS_LOAN_PAYMENT_DETAIL
-      where LOAN_REQUEST_ID IN ($ids) GROUP BY LOAN_REQUEST_ID 
-      ORDER BY LOAN_REQUEST_ID DESC;";
+    //   $sql = "SELECT (CASE WHEN (SELECT COUNT(*) FROM HRIS_LOAN_PAYMENT_DETAIL 
+    //   WHERE LOAN_REQUEST_ID IN ($ids)
+    //   AND PAID_FLAG = 'N') > 0 
+    //   THEN 'OPEN' 
+    //   ELSE 'CLOSED' END) 
+    //   AS STATUS,
+    //   SUM(CASE WHEN PAID_FLAG = 'N' THEN AMOUNT ELSE 0 END) 
+    //   AS BALANCE,
+    //   SUM(CASE WHEN PAID_FLAG = 'Y' THEN AMOUNT ELSE 0 END) 
+    //   AS PAID_AMOUNT
+    //   FROM HRIS_LOAN_PAYMENT_DETAIL
+    //   where LOAN_REQUEST_ID IN ($ids) GROUP BY LOAN_REQUEST_ID 
+    //   ORDER BY LOAN_REQUEST_ID DESC;";
+     
+    //   $statement = $this->adapter->query($sql);
+    //   $result = $statement->execute();
+    //   return $result;
+    // }
     
-      $statement = $this->adapter->query($sql);
-      $result = $statement->execute();
-      return $result;
+    public function getApprovedStatus($id){
+      $sql = "SELECT STATUS FROM HRIS_EMPLOYEE_LOAN_REQUEST WHERE LOAN_REQUEST_ID = $id";
+      $statement = $this->adapter->query($sql); 
+      return $statement->execute();
     }
-
 }

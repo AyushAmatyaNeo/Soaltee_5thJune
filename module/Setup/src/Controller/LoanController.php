@@ -79,14 +79,16 @@ class LoanController extends AbstractActionController {
         $positionFormElement->setValueOptions($positions);
         $positionFormElement->setAttributes(["id" => "positionId", "class" => "form-control", "multiple" => "multiple"]);
         $positionFormElement->setLabel("Position");
-
+        
         $serviceTypeFormElement = new Select();
         $serviceTypeFormElement->setName("serviceType");
         $serviceTypes = EntityHelper2::getTableKVListWithSortOption($this->adapter, ServiceType::TABLE_NAME, ServiceType::SERVICE_TYPE_ID, [ServiceType::SERVICE_TYPE_NAME], [ServiceType::STATUS => 'E'], "SERVICE_TYPE_NAME", "ASC", null, false, true);
         $serviceTypeFormElement->setValueOptions($serviceTypes);
         $serviceTypeFormElement->setAttributes(["id" => "serviceTypeId", "class" => "form-control", "multiple" => "multiple"]);
         $serviceTypeFormElement->setLabel("Service Type");
-
+        
+        $payCodes = $this->repository->getPayCodesList();
+     
         if ($request->isPost()) {
             $postRecord = $request->getPost();
             $this->form->setData($postRecord);
@@ -137,6 +139,7 @@ class LoanController extends AbstractActionController {
                 $loanModel->loanId = ((int) Helper::getMaxId($this->adapter, Loan::TABLE_NAME, Loan::LOAN_ID)) + 1;
                 $loanModel->createdDate = Helper::getcurrentExpressionDate();
                 $loanModel->status = 'E';
+                $loanModel->isRateFlexible = $postRecord['isRateFlexible'];
                 $loanModel->createdBy = $this->employeeId;
                 $this->repository->add($loanModel);
 
@@ -160,6 +163,7 @@ class LoanController extends AbstractActionController {
                     'designation' => $designationFormElement,
                     'position' => $positionFormElement,
                     'serviceType' => $serviceTypeFormElement,
+                    'pay_codes' => $payCodes,
                     'companies' => EntityHelper2::getTableKVListWithSortOption($this->adapter, Company::TABLE_NAME, Company::COMPANY_ID, [Company::COMPANY_NAME], ["STATUS" => "E"], Company::COMPANY_NAME, "ASC", null, false, true)
         ]);
     }
@@ -180,6 +184,9 @@ class LoanController extends AbstractActionController {
         $designationFormElement->setValueOptions($designations);
         $designationFormElement->setAttributes(["id" => "designationId", "class" => "form-control", "multiple" => "multiple"]);
         $designationFormElement->setLabel("Designation");
+
+        $payCodes = $this->repository->getPayCodesList();
+        $selectedPayCodes = $this->repository->getSelectedPayCodes($id);
 
         $positionFormElement = new Select();
         $positionFormElement->setName("position");
@@ -254,6 +261,7 @@ class LoanController extends AbstractActionController {
                 $loanModel->exchangeArrayFromForm($this->form->getData());
                 $loanModel->modifiedDate = Helper::getcurrentExpressionDate();
                 $loanModel->modifiedBy = $this->employeeId;
+                $loanModel->isRateFlexible = $postRecord['isRateFlexible'];
                 $this->repository->edit($loanModel, $id);
 
                 foreach ($loanRestrictionList as $loanRestrictionType => $loanRestrictionValue) {
@@ -277,6 +285,9 @@ class LoanController extends AbstractActionController {
                     'serviceType' => $serviceTypeFormElement,
                     'salaryRange' => $salaryRange,
                     'workingPeriod' => $workingPeriod,
+                    'isRateFexible' => $this->repository->getRateFlexibleFlag($id),
+                    'pay_codes' => $payCodes,
+                    'selectedPayCodes' => $selectedPayCodes,
                     'serviceTypeRestriction' => $serviceTypeRestriction,
                     'designationRestriction' => $designationRestriction,
                     'positionRestriction' => $positionRestriction,

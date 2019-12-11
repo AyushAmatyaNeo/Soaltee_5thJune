@@ -26,7 +26,7 @@ class EntityHelper {
 
     const STATUS_ENABLED = 'E';
     const STATUS_DISABLED = 'D';
-    const ORACLE_FUNCTION_INITCAP = 'INITCAP';
+    const ORACLE_FUNCTION_INITCAP = '';
 
     public static function getTableKVList(AdapterInterface $adapter, $tableName, $key = null, array $values, $where = null, $concatWith = null, $emptyColumn = false, $orderBy = null, $orderAs = null, $initCap = false) {
         $gateway = new TableGateway($tableName, $adapter);
@@ -37,7 +37,7 @@ class EntityHelper {
             if ($initCap) {
                 $tempValues = [];
                 foreach ($values as $key => $value) {
-                    $tempValues[$key] = "INITCAP({$value}) AS {$value}";
+                    $tempValues[$key] = "({$value}) AS {$value}";
                 }
                 $values = $tempValues;
             }
@@ -80,7 +80,10 @@ class EntityHelper {
         return $entitiesArray;
     }
 
-    public static function getTableKVListWithSortOption(AdapterInterface $adapter, $tableName, $key, array $values, $where = null, $orderBy = null, $orderAs = null, $concatWith = null, $emptyColumn = false, $initCap = false) {
+    public static function getTableKVListWithSortOption(AdapterInterface $adapter, $tableName, $key, array $values, $where = null, $orderBy = null, $orderAs = null, $concatWith = null, $emptyColumn = false, $initCap = false, $employeeId = null) {
+        if($employeeId !== null){
+            $where = self::applyRoleControl($adapter, $employeeId, $where);
+        }
         return self::getTableKVList($adapter, $tableName, $key, $values, $where, $concatWith, $emptyColumn, $orderBy, $orderAs, $initCap);
     }
 
@@ -89,12 +92,15 @@ class EntityHelper {
         return $statement->execute();
     }
 
-    public static function getTableList(AdapterInterface $adapter, string $tableName, array $columnList, array $where = null, string $predicate = Predicate::OP_AND) {
+    public static function getTableList(AdapterInterface $adapter, string $tableName, array $columnList, array $where = null, string $predicate = Predicate::OP_AND,$orderBy=null) {
         $gateway = new TableGateway($tableName, $adapter);
-        $zendResult = $gateway->select(function(Select $select) use($columnList, $where, $predicate) {
+        $zendResult = $gateway->select(function(Select $select) use($columnList, $where, $predicate,$orderBy) {
             $select->columns($columnList, false);
             if ($where != null) {
                 $select->where($where, $predicate);
+            }
+            if ($orderBy != null) {
+            $select->order($orderBy);
             }
         });
         return Helper::extractDbData($zendResult, true);
@@ -172,19 +178,20 @@ class EntityHelper {
     public static function getSearchData($adapter, $getDisabled = false) {
         $employeeWhere = (!$getDisabled) ? [HrEmployees::STATUS => "E"] : ["status='E' or employee_id in (select employee_id from HRIS_JOB_HISTORY)"];
         $companyList = self::getTableList($adapter, Company::TABLE_NAME, [Company::COMPANY_ID, Company::COMPANY_NAME], [Company::STATUS => "E"]);
-        $branchList = self::getTableList($adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME, Branch::COMPANY_ID], [Branch::STATUS => "E"]);
-        $departmentList = self::getTableList($adapter, Department::TABLE_NAME, [Department::DEPARTMENT_ID, Department::DEPARTMENT_NAME, Department::COMPANY_ID, Department::BRANCH_ID], [Department::STATUS => "E"]);
-        $designationList = self::getTableList($adapter, Designation::TABLE_NAME, [Designation::DESIGNATION_ID, Designation::DESIGNATION_TITLE, Designation::COMPANY_ID], [Designation::STATUS => 'E']);
-        $positionList = self::getTableList($adapter, Position::TABLE_NAME, [Position::POSITION_ID, Position::POSITION_NAME, Position::COMPANY_ID], [Position::STATUS => "E"]);
-        $serviceTypeList = self::getTableList($adapter, ServiceType::TABLE_NAME, [ServiceType::SERVICE_TYPE_ID, ServiceType::SERVICE_TYPE_NAME], [ServiceType::STATUS => "E"]);
-        $serviceEventTypeList = self::getTableList($adapter, ServiceEventType::TABLE_NAME, [ServiceEventType::SERVICE_EVENT_TYPE_ID, ServiceEventType::SERVICE_EVENT_TYPE_NAME], [ServiceEventType::STATUS => "E"]);
+        $branchList = self::getTableList($adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME, Branch::COMPANY_ID], [Branch::STATUS => "E"],"","BRANCH_NAME ASC");
+        $departmentList = self::getTableList($adapter, Department::TABLE_NAME, [Department::DEPARTMENT_ID, Department::DEPARTMENT_NAME, Department::COMPANY_ID, Department::BRANCH_ID], [Department::STATUS => "E"],"","DEPARTMENT_NAME ASC");
+        $designationList = self::getTableList($adapter, Designation::TABLE_NAME, [Designation::DESIGNATION_ID, Designation::DESIGNATION_TITLE, Designation::COMPANY_ID], [Designation::STATUS => 'E'],"","DESIGNATION_TITLE ASC");
+        $positionList = self::getTableList($adapter, Position::TABLE_NAME, [Position::POSITION_ID, Position::POSITION_NAME, Position::COMPANY_ID], [Position::STATUS => "E"],"","POSITION_NAME ASC");
+        $serviceTypeList = self::getTableList($adapter, ServiceType::TABLE_NAME, [ServiceType::SERVICE_TYPE_ID, ServiceType::SERVICE_TYPE_NAME], [ServiceType::STATUS => "E"],"","SERVICE_TYPE_NAME ASC");
+        $serviceEventTypeList = self::getTableList($adapter, ServiceEventType::TABLE_NAME, [ServiceEventType::SERVICE_EVENT_TYPE_ID, ServiceEventType::SERVICE_EVENT_TYPE_NAME], [ServiceEventType::STATUS => "E"],"","SERVICE_EVENT_TYPE_NAME ASC");
         $genderList = self::getTableList($adapter, Gender::TABLE_NAME, [Gender::GENDER_ID, Gender::GENDER_NAME], [Gender::STATUS => "E"]);
         $locationList = self::getTableList($adapter, Location::TABLE_NAME, [Location::LOCATION_ID, Location::LOCATION_EDESC], [Location::STATUS => "E"]);
-        $functionalTypeList = self::getTableList($adapter, FunctionalTypes::TABLE_NAME, [FunctionalTypes::FUNCTIONAL_TYPE_ID, FunctionalTypes::FUNCTIONAL_TYPE_EDESC], [FunctionalTypes::STATUS=> "E"]);
+        $functionalTypeList = self::getTableList($adapter, FunctionalTypes::TABLE_NAME, [FunctionalTypes::FUNCTIONAL_TYPE_ID, FunctionalTypes::FUNCTIONAL_TYPE_EDESC], [FunctionalTypes::STATUS=> "E"],"","FUNCTIONAL_TYPE_EDESC ASC");
         $employeeList = self::getTableList($adapter, HrEmployees::TABLE_NAME, [
                     new Expression(HrEmployees::EMPLOYEE_ID." AS ".HrEmployees::EMPLOYEE_ID),
                     new Expression(HrEmployees::EMPLOYEE_CODE." AS ".HrEmployees::EMPLOYEE_CODE),
                     new Expression("EMPLOYEE_CODE||'-'||FULL_NAME AS FULL_NAME"),
+                    new Expression(HrEmployees::FULL_NAME." AS FULL_NAME_SCIENTIFIC"),
                     new Expression(HrEmployees::COMPANY_ID." AS ".HrEmployees::COMPANY_ID),
                     new Expression(HrEmployees::BRANCH_ID." AS ".HrEmployees::BRANCH_ID),
                     new Expression(HrEmployees::DEPARTMENT_ID." AS ".HrEmployees::DEPARTMENT_ID),
@@ -209,7 +216,7 @@ class EntityHelper {
 //                    HrEmployees::GENDER_ID,
 //                    HrEmployees::EMPLOYEE_TYPE,
 //                    HrEmployees::GROUP_ID,
-                        ], $employeeWhere);
+                        ], $employeeWhere,"","FULL_NAME_SCIENTIFIC ASC");
 
         $searchValues = [
             'company' => $companyList,
@@ -423,5 +430,153 @@ class EntityHelper {
         }
         return ' ORDER BY '.$orderByString;
     }
+    
+    
+     public static function getSearchConditonPayroll($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId = null, $locationId = null, $functionalTypeId = null) {
+        $conditon = "";
+        if ($companyId != null && $companyId != -1) {
+            $conditon .= self::conditionBuilder($companyId, "SSED.COMPANY_ID", "AND");
+        }
+        if ($branchId != null && $branchId != -1) {
+            $conditon .= self::conditionBuilder($branchId, "SSED.BRANCH_ID", "AND");
+        }
+        if ($departmentId != null && $departmentId != -1) {
+            $parentQuery = "(SELECT DEPARTMENT_ID FROM
+                         HRIS_DEPARTMENTS 
+                        START WITH PARENT_DEPARTMENT in (INVALUES)
+                        CONNECT BY PARENT_DEPARTMENT= PRIOR DEPARTMENT_ID
+                        UNION 
+                        SELECT DEPARTMENT_ID FROM HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN (INVALUES)
+                        UNION
+                        SELECT  TO_NUMBER(TRIM(REGEXP_SUBSTR(EXCEPTIONAL,'[^,]+', 1, LEVEL) )) DEPARTMENT_ID
+  FROM (SELECT EXCEPTIONAL  FROM  HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN  (INVALUES))
+   CONNECT BY  REGEXP_SUBSTR(EXCEPTIONAL, '[^,]+', 1, LEVEL) IS NOT NULL
+                        )";
+            $conditon .= self::conditionBuilder($departmentId, "SSED.DEPARTMENT_ID", "AND", false, $parentQuery);
+        }
+        if ($positionId != null && $positionId != -1) {
+            $conditon .= self::conditionBuilder($positionId, "SSED.POSITION_ID", "AND");
+        }
+        if ($designationId != null && $designationId != -1) {
+            $conditon .= self::conditionBuilder($designationId, "SSED.DESIGNATION_ID", "AND");
+        }
+        if ($serviceTypeId != null && $serviceTypeId != -1) {
+            $conditon .= self::conditionBuilder($serviceTypeId, "SSED.SERVICE_TYPE_ID", "AND");
+        }
+//        if ($serviceEventTypeId != null && $serviceEventTypeId != -1) {
+//            $conditon .= self::conditionBuilder($serviceEventTypeId, "E.SERVICE_EVENT_TYPE_ID", "AND");
+//        }
+//        if ($employeeTypeId != null && $employeeTypeId != -1) {
+//            $conditon .= self::conditionBuilder($employeeTypeId, "E.EMPLOYEE_TYPE", "AND", true);
+//        }
+        if ($employeeId != null && $employeeId != -1) {
+            $conditon .= self::conditionBuilder($employeeId, "SSED.EMPLOYEE_ID", "AND");
+        }
+        if ($genderId != null && $genderId != -1) {
+            $conditon .= self::conditionBuilder($genderId, "SSED.GENDER_ID", "AND");
+        }
+//        if ($locationId != null && $locationId != -1) {
+//            $conditon .= self::conditionBuilder($locationId, "E.LOCATION_ID", "AND");
+//        }
+        if ($functionalTypeId != null && $functionalTypeId != -1) {
+            $conditon .= self::conditionBuilder($functionalTypeId, "SSED.FUNCTIONAL_TYPE_ID", "AND");
+        }
+        return $conditon;
+    }
 
+    public static function applyRoleControl($adapter, $employeeId, $where){
+        $sql = "SELECT CONTROL FROM HRIS_ROLES WHERE ROLE_ID = (SELECT ROLE_ID FROM HRIS_USERS WHERE EMPLOYEE_ID = $employeeId)";
+        $roleControl = Helper::extractDbData(self::rawQueryResult($adapter, $sql))[0]['CONTROL'];
+        
+        switch ($roleControl) {
+            case 'B': 
+            $controlData = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT VAL FROM HRIS_ROLE_CONTROL WHERE ROLE_ID = (SELECT ROLE_ID FROM HRIS_USERS WHERE EMPLOYEE_ID = $employeeId) AND CONTROL = 'B'"));
+            if(count($controlData) == 0){
+                $where['BRANCH_ID'] = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT BRANCH_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID = $employeeId"))[0]['BRANCH_ID'];
+            }
+            else{
+                $where['BRANCH_ID'] = [];
+                foreach ($controlData as $data) {
+                    array_push($where['BRANCH_ID'], $data['VAL']);
+                }
+            }
+            break;
+
+            case 'C': 
+            $controlData = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT VAL FROM HRIS_ROLE_CONTROL WHERE ROLE_ID = (SELECT ROLE_ID FROM HRIS_USERS WHERE EMPLOYEE_ID = $employeeId) AND CONTROL = 'C'"));
+            if(count($controlData) == 0){
+                $where['COMPANY_ID'] = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT COMPANY_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID = $employeeId"))[0]['COMPANY_ID'];
+            }
+            else{
+                $where['COMPANY_ID'] = [];
+                foreach ($controlData as $data) {
+                    array_push($where['COMPANY_ID'], $data['VAL']);
+                }
+            }
+            break;
+
+            case 'DP': 
+            $controlData = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT VAL FROM HRIS_ROLE_CONTROL WHERE ROLE_ID = (SELECT ROLE_ID FROM HRIS_USERS WHERE EMPLOYEE_ID = $employeeId) AND CONTROL = 'DP'"));
+            if(count($controlData) == 0){
+                $where['DEPARTMENT_ID'] = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT DEPARTMENT_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID = $employeeId"))[0]['DEPARTMENT_ID'];
+            }
+            else{
+                $depVal;
+                $depCounter=1;
+                foreach ($controlData as $data) {
+                    if($depCounter==1){
+                    $depVal.=$data['VAL'];
+                    }else{
+                    $depVal.=",";
+                    $depVal.=$data['VAL'];
+                    }
+                    $depCounter++;
+                }
+                    array_push($where,"DEPARTMENT_ID in (SELECT DEPARTMENT_ID FROM
+                         HRIS_DEPARTMENTS 
+                        START WITH PARENT_DEPARTMENT in ({$depVal})
+                        CONNECT BY PARENT_DEPARTMENT= PRIOR DEPARTMENT_ID
+                        UNION 
+                        SELECT DEPARTMENT_ID FROM HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN ({$depVal})
+                        UNION
+                        SELECT  TO_NUMBER(TRIM(REGEXP_SUBSTR(EXCEPTIONAL,'[^,]+', 1, LEVEL) )) DEPARTMENT_ID
+  FROM (SELECT EXCEPTIONAL  FROM  HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN  ({$depVal}))
+   CONNECT BY  REGEXP_SUBSTR(EXCEPTIONAL, '[^,]+', 1, LEVEL) IS NOT NULL)");
+            }
+            break;
+
+            case 'DS': 
+            $controlData = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT VAL FROM HRIS_ROLE_CONTROL WHERE ROLE_ID = (SELECT ROLE_ID FROM HRIS_USERS WHERE EMPLOYEE_ID = $employeeId) AND CONTROL = 'DS'"));
+            if(count($controlData) == 0){
+                $where['DESIGNATION_ID'] = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT DESIGNATION_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID = $employeeId"))[0]['DESIGNATION_ID'];
+            }
+            else{
+                $where['DESIGNATION_ID'] = [];
+                foreach ($controlData as $data) {
+                    array_push($where['DESIGNATION_ID'], $data['VAL']);
+                }
+            }
+            break;
+
+            case 'P': 
+            $controlData = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT VAL FROM HRIS_ROLE_CONTROL WHERE ROLE_ID = (SELECT ROLE_ID FROM HRIS_USERS WHERE EMPLOYEE_ID = $employeeId) AND CONTROL = 'P'"));
+            if(count($controlData) == 0){
+                $where['POSITION_ID'] = Helper::extractDbData(self::rawQueryResult($adapter, "SELECT POSITION_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID = $employeeId"))[0]['POSITION_ID'];
+            }
+            else{
+                $where['POSITION_ID'] = [];
+                foreach ($controlData as $data) {
+                    array_push($where['POSITION_ID'], $data['VAL']);
+                }
+            }
+            break;
+        }
+        return $where;
+    }
+
+    public function getEmployeeIdFromCode($adapter, $code){
+        $sql = "SELECT EMPLOYEE_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_CODE = '{$code}'";
+        $result = self::rawQueryResult($adapter, $sql);
+        return Helper::extractDbData($result)[0]['EMPLOYEE_ID'];
+    }
 }

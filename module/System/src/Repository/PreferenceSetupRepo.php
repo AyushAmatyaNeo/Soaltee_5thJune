@@ -40,7 +40,7 @@ class PreferenceSetupRepo implements RepositoryInterface {
         $select->from(['P' => PreferenceSetup::TABLE_NAME]);
         $companyIdKey = Company::COMPANY_ID;
         $companyNameKey = Company::COMPANY_NAME;
-        $select->join(['C' => Company::TABLE_NAME], "C.{$companyIdKey} = P.{$companyIdKey}", [Company::COMPANY_NAME => new Expression("INITCAP(C.{$companyNameKey})")], Join::JOIN_LEFT);
+        $select->join(['C' => Company::TABLE_NAME], "C.{$companyIdKey} = P.{$companyIdKey}", [Company::COMPANY_NAME => new Expression("(C.{$companyNameKey})")], Join::JOIN_LEFT);
         $select->where(['P.' . PreferenceSetup::STATUS."='E'"]);
         $select->order([
             'P.' . PreferenceSetup::PREFERENCE_NAME => Select::ORDER_ASCENDING,

@@ -19,6 +19,31 @@ use Zend\Db\Adapter\AdapterInterface;
 use Zend\View\Model\JsonModel;
 
 class VarianceSetupController extends HrisController {
+    
+    private $variableTypeList=[
+    'S'=>'Salary Group',
+    'V'=>'Variance',
+    'O'=>'OT',
+    'T'=>'Tax Group',
+    'B'=>'Basic', // for baisc
+    'C'=>'Grade', // for Grade
+    'A'=>'Allowance', // for Allowance
+    'G'=>'Gross', // for Gross
+    'Y'=>'Tax Yearly', // for Gross
+    ];
+    
+    
+    private $vHeadsList=[
+    'NO'=>'None',
+    'IN'=>'Incomes',
+    'TE'=>'Tax Excemptions',
+    'OT'=>'Other Tax',
+    'MI'=>'Miscellaneous',
+    'BM'=>'B-Miscellaneous',
+    'CM'=>'C-Miscellaneous',
+    'SE'=>'Sum Of Exemptions',
+    'ST'=>'A Sum of Other Tax',
+    ];
 
     public function __construct(AdapterInterface $adapter, StorageInterface $storage) {
         parent::__construct($adapter, $storage);
@@ -63,6 +88,8 @@ class VarianceSetupController extends HrisController {
             }
         }
         return [
+            'variableTypeList' => $this->variableTypeList,
+            'vHeadsList' => $this->vHeadsList,
             'form' => $this->form,
             'customRenderer' => Helper::renderCustomView(),
             'payHeads' => EntityHelper::getTableList($this->adapter, Rules::TABLE_NAME, [Rules::PAY_ID, Rules::PAY_EDESC], [Rules::STATUS => "E"])
@@ -100,6 +127,8 @@ class VarianceSetupController extends HrisController {
 
         return [
             'id' => $id,
+            'variableTypeList' => $this->variableTypeList,
+            'vHeadsList' => $this->vHeadsList,
             'form' => $this->form,
             'customRenderer' => Helper::renderCustomView(),
             'details' => $details,

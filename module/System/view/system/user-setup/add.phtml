@@ -9,7 +9,6 @@ $form->setAttribute('id', 'usersetup-form');
 
 $userName = $form->get('userName');
 $password = $form->get('password');
-$status = $form->get('status');
 $roleId = $form->get('roleId');
 $roleId->setValueOptions($roleList);
 $employeeId = $form->get('employeeId');
@@ -97,15 +96,9 @@ $form->prepare();
                             <input name="repassword" required="required" id="form-repassword" class="form-repassword form-control" type="password" value="">
                         </div>
                     </div>
-                    <div class=" col-sm-4 ">
-                        <div class="form-group padding-0">
-                            <?php print $this->formLabel($status); ?>
-                            <div class="md-radio-inline">
-                                <?php $customRenderer($status); ?>
-                            </div>
-                        </div>
-                        <?php print $this->formElementErrors()->render($status, ['class' => 'help-block error']); ?>
-                    </div>
+                    
+                    <input type="hidden" name="status" value="E">
+
                     <div class="col-sm-4">
                         <div class="form-group">
                             <?php print $this->formLabel($isLocked); ?>
@@ -114,6 +107,7 @@ $form->prepare();
                             <?php print $this->formElementErrors()->render($isLocked, ['class' => 'help-block error']); ?>
                         </div>
                     </div>
+                    
                 </div>
 
                 <?php print $this->formSubmit($submit); ?>

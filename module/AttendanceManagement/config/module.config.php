@@ -22,6 +22,20 @@ return [
                     ]
                 ],
             ],
+            'groupshiftassign' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/attendance/groupshiftassign[/:action[/:id]]',
+                    'constants' => [
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'id' => '[0-9]+',
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\GroupShiftAssign::class,
+                        'action' => 'index',
+                    ]
+                ],
+            ],
             'attendancebyhr' => [
                 'type' => Segment::class,
                 'options' => [
@@ -345,6 +359,7 @@ return [
             Controller\ShiftAdjustment::class => ControllerFactory::class,
             Controller\Penalty::class => ControllerFactory::class,
             Controller\Roaster::class => ControllerFactory::class,
+            Controller\GroupShiftAssign::class => ControllerFactory::class
         ],
     ],
     'view_manager' => [

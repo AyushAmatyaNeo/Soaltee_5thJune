@@ -8,6 +8,7 @@
             {field: "PREVIOUS_YEAR_BAL", title: "Previous"},
             {field: "TOTAL_DAYS", title: "Total Days"},
             {field: "LEAVE_TAKEN", title: "Leave taken"},
+            {field: "ENCASHED", title: "Encashed"},
             {field: "LEAVE_DEDUCTED", title: "Leave Deducted"},
             {field: "LEAVE_ADDED", title: "Leave Added"},
             {field: "BALANCE", title: "Available Days"}

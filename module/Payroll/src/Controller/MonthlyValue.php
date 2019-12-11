@@ -105,12 +105,13 @@ class MonthlyValue extends HrisController {
     public function detailAction() {
         $monthlyValues = EntityHelper::getTableList($this->adapter, MonthlyValueModel::TABLE_NAME, [MonthlyValueModel::MTH_ID, MonthlyValueModel::MTH_EDESC]);
         $fiscalYears = EntityHelper::getTableList($this->adapter, FiscalYear::TABLE_NAME, [FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME]);
-        $months = EntityHelper::getTableList($this->adapter, Months::TABLE_NAME, [Months::MONTH_ID, Months::MONTH_EDESC, Months::FISCAL_YEAR_ID]);
+        $months = EntityHelper::getTableList($this->adapter, Months::TABLE_NAME, [Months::MONTH_ID, Months::MONTH_EDESC, Months::FISCAL_YEAR_ID],null,'','FISCAL_YEAR_MONTH_NO');
         return Helper::addFlashMessagesToArray($this, [
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
                     'monthlyValues' => $monthlyValues,
                     'fiscalYears' => $fiscalYears,
-                    'months' => $months
+                    'months' => $months,
+                    'acl' => $this->acl,
         ]);
     }
 

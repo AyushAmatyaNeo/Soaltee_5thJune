@@ -19,6 +19,8 @@ $fromDate = $form->get('fromDate');
 $fromDate->setAttributes(["disabled" => "disabled"]);
 $toDate = $form->get('toDate');
 $toDate->setAttributes(["disabled" => "disabled"]);
+$departure = $form->get('departure');
+$departure->setAttributes(["disabled" => "disabled"]);
 $destination = $form->get('destination');
 $destination->setAttributes(["disabled" => "disabled"]);
 $purpose = $form->get('purpose');
@@ -37,6 +39,8 @@ $recommendedRemarks = $form->get('recommendedRemarks');
 $recommendedRemarks->setAttributes(["disabled" => "disabled"]);
 $approvedRemarks = $form->get('approvedRemarks');
 $approvedRemarks->setAttributes(["disabled" => "disabled"]);
+$noOfDays = $form->get('noOfDays');
+$noOfDays->setAttributes(["disabled" => "disabled"]);
 
 $submit = $form->get('submit');
 $submit->setAttribute('value', 'SUBMIT');
@@ -167,9 +171,27 @@ print $this->form()->openTag($form);
                             </div>     
                         </div>     
                     </div>
+                    
+                    <div class="col-sm-4">
+                        <div
+                            class="form-group required <?= empty($noOfDays->getMessages()) ? "" : "error" ?>">
+                                <?php print $this->formLabel($noOfDays); ?>
+                            <span class="required" aria-required="true">*</span>
+                            <?php print $this->formElement($noOfDays); ?>
+                            <span id="errorMsg" style="font-size:11px; color:red;"></span>
+                        </div>
+                        <?php print $this->formElementErrors()->render($noOfDays, ['class' => 'help-block error']); ?>
+                    </div>
                 </div>
 
                 <div class=" row">
+                     <div class="col-sm-4">
+                        <div class="form-group">
+                            <?php print $this->formLabel($departure); ?>
+                            <?php print $this->formElement($departure); ?>
+                            <?php print $this->formElementErrors()->render($departure, ['class' => 'help-block']); ?>
+                        </div>               
+                    </div>
                     <div class="col-sm-4">
                         <div class="form-group">
                             <?php print $this->formLabel($destination); ?>

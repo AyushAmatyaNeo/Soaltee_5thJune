@@ -65,11 +65,12 @@ class TravelApproveRepository implements RepositoryInterface {
         
     }
   
+    /*
     public function fetchAttachmentsById($id){
       $sql = "SELECT * FROM HRIS_TRAVEL_FILES WHERE TRAVEL_ID = $id";
       $result = EntityHelper::rawQueryResult($this->adapter, $sql);
       return Helper::extractDbData($result);
-    }
+    }*/
 
     public function fetchById($id) {
         $sql = new Sql($this->adapter);
@@ -78,6 +79,7 @@ class TravelApproveRepository implements RepositoryInterface {
             new Expression("TR.EMPLOYEE_ID AS EMPLOYEE_ID"),
             new Expression("TR.TRAVEL_ID AS TRAVEL_ID"),
             new Expression("TR.TRAVEL_CODE AS TRAVEL_CODE"),
+            new Expression("TR.DEPARTURE AS DEPARTURE"),
             new Expression("TR.DESTINATION AS DESTINATION"),
             new Expression("TR.REQUESTED_AMOUNT AS REQUESTED_AMOUNT"),
             new Expression("TR.PURPOSE AS PURPOSE"),
@@ -158,6 +160,7 @@ class TravelApproveRepository implements RepositoryInterface {
         $sql = "SELECT TR.TRAVEL_ID                        AS TRAVEL_ID,
                   TR.TRAVEL_CODE                           AS TRAVEL_CODE,
                   TR.EMPLOYEE_ID                           AS EMPLOYEE_ID,
+                  E.EMPLOYEE_CODE                             AS EMPLOYEE_CODE,
                   E.FULL_NAME                              AS EMPLOYEE_NAME,
                   TO_CHAR(TR.REQUESTED_DATE,'DD-MON-YYYY') AS REQUESTED_DATE_AD,
                   BS_DATE(TR.REQUESTED_DATE)               AS REQUESTED_DATE_BS,
@@ -215,9 +218,15 @@ class TravelApproveRepository implements RepositoryInterface {
                 ON (RA.RECOMMEND_BY=RAR.EMPLOYEE_ID)
                 LEFT JOIN HRIS_EMPLOYEES RAA
                 ON(RA.APPROVED_BY=RAA.EMPLOYEE_ID)
+                LEFT JOIN HRIS_ALTERNATE_R_A ALR
+                ON(ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=TR.EMPLOYEE_ID AND ALR.R_A_ID={$search['employeeId']})
+                LEFT JOIN HRIS_ALTERNATE_R_A ALA
+                ON(ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=TR.EMPLOYEE_ID AND ALA.R_A_ID={$search['employeeId']})
                 LEFT JOIN HRIS_EMPLOYEES U
                 ON(U.EMPLOYEE_ID      = RA.RECOMMEND_BY
-                OR U.EMPLOYEE_ID      =RA.APPROVED_BY)
+                OR U.EMPLOYEE_ID      =RA.APPROVED_BY
+                OR U.EMPLOYEE_ID = ALR.R_A_ID
+                OR U.EMPLOYEE_ID = ALA.R_A_ID )
                 WHERE 1               =1
                 AND (TS.APPROVED_FLAG =
                   CASE
@@ -274,8 +283,14 @@ class TravelApproveRepository implements RepositoryInterface {
                   RAR.FULL_NAME                                                   AS RECOMMENDER_NAME,
                   RAA.EMPLOYEE_ID                                                 AS APPROVER_ID,
                   RAA.FULL_NAME                                                   AS APPROVER_NAME,
-                  REC_APP_ROLE(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY)      AS ROLE,
-                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,RA.RECOMMEND_BY,RA.APPROVED_BY) AS YOUR_ROLE
+                  REC_APP_ROLE(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  )      AS ROLE,
+                  REC_APP_ROLE_NAME(U.EMPLOYEE_ID,
+                  CASE WHEN ALR.R_A_ID IS NOT NULL THEN ALR.R_A_ID ELSE RA.RECOMMEND_BY END,
+                  CASE WHEN ALA.R_A_ID IS NOT NULL THEN ALA.R_A_ID ELSE RA.APPROVED_BY END
+                  ) AS YOUR_ROLE
                 FROM HRIS_EMPLOYEE_TRAVEL_REQUEST TR
                 LEFT JOIN HRIS_TRAVEL_SUBSTITUTE TS
                 ON TR.TRAVEL_ID = TS.TRAVEL_ID
@@ -291,15 +306,25 @@ class TravelApproveRepository implements RepositoryInterface {
                 ON (RA.RECOMMEND_BY=RAR.EMPLOYEE_ID)
                 LEFT JOIN HRIS_EMPLOYEES RAA
                 ON(RA.APPROVED_BY=RAA.EMPLOYEE_ID)
+                LEFT JOIN HRIS_ALTERNATE_R_A ALR
+                ON(ALR.R_A_FLAG='R' AND ALR.EMPLOYEE_ID=TR.EMPLOYEE_ID AND ALR.R_A_ID={$employeeId})
+                LEFT JOIN HRIS_ALTERNATE_R_A ALA
+                ON(ALA.R_A_FLAG='A' AND ALA.EMPLOYEE_ID=TR.EMPLOYEE_ID AND ALA.R_A_ID={$employeeId})
                 LEFT JOIN HRIS_EMPLOYEES U
                 ON(U.EMPLOYEE_ID      = RA.RECOMMEND_BY
-                OR U.EMPLOYEE_ID      =RA.APPROVED_BY)
+                OR U.EMPLOYEE_ID      =RA.APPROVED_BY
+                OR
+                U.EMPLOYEE_ID = ALR.R_A_ID
+                OR
+                U.EMPLOYEE_ID = ALA.R_A_ID )
                 WHERE 1               =1
                 AND E.STATUS          ='E'
                 AND E.RETIRED_FLAG    ='N'
-                AND ((RA.RECOMMEND_BY = U.EMPLOYEE_ID
+                AND ((
+                ((RA.RECOMMEND_BY = U.EMPLOYEE_ID) OR (ALR.R_A_ID = U.EMPLOYEE_ID))
                 AND TR.STATUS         ='RQ')
-                OR (RA.APPROVED_BY    = U.EMPLOYEE_ID
+                OR 
+                (((RA.APPROVED_BY    = U.EMPLOYEE_ID)  OR (ALA.R_A_ID = U.EMPLOYEE_ID))
                 AND TR.STATUS         ='RC') )
                 AND U.EMPLOYEE_ID     ={$employeeId}
                 AND (TS.APPROVED_FLAG =

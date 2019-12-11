@@ -3,7 +3,7 @@
     $(document).ready(function () {
         $("select").select2();
         app.startEndDatePickerWithNepali('nepaliFromDate', 'fromDate', 'nepaliToDate', 'toDate', null, false);
-        app.searchTable('withOTReport', ['COMPANY_NAME', 'DEPARTMENT_NAME', 'FULL_NAME'], true);
+        app.searchTable('withOTReport', ['COMPANY_NAME', 'DEPARTMENT_NAME', 'FULL_NAME', 'EMPLOYEE_CODE'], false);
         app.pdfExport(
                 'withOTReport',
                 {
@@ -20,6 +20,8 @@
                     'PAID_LEAVE': 'Paid Leave',
                     'UNPAID_LEAVE': 'Unpaid Leave',
                     'OVERTIME_HOUR': 'Overtime Hour',
+                    'ADDITION' : 'Overtime +',
+                    'DEDUCTION': 'Overtime -',
                     'TRAVEL': 'Travel',
                     'TRAINING': 'Training',
                     'WORK_ON_HOLIDAY': 'Work on Holiday',
@@ -29,6 +31,8 @@
         var months = null;
         var $year = $('#fiscalYearId');
         var $month = $('#monthId');
+        let selectedMonthId;
+
         app.setFiscalMonth($year, $month, function (yearList, monthList, currentMonth) {
             months = monthList;
             $fromDate.val(currentMonth['FROM_DATE_AD']);
@@ -52,6 +56,7 @@
             $toDate.val(selectedMonthList[0]['TO_DATE']);
             $nepaliFromDate.val(nepaliDatePickerExt.fromEnglishToNepali(selectedMonthList[0]['FROM_DATE']));
             $nepaliToDate.val(nepaliDatePickerExt.fromEnglishToNepali(selectedMonthList[0]['TO_DATE']));
+            selectedMonthId = selectedMonthList[0]['MONTH_ID'];
         };
         $month.on('change', function () {
             monthChange($(this));
@@ -77,15 +82,18 @@
             {field: "PAID_LEAVE", title: "Paid Leave", width: 150},
             {field: "UNPAID_LEAVE", title: "Unpaid Leave", width: 150},
             {field: "OVERTIME_HOUR", title: "Overtime Hour", width: 150},
+            {field: "ADDITION", title: "Overtime (+)", width: 150},
+            {field: "DEDUCTION", title: "Overtime (-)", width: 150},
             {field: "TRAVEL", title: "Travel", width: 150},
             {field: "TRAINING", title: "Training", width: 150},
             {field: "WORK_ON_HOLIDAY", title: "Work on Holiday", width: 150},
             {field: "WORK_ON_DAYOFF", title: "Work on Dayoff", width: 150},
-        ]);
+        ], null, null, null, 'Report with Overtime');
         $search.on('click', function () {
             var data = document.searchManager.getSearchValues();
             data['fromDate'] = $fromDate.val();
             data['toDate'] = $toDate.val();
+            data['monthId'] = selectedMonthId;
             app.serverRequest(document.withOvertimeWs, data).then(function (response) {
                 if (response.success) {
                     app.renderKendoGrid($withOTReport, response.data);
@@ -143,6 +151,7 @@
                 }
             }, function (error) {});
         });
+        
 
     });
 })(window.jQuery, window.app);

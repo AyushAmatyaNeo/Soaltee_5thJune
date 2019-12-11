@@ -25,7 +25,7 @@ $enableSubstitute = $form->get('enableSubstitute');
 $remarks = $form->get('remarks');
 $dayOffAsLeave = $form->get('dayOffAsLeave');
 $holidayAsLeave = $form->get('holidayAsLeave');
-
+$applyLimit = $form->get('applyLimit');
 $fiscalYear->setValueOptions($fiscalYears);
 
 $submit = $form->get('submit');
@@ -94,6 +94,15 @@ print $this->form()->openTag($form);
                         </div>
                         <?php print $this->formElementErrors()->render($maxAccumulateDays, ['class' => 'help-block error']); ?>
                     </div>
+
+                    <div class="col-sm-4">
+                        <div class="form-group <?= empty($applyLimit->getMessages()) ? "" : "error" ?>">
+                            <?php print $this->formLabel($applyLimit); ?>
+                            <?php print $this->formElement($applyLimit); ?>
+                        </div>
+                        <?php print $this->formElementErrors()->render($applyLimit, ['class' => 'help-block error']); ?>
+                    </div>
+
                 </div>
                 <div class="padding-5">
                     <div class="row  bg-master-lightest">

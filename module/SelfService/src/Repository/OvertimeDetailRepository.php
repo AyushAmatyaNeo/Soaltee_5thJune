@@ -56,4 +56,9 @@ class OvertimeDetailRepository implements RepositoryInterface {
         });
         return iterator_to_array($rowset, FALSE);
     }
+
+    public function getAttendanceOvertimeValidation($employeeId, $date){
+        $rawResult = EntityHelper::rawQueryResult($this->adapter, "SELECT HRIS_VALIDATE_OVERTIME_ATTD({$employeeId}, '{$date}') AS VALIDATION FROM DUAL");
+        return $rawResult->current();
+    }
 }

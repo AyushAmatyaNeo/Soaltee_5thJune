@@ -25,7 +25,8 @@ class LeaveReportCard extends HrisController {
         return $this->stickFlashMessagesTo([
             'searchValues' => EntityHelper::getSearchData($this->adapter),
             'acl' => $this->acl,
-            'employeeDetail' => $this->storageData['employee_detail']
+            'employeeDetail' => $this->storageData['employee_detail'],
+            'preference' => $this->preference
         ]);
     }
   
@@ -34,9 +35,10 @@ class LeaveReportCard extends HrisController {
         if ($request->isPost()) {
             try {
                 $data = $request->getPost();
+                $employee = $data['data']['employeeId'];
                 $rawList = $this->repository->fetchLeaveReportCard($data);
                 $list = Helper::extractDbData($rawList);
-                $rawLeaves = $this->repository->fetchLeaves();
+                $rawLeaves = $this->repository->fetchLeaves($employee);
                 $leaves = Helper::extractDbData($rawLeaves);
                 return new JsonModel([
                     "success" => true,

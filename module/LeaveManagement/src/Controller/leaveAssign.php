@@ -34,7 +34,7 @@ class leaveAssign extends HrisController {
         $config = [
             'name' => 'leave',
             'id' => 'leaveId',
-            'class' => 'form-control',
+            'class' => 'form-control reset-field',
             'label' => 'Type'
         ];
         $leaveSE = $this->getSelectElement($config, $leaveList);
@@ -51,13 +51,15 @@ class leaveAssign extends HrisController {
          $leaveYearConfig = [
             'name' => 'leaveYear',
             'id' => 'leaveYear',
-            'class' => 'form-control',
+            'class' => 'form-control reset-field',
             'label' => 'Leave Year'
         ];
          $leaveYearSE = $this->getSelectElement($leaveYearConfig, $leaveYearData);
         return [
             'leaveFormElement' => $leaveSE,
             'leaveYearFormElement' => $leaveYearSE,
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail']
                 ];
     }
 
@@ -112,7 +114,7 @@ class leaveAssign extends HrisController {
                 
                 ($leaveDetails['IS_MONTHLY']=='N')?
                 $leaveAssignRepo->add($leaveAssign)
-                :$leaveAssignRepo->editMonthlyLeave($leaveAssign->employeeId,$leaveDetails,$data['month'],$leaveAssign->totalDays);
+                :$leaveAssignRepo->editMonthlyLeave($leaveAssign->employeeId,$leaveDetails,$data['month'],$leaveAssign->totalDays,$leaveAssign->previousYearBalance);
             } else {
                 $leaveAssign->modifiedDt = Helper::getcurrentExpressionDate();
                 $leaveAssign->modifiedBy = $this->employeeId;
@@ -120,7 +122,7 @@ class leaveAssign extends HrisController {
                 unset($leaveAssign->leaveId);
                 ($leaveDetails['IS_MONTHLY']=='N')?
                 $leaveAssignRepo->edit($leaveAssign, [$data['leaveId'], $data['employeeId']])
-                :$leaveAssignRepo->editMonthlyLeave($data['employeeId'],$leaveDetails,$data['month'],$leaveAssign->totalDays);
+                :$leaveAssignRepo->editMonthlyLeave($data['employeeId'],$leaveDetails,$data['month'],$leaveAssign->totalDays,$leaveAssign->previousYearBalance);
                 
             }
 

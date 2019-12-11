@@ -89,27 +89,27 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                             <div class="col-sm-3">
                                 <div class="form-group">
                                     <label for="fromDate">From Date</label>
-                                    <input type="text" id="fromDate" name="fromDate" class="form-control"/>
+                                    <input type="text" id="fromDate" name="fromDate" class="form-control reset-field"/>
                                 </div>
 
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
                                     <label for="nepaliFromDate">&nbsp;</label>
-                                    <input type="text" id="nepaliFromDate" name="nepaliFromDate"  class="form-control"/>
+                                    <input type="text" id="nepaliFromDate" name="nepaliFromDate"  class="form-control reset-field"/>
                                 </div>
 
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
                                     <label for="toDate">To Date</label>
-                                    <input type="text"  id="toDate" name="toDate"  class="form-control"/>
+                                    <input type="text"  id="toDate" name="toDate"  class="form-control reset-field"/>
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
                                     <label for="nepaliToDate">&nbsp;</label>
-                                    <input type="text"  id="nepaliToDate" name="nepaliToDate" class="form-control"/>
+                                    <input type="text"  id="nepaliToDate" name="nepaliToDate" class="form-control reset-field"/>
                                 </div>
                             </div>
                         </div>
@@ -123,7 +123,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                         <?php print $this->formElement($presentStatus); ?>
                     </div>
                     <div class=" col-sm-2">
-                        <button id="reset" class="btn default btn-sm pull-right">
+                        <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                             Reset
                             <i class="fa fa-refresh"></i>
                         </button>

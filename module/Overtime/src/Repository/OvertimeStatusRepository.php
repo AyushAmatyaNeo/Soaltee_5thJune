@@ -218,11 +218,12 @@ class OvertimeStatusRepository extends HrisRepository {
         $serviceTypeId = $data['serviceTypeId'];
         $serviceEventTypeId = $data['serviceEventTypeId'];
         $employeeTypeId = $data['employeeTypeId'];
+        $functionalTypeId = $data['functionalTypeId'];
         $requestStatusId = $data['requestStatusId'];
         $fromDate = $data['fromDate'];
         $toDate = $data['toDate'];
 
-        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, null, null, $functionalTypeId);
         $statusConditon = "";
         $fromDateCondition = "";
         $toDateCondition = "";

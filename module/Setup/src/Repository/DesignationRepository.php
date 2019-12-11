@@ -25,8 +25,8 @@ class DesignationRepository extends HrisRepository implements RepositoryInterfac
         $companyIdKey = Designation::COMPANY_ID;
         $companyNameKey = Company::COMPANY_NAME;
         $select->from(["D1" => Designation::TABLE_NAME])
-            ->join(["D2" => Designation::TABLE_NAME], 'D1.PARENT_DESIGNATION=D2.DESIGNATION_ID', ["PARENT_DESIGNATION_TITLE" => new Expression('INITCAP(D2.DESIGNATION_TITLE)')], "left")
-            ->join(["C" => Company::TABLE_NAME], "C.{$companyIdKey}=D1.{$companyIdKey}", [Company::COMPANY_NAME => new Expression("INITCAP(C.{$companyNameKey})")], "left")
+            ->join(["D2" => Designation::TABLE_NAME], 'D1.PARENT_DESIGNATION=D2.DESIGNATION_ID', ["PARENT_DESIGNATION_TITLE" => new Expression('(D2.DESIGNATION_TITLE)')], "left")
+            ->join(["C" => Company::TABLE_NAME], "C.{$companyIdKey}=D1.{$companyIdKey}", [Company::COMPANY_NAME => new Expression("(C.{$companyNameKey})")], "left")
         ;
         $select->where(["D1.STATUS= 'E'"]);
         $select->order(["D1." . Designation::DESIGNATION_TITLE => Select::ORDER_ASCENDING, "C.{$companyNameKey}" => Select::ORDER_ASCENDING]);
@@ -61,7 +61,7 @@ class DesignationRepository extends HrisRepository implements RepositoryInterfac
         $select = $sql->select();
         $select->columns([Designation::DESIGNATION_ID, Designation::DESIGNATION_TITLE]);
         $select->from(['D' => Designation::TABLE_NAME]);
-        $select->join(['C' => Company::TABLE_NAME], "C." . Company::COMPANY_ID . "=D." . Designation::COMPANY_ID, array(Company::COMPANY_ID, 'COMPANY_NAME' => new Expression('INITCAP(C.' . Company::COMPANY_NAME . ')')), 'inner');
+        $select->join(['C' => Company::TABLE_NAME], "C." . Company::COMPANY_ID . "=D." . Designation::COMPANY_ID, array(Company::COMPANY_ID, 'COMPANY_NAME' => new Expression('(C.' . Company::COMPANY_NAME . ')')), 'inner');
         $select->where(["C.STATUS='E'"]);
         $select->where(["D.STATUS='E'"]);
         $select->order("D." . Designation::DESIGNATION_TITLE . " ASC");

@@ -19,6 +19,8 @@ class RoleSetup extends Model {
     const ALLOW_ADD = "ALLOW_ADD";
     const ALLOW_UPDATE = "ALLOW_UPDATE";
     const ALLOW_DELETE = "ALLOW_DELETE";
+    const HR_APPROVE = "HR_APPROVE";
+    const HR_CANCEL = "HR_CANCEL";
 
     public $roleId;
     public $roleName;
@@ -32,6 +34,8 @@ class RoleSetup extends Model {
     public $allowAdd;
     public $allowUpdate;
     public $allowDelete;
+    public $hrApprove;
+    public $hrCancel;
     public $mappings = [
         'roleId' => Self::ROLE_ID,
         'roleName' => Self::ROLE_NAME,
@@ -45,6 +49,8 @@ class RoleSetup extends Model {
         'allowAdd' => self::ALLOW_ADD,
         'allowUpdate' => self::ALLOW_UPDATE,
         'allowDelete' => self::ALLOW_DELETE,
+        'hrApprove' => self::HR_APPROVE,
+        'hrCancel' => self::HR_CANCEL
     ];
 
 }

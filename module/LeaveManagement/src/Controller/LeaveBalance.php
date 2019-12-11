@@ -12,6 +12,9 @@ use SelfService\Repository\LeaveRequestRepository;
 use Zend\Authentication\Storage\StorageInterface;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\View\Model\JsonModel;
+use LeaveManagement\Model\LeaveMaster;
+use Application\Repository\MonthRepository;
+use LeaveManagement\Model\LeaveMonths;
 
 class LeaveBalance extends HrisController {
 
@@ -31,7 +34,8 @@ class LeaveBalance extends HrisController {
                     'leavesArrray' => $leaves,
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
                     'acl' => $this->acl,
-                    'employeeDetail' => $this->storageData['employee_detail']
+                    'employeeDetail' => $this->storageData['employee_detail'],
+                    'preference' => $this->preference
         ]);
     }
 
@@ -58,7 +62,8 @@ class LeaveBalance extends HrisController {
                     'leavesArrray' => $leaves,
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
                     'acl' => $this->acl,
-                    'employeeDetail' => $this->storageData['employee_detail']
+                    'employeeDetail' => $this->storageData['employee_detail'],
+                    'preference' => $this->preference
         ]);
     }
 
@@ -77,19 +82,20 @@ class LeaveBalance extends HrisController {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
     }
-    
-    public function betweenDatesAction(){
+
+    public function betweenDatesAction() {
         $leaveList = $this->repository->getAllLeave();
         $leaves = Helper::extractDbData($leaveList);
         return $this->stickFlashMessagesTo([
                     'leavesArrray' => $leaves,
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
                     'acl' => $this->acl,
-                    'employeeDetail' => $this->storageData['employee_detail']
+                    'employeeDetail' => $this->storageData['employee_detail'],
+                    'preference' => $this->preference
         ]);
     }
-    
-    public function pullBalanceBetweenDatesAction(){
+
+    public function pullBalanceBetweenDatesAction() {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -103,7 +109,45 @@ class LeaveBalance extends HrisController {
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
+    }
+
+    public function leaveAdditionReportAction() {
+        $request = $this->getRequest();
         
+        if($request->isPost()) {
+            
+            try {
+                $data = $request->getPost();
+                $reportData = $this->repository->fetchLeaveAddition($data);
+               
+                return new JsonModel(['success' => true, 'data' => $reportData, 'error' => '']);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+            }
+        }
+
+        $leaveList = $this->repository->getLeaveTypes();
+        $leaves = Helper::extractDbData($leaveList);
+        
+        return $this->stickFlashMessagesTo([
+                    'leavesArray' => $leaves,
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'acl' => $this->acl,
+                    'employeeDetail' => $this->storageData['employee_detail'],
+                    'preference' => $this->preference,
+        ]);
+    }
+    
+    public function getLeaveYearMonthAction(){
+        
+        try {
+            $data['years'] = EntityHelper::getTableList($this->adapter, "HRIS_LEAVE_YEARS", ["LEAVE_YEAR_ID", "LEAVE_YEAR_NAME"]);
+            $data['months'] = iterator_to_array($this->repository->fetchLeaveYearMonth(), false);
+            $data['currentMonth'] = $this->repository->getCurrentLeaveMonth();
+            return new JsonModel(['success' => true, 'data' => $data, 'error' => '']);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+        }
     }
 
 }

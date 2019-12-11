@@ -38,6 +38,16 @@ $employeeTypeValue = [
 $employeeType->setValueOptions($employeeTypeValue);
 $isHR = $formFour->get('isHR');
 
+$payEmpType = $formFour->get('payEmpType');
+$payEmpTypeValue = [
+    'NEW'=>'NEW',
+    'OLD'=>'OLD'
+];
+$payEmpType->setValueOptions($payEmpTypeValue);
+
+$wohFlag = $formFour->get('wohFlag');
+$overtimeEligible = $formFour->get('overtimeEligible');
+
 $formFour->setAttribute('action', $this->url('employee', ['action' => 'edit', 'id' => $id, 'tab' => 4]));
 $formFour->setAttribute("name", "employeeForm");
 $formFour->prepare();
@@ -254,6 +264,48 @@ $formFour->prepare();
                         </div>
                     </div>
                 </div>
+
+
+
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="row bottomgap">
+                        <div class="form-group">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-4" style="margin-top:2%;">
+                                <?= $this->formLabel($overtimeEligible) ?>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6 cgap-4 ">
+                                <div class="md-radio-inline">
+                                    <?php $customRender($overtimeEligible); ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="row bottomgap">
+                        <div class="form-group<?= empty($wohFlag->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-4">
+                                <?php print $this->formLabel($wohFlag); ?></div>
+                            <div class="col-xs-6 col-sm-6 cgap-4">
+                                <?php print $this->formElement($wohFlag); ?></div>
+                            <?php print $this->formElementErrors()->render($wohFlag, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="row bottomgap">
+                        <div class="form-group<?= empty($payEmpType->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-4">
+                                <?php print $this->formLabel($payEmpType); ?></div>
+                            <div class="col-xs-6 col-sm-6 cgap-4">
+                                <?php print $this->formElement($payEmpType); ?></div>
+                            <?php print $this->formElementErrors()->render($payEmpType, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <input type="submit" class="hidden" id="btnform4" value="submit">
             <?php print $this->form()->closeTag(); ?>

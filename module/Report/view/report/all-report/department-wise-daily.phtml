@@ -1,3 +1,9 @@
+<style>
+ .btn.green:not(.btn-outline), .green {
+    background-color: #63AB6A !important;
+    border-color: #63AB6A !important;
+}   
+</style>
 <?php
 $this->headLink()
     ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.common.min.css'))
@@ -19,11 +25,13 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reportthree
 <script>
     document.getSearchDataLink = '<?php echo $this->url('allreport', ['action' => 'getSearchData']); ?>';
     document.getFiscalYearMonthLink = '<?php echo $this->url('allreport', ['action' => 'getFiscalYearMonth']); ?>';
-    
+    document.preference =<?php echo json_encode($preference) ?>;
 //    document.wsDepartmentWiseDailyReport = '<?php // echo $this->url('allreport', ['action' => 'departmentWiseDailyReport']); ?>';
 //    document.comBraDepList =<?php // echo json_encode($comBraDepList); ?>;
 //    document.monthId =<?php // echo $monthId; ?>;
 //    document.departmentId =<?php // echo $departmentId; ?>;
+    document.acl =<?php echo json_encode($acl); ?>;
+    document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
 
 </script>
 
@@ -119,6 +127,11 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reportthree
                     </select>
                 </div>
                 <div class="col-sm-2">
+                    <label>Functional Type</label>
+                    <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                    </select>
+                </div>
+                <div class="col-sm-2">
                     <label>Employee</label>
                     <select multiple class="form-control" name="employee" id="employeeId">
                     </select>
@@ -126,11 +139,11 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reportthree
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-2">
-                <select class="form-control"  id="fiscalYearId" >
+                <select class="form-control reset-field"  id="fiscalYearId" >
                 </select>
             </div>
             <div class="col-sm-2">
-                <select class="form-control" id="monthId" >
+                <select class="form-control reset-field" id="monthId" >
                 </select>
             </div>
                 
@@ -138,7 +151,7 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reportthree
                     <?php // print $this->formElement($fiscalYearSE); ?>
                 </div>-->
                 <div class="col-sm-4 col-sm-offset-6">
-                    <button class="btn default btn-sm pull-right hris-filter-reset-btn">
+                    <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                         Reset
                         <i class="fa fa-refresh"></i>
                     </button>

@@ -50,7 +50,7 @@
                     }]},
             {field: "DURATION", title: "Duration"},
             {field: "STATUS_DETAIL", title: "Status"},
-            {field: ["ID", "ALLOW_EDIT", "ALLOW_DELETE"], title: "Action", template: action}
+            {field: "ID", title: "Action", template: action}
         ]);
 
         app.searchTable('workOnDayoffTbl', ['REQUESTED_DATE_AD', 'REQUESTED_DATE_BS', 'FROM_DATE_AD', 'FROM_DATE_BS', 'TO_DATE_AD', 'TO_DATE_BS', 'DURATION', 'STATUS_DETAIL']);
