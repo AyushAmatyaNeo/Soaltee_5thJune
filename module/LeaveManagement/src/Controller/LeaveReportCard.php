@@ -6,6 +6,7 @@ use Application\Controller\HrisController;
 use Application\Helper\EntityHelper;
 use Application\Helper\Helper;
 use Exception;
+use LeaveManagement\Model\LeaveMaster;
 use LeaveManagement\Repository\LeaveReportCardRepository;
 use SelfService\Repository\LeaveRequestRepository;
 use Zend\Authentication\Storage\StorageInterface;
@@ -22,9 +23,13 @@ class LeaveReportCard extends HrisController {
     }
 
     public function indexAction() {
+        $leaveList = EntityHelper::getTableKVListWithSortOption($this->adapter, LeaveMaster::TABLE_NAME, LeaveMaster::LEAVE_ID, [LeaveMaster::LEAVE_ENAME], [LeaveMaster::STATUS => 'E'], LeaveMaster::LEAVE_ENAME, "ASC", NULL, ['-1' => 'All Leaves'], TRUE);
+        $leaveSE = $this->getSelectElement(['name' => 'leave', 'id' => 'leaveId', 'class' => 'form-control reset-field', 'label' => 'Type'], $leaveList);
+        $leaveSE->setAttribute('multiple', 'multiple');
         return $this->stickFlashMessagesTo([
             'searchValues' => EntityHelper::getSearchData($this->adapter),
             'acl' => $this->acl,
+            'leaves' => $leaveSE,
             'employeeDetail' => $this->storageData['employee_detail'],
             'preference' => $this->preference
         ]);
@@ -38,7 +43,7 @@ class LeaveReportCard extends HrisController {
                 $employee = $data['data']['employeeId'];
                 $rawList = $this->repository->fetchLeaveReportCard($data);
                 $list = Helper::extractDbData($rawList);
-                $rawLeaves = $this->repository->fetchLeaves($employee);
+                $rawLeaves = $this->repository->fetchLeaves($employee, $data['data']['leaveId']);
                 $leaves = Helper::extractDbData($rawLeaves);
                 return new JsonModel([
                     "success" => true,

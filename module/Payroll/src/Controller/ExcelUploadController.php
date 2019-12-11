@@ -4,8 +4,6 @@ namespace Payroll\Controller;
 
 use Application\Controller\HrisController;
 use Application\Helper\EntityHelper;
-use Application\Helper\Helper;
-use Exception;
 use Payroll\Model\FlatValue as FlatValueModel;
 use Application\Model\FiscalYear;
 use Payroll\Model\MonthlyValue as MonthlyValueModel;
@@ -50,10 +48,10 @@ class ExcelUploadController extends HrisController {
         $detailRepo = new FlatValueDetailRepo($this->adapter);
         foreach($flatId as $fid){
             foreach ($excelData as $data) {
-                if($basedOn == 2){ $data['ID'] = EntityHelper::getEmployeeIdFromCode($this->adapter, $data['ID']); }
-                if($data['ID'] == null || $data['ID'] == ''){ continue; }
-                $item['employeeId'] = $data['ID'];
-                $item['value'] = $data['AMOUNT'];
+                if($basedOn == 2){ $data['A'] = EntityHelper::getEmployeeIdFromCode($this->adapter, $data['A']); }
+                if($data['A'] == null || $data['A'] == ''){ continue; }
+                $item['employeeId'] = $data['A'];
+                $item['value'] = $data['C'];
                 $item['flatId'] = $fid;
                 $detailRepo->postBulkFlatValuesDetail($item, $fiscalYearId);
             }
@@ -70,10 +68,10 @@ class ExcelUploadController extends HrisController {
         $detailRepo = new MonthlyValueDetailRepo($this->adapter);
         foreach($monthlyValueId as $mid){
             foreach ($excelData as $data) {
-                if($basedOn == 2){ $data['ID'] = EntityHelper::getEmployeeIdFromCode($this->adapter, $data['ID']); }
-                if($data['ID'] == null || $data['ID'] == ''){ continue; }
-                $item['employeeId'] = $data['ID'];
-                $item['mthValue'] = $data['AMOUNT'];
+                if($basedOn == 2){ $data['A'] = EntityHelper::getEmployeeIdFromCode($this->adapter, $data['A']); }
+                if($data['A'] == null || $data['A'] == ''){ continue; }
+                $item['employeeId'] = $data['A'];
+                $item['mthValue'] = $data['C'];
                 $item['mthId'] = $mid;
                 $item['fiscalYearId'] = $fiscalYearId;
                 $item['monthId'] = $monthId;
@@ -89,9 +87,9 @@ class ExcelUploadController extends HrisController {
             $excelData = $_POST['data'];
             $basedOn = $_POST['basedOn'];
             foreach ($excelData as $data) {
-                if($basedOn == 2){ $data['ID'] = EntityHelper::getEmployeeIdFromCode($this->adapter, $data['ID']); }
-                if($data['ID'] == null || $data['ID'] == ''){ continue; }
-                $this->repository->updateEmployeeSalary($data['ID'], $data['AMOUNT']);
+                if($basedOn == 2){ $data['A'] = EntityHelper::getEmployeeIdFromCode($this->adapter, $data['A']); }
+                if($data['A'] == null || $data['A'] == ''){ continue; }
+                $this->repository->updateEmployeeSalary($data['A'], $data['C']);
             }
             return new JsonModel(['success' => true, 'error' => '']);
         }

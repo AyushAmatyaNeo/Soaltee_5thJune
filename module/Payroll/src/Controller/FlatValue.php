@@ -338,7 +338,7 @@ class FlatValue extends HrisController {
             }
             $fiscalYearId = $postedData['fiscalYearId'];
             $detailRepo = new FlatValueDetailRepo($this->adapter);
-            $result = $detailRepo->getPositionWiseFlatValue($pivotString, $fiscalYearId, $postedData['positionId']);
+            $result = $detailRepo->getPositionWiseFlatValue($pivotString, $fiscalYearId, $positionId);
             $columns = $detailRepo->getColumns($flatId);
             return new JsonModel(['success' => true, 'data' => Helper::extractDbData($result), 'error' => '', 'columns' => Helper::extractDbData($columns)]);
         } catch (Exception $e) {

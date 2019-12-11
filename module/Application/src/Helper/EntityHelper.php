@@ -579,4 +579,12 @@ class EntityHelper {
         $result = self::rawQueryResult($adapter, $sql);
         return Helper::extractDbData($result)[0]['EMPLOYEE_ID'];
     }
+
+    public static function getProvinceList($adapter) {
+        return self::getTableKVListWithSortOption($adapter, "HRIS_PROVINCES", "PROVINCE_ID", ["PROVINCE_NAME"], ["STATUS" => 'E'], "PROVINCE_ID", "ASC", "-");
+    }
+
+    public static function getBranchFromProvince($adapter) {
+        return self::getTableKVList($adapter,'HRIS_BRANCHES','BRANCH_ID',['PROVINCE_ID'],"STATUS = 'E'");
+    }
 }

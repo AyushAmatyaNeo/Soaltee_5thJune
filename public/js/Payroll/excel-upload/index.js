@@ -37,12 +37,13 @@
             app.populateSelect($monthId, selectedYearMonthList, 'MONTH_ID', 'MONTH_EDESC', 'Months');
     	});
     	var columns = [];
-    	columns.push({field: "ID", title: "ID", width: 80});
-    	columns.push({field: "NAME", title: "NAME", width: 120});
-    	columns.push({field: "AMOUNT", title: "AMOUNT", width: 120});
+    	columns.push({field: "A", title: "ID", width: 80});
+    	columns.push({field: "B", title: "NAME", width: 120});
+    	columns.push({field: "C", title: "AMOUNT", width: 120});
     	app.initializeKendoGrid($table, columns);
 
     	$("#submit").on('click', function(){
+			if(prompt("Make sure all options are correctly selected. Type CONFIRM to proceed.") !== "CONFIRM"){ return; }
             var valueType = $payHeads.val();
             var fileUploadedFlag = document.getElementById("excelImport").files.length;
             var fiscalYearId = $fiscalYearId.val();
@@ -79,8 +80,9 @@
                   type: 'binary'
               });
               workbook.SheetNames.forEach(function(sheetName) {
-                  var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
-                  var json_object = JSON.stringify(XL_row_object);
+                  //var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheetName]);
+				  var XL_row_object = XLSX.utils.sheet_to_json(workbook.Sheets.Sheet1, {header: "A"}); 
+				  var json_object = JSON.stringify(XL_row_object);
                   excelData = JSON.parse(json_object);
                   app.renderKendoGrid($table, excelData);
                 });

@@ -13,6 +13,7 @@
         $.each(document.searchManager.getIds(), function (key, value) {
             $('#' + value).select2();
         });
+
         $leave.select2();
         $status.select2();
 

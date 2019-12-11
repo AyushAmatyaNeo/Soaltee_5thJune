@@ -174,6 +174,15 @@ class ShiftForm {
     /**
      * @Annotation\Type("Zend\Form\Element\Radio")
      * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"Deduct Break Time"})
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({ "id":"breakDeductFlag"})
+     */
+    public $breakDeductFlag;
+
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
      * @Annotation\Options({"value_options":{"E":"Enabled","D":"Disabled"},"label":"Two Day Shift"})
      * @Annotation\Required(false)
      * @Annotation\Attributes({ "id":"twoDayShift"})

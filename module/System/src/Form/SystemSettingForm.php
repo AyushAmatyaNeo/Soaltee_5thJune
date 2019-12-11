@@ -82,8 +82,9 @@ class SystemSettingForm {
 
     /**
      * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Required(false)
      * @Annotation\Options({"label":"Late Penalty Leave Deduction"})
-     * @Annotation\Attributes({ "id":"latePenaltyLeaveDeduction", "class":" form-control","step":"0.5","min":"0","max":"100"})
+     * @Annotation\Attributes({ "id":"latePenaltyLeaveDeduction", "class": "form-control"})
      */
     public $latePenaltyLeaveDeduction;
 
@@ -219,6 +220,37 @@ class SystemSettingForm {
      * @Annotation\Attributes({ "id":"attAppTimeChangeable","value":"N"})
      */
     public $attAppTimeChangeable;
+
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"Province wise branch filter"})
+     * @Annotation\Attributes({ "id":"provinceWiseBranchFilter","value":"N"})
+     */
+    public $provinceWiseBranchFilter;
+
+    /**
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Company Name"})
+     * @Annotation\Attributes({ "id":"companyName", "class": "form-control"})
+     */
+    public $companyName;
+
+    /**
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Company Address"})
+     * @Annotation\Attributes({ "id":"companyAddress", "class": "form-control"})
+     */
+    public $companyAddress;
+
+    /**
+     * @Annotation\Type("Zend\Form\Element\Number")
+     * @Annotation\Required(false)
+     * @Annotation\Options({"label":"Company Account No."})
+     * @Annotation\Attributes({ "id":"companyAccountNo", "class": "form-control"})
+     */
+    public $companyAccountNo;
 
     /**
      * @Annotation\Type("Zend\Form\Element\Submit")

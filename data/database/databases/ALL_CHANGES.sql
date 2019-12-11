@@ -1590,3 +1590,8 @@ leave_id,leave_code,leave_ename
 ,'update hris_leave_master_setup set leave_code='''||SUBSTR(leave_ename, 1, 3)||''' where leave_id='||leave_id||';'
 from 
 hris_leave_master_setup where status='E';
+
+insert into HRIS_PREFERENCES values ('PROVINCE_WISE_BRANCH_FILTER','N');
+
+alter table hris_shifts add break_deduct_flag char(1) default 'N'
+check (break_deduct_flag in ('Y', 'N'));

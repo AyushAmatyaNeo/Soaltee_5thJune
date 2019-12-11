@@ -115,11 +115,31 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <select multiple class="form-control" name="employee" id="employeeId">
                 </select>
             </div>
+
+            <div class="col-sm-2">
+                <label>Holiday Work Reward</label>
+                <select class="form-control" name="wohReward" id="wohRewardID">
+                    <option value="">---</option>
+                    <option value="O">Overtime</option>
+                    <option value="L">Substitute Leave</option>
+                </select>
+            </div>
 <!--            <div class="col-sm-2">-->
 <!--                --><?php //print $this->formLabel($leaveFormElement); ?>
 <!--                --><?php //print $this->formElement($leaveFormElement); ?>
 <!--            </div>-->
-            <div class="col-sm-2 ">
+        </div>
+        <div class="row margin-top-10">
+            <div class="col-sm-2">
+                <label>Update value</label>
+                <select class="form-control " name="update" id="updateId">
+                    <option value="">---</option>
+                    <option value="O">Overtime Eligibility</option>
+                    <option value="W">WOH Reward</option>
+                </select>
+            </div>
+
+            <div class="col-sm-10">
                 <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                     Reset
                     <i class="fa fa-refresh"></i>
@@ -155,6 +175,12 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
             <th>
                 Position
             </th>
+            <th>
+                Work on Holiday Reward
+            </th>
+            <th>
+                Overtime Eligible
+            </th>
             <th class="bs-checkbox " style="width: 36px; " data-field="state" tabindex="0">
                 <div class="th-inner ">
                     <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
@@ -173,4 +199,28 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 
 </div>
 
-<a id="assignBtn" class="btn btn-primary">Assign</a>
+<div class="row margin-top-30" >
+    <div class="col-sm-2 W H">
+        <div class="form-group">
+        <label>WOH Reward</label>
+        <select class="form-control" name="wohFlag" id="wohFlagId">
+            <option value="">--</option>
+            <option value="O">Overtime</option>
+            <option value="L">Substitute Leave</option>
+        </select>
+    </div>
+    </div>
+
+    <div class="col-sm-2 O H">
+            <label>Overtime Eligible</label>
+            <form name="overtimeEligible" id="overtimeEligibleId">
+                <input type="radio" name="overtime" value="Y" > Yes
+                <input type="radio" name="overtime" value="N" checked> No
+            </form>
+    </div>
+
+    <div class="col-sm-6">
+        <a id="assignBtn" class="btn btn-primary pull-right">Assign</a>
+        </button>
+    </div>
+</div>

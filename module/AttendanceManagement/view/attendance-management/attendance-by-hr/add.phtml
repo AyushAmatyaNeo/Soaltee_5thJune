@@ -108,7 +108,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                     <div class="col-sm-4">
                         <div class="form-group <?= empty($inTime->getMessages()) ? "" : "error" ?>">
                             <?php print $this->formLabel($inTime) ?>
-                            <span class="required" aria-required="true">*</span>
+                            <!-- <span class="required" aria-required="true">*</span> -->
                             <div class="input-group dropdown-select">
                                 <?php print $this->formElement($inTime) ?>
                             </div>
@@ -121,7 +121,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                             <div class="col-sm-8">
                                 <div class="form-group <?= empty($outTime->getMessages()) ? "" : "error" ?>">
                                     <?php print $this->formLabel($outTime) ?>
-                                    <span class="required" aria-required="true">*</span>
+                                    <!-- <span class="required" aria-required="true">*</span> -->
                                     <div class="input-group dropdown-select">
                                         <?php print $this->formElement($outTime) ?>
                                     </div>

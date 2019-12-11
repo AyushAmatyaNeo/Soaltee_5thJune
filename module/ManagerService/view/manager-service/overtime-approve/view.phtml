@@ -267,7 +267,7 @@ print $this->form()->openTag($form);
                 if ($status == 'RQ' || ($status == 'RC' && $employeeId != $recommendedBy)) {
                     print $this->formSubmit($submit);
                     ?>
-                    <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">
+                    <input type="submit" name="submit" class="btn btn-danger pull-right" value="Reject">
                 <?php } ?>
 
             </div>

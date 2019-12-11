@@ -1697,3 +1697,41 @@ VALUES
     NULL,
     'Y'
 );
+
+INSERT
+INTO hris_menus
+(
+    MENU_CODE,
+    MENU_ID,
+    MENU_NAME,
+    PARENT_MENU,
+    MENU_DESCRIPTION,
+    ROUTE,
+    STATUS,
+    CREATED_DT,
+    MODIFIED_DT,
+    ICON_CLASS,
+    ACTION,
+    MENU_INDEX,
+    CREATED_BY,
+    MODIFIED_BY,
+    IS_VISIBLE
+)
+VALUES
+(
+    NULL,
+    (select max(menu_id)+1 from hris_menus),
+    'Attendance SCP Report',
+    4,
+    NULL,
+    'attendancebyhr',
+    'E',
+    TRUNC(SYSDATE),
+    TRUNC(SYSDATE),
+    'fa fa-pencil',
+    'reportOnly',
+    2,
+    NULL,
+    NULL,
+    'Y'
+);

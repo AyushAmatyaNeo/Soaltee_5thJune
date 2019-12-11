@@ -145,7 +145,7 @@
                     {field: "START_TIME", title: "From"},
                     {field: "END_TIME", title: "To"},
                 ]}
-        ], detailInit);
+        ], detailInit, null, null, 'Attendance Report.xlsx');
 
         $search.on('click', function () {
             var q = document.searchManager.getSearchValues();

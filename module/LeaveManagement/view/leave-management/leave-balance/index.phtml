@@ -117,13 +117,18 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 </select>
             </div>
             <div class="col-sm-2">
-                            <label>Functional Type</label>
-                            <select multiple class="form-control" name="functionalType" id="functionalTypeId">
-                            </select>
+                <label>Functional Type</label>
+                <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                </select>
             </div>
             <div class="col-sm-2">
                 <label>Employee</label>
                 <select multiple class="form-control" name="employee" id="employeeId">
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <label>Leave</label>
+                <select multiple class="form-control" name="leaveId" id="leaveId">
                 </select>
             </div>
             <div class="col-sm-2 ">
@@ -131,8 +136,8 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <select multiple class="form-control reset-field" name="options" id="options">
                 </select>
             </div>
-            <div class="col-sm-2 ">
-                <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
+            <div class="col-sm-4 ">
+                <button id="reset" class="btn default btn-sm  hris-reset-btn">
                     Reset
                     <i class="fa fa-refresh"></i>
                 </button>

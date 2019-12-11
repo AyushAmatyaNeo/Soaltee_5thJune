@@ -93,6 +93,9 @@ class EmployeeController extends HrisController {
                 'searchValues' => ApplicationHelper::getSearchData($this->adapter),
                 'acl' => $this->acl,
                 'employeeDetail' => $this->storageData['employee_detail'],
+                'preference' => $this->preference,
+                'provinces' => ApplicationHelper::getProvinceList($this->adapter),
+                'braProv' => ApplicationHelper::getBranchFromProvince($this->adapter),
         ]);
     }
 
@@ -243,7 +246,6 @@ class EmployeeController extends HrisController {
                             $formOneModel->modifiedDt = Helper::getcurrentExpressionDate();
                             $this->repository->edit($formOneModel, $id);
                         }
-
                         return $this->redirect()->toRoute('employee', ['action' => 'edit', 'id' => $id, 'tab' => 2]);
                     }
                     break;
@@ -299,9 +301,15 @@ class EmployeeController extends HrisController {
                             $recommendApprove->modifiedDt = Helper::getcurrentExpressionDate();
                             $recommApproverRepo->edit($recommendApprove, $id);
                         }
-                        /*
-                         * 
-                         */
+
+                        if($postData->update == 'Y'){
+                            $data = $postData;
+                            $data['employeeId'] = $id;
+                            $data['createdBy'] = $this->employeeId;
+
+                            $this->repository->updateServiceStatus($data);
+                        }
+
                         return $this->redirect()->toRoute('employee', ['action' => 'edit', 'id' => $id, 'tab' => 5]);
                     }
                     break;
@@ -415,6 +423,7 @@ class EmployeeController extends HrisController {
                 'distributionTable' =>$distributionTable,
 //                'relation' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_RELATIONS", "RELATION_ID", ["RELATION_NAME"], ["STATUS" => 'E'], "RELATION_NAME", "ASC", null, false, true),
             'relation' => ApplicationHelper::getTableList($this->adapter, "HRIS_RELATIONS", ["RELATION_ID","RELATION_NAME"], ["STATUS" => 'E']),
+            'serviceEventTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SERVICE_EVENT_TYPES", "SERVICE_EVENT_TYPE_ID", ["SERVICE_EVENT_TYPE_NAME"], ["STATUS" => 'E'], "SERVICE_EVENT_TYPE_NAME", "ASC", null, true, true),
         ]);
     }
 

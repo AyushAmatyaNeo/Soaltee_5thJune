@@ -172,6 +172,12 @@ class VariableProcessor {
             case PayrollGenerator::VARIABLES[23]:
                 $processedValue = $this->payrollRepo->getPayEmpType($this->employeeId);
                 break;
+            /*
+             * EMPLOYEE_SERVICE_ID
+             */
+            case PayrollGenerator::VARIABLES[24]:
+                $processedValue = $this->payrollRepo->getEmployeeServiceId($this->employeeId,$this->sheetNo);
+                break;
             default:
 
 

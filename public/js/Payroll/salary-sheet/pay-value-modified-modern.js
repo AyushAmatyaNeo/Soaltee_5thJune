@@ -9,7 +9,8 @@
         var $searchEmployeesBtn = $('#searchEmployeesBtn');
         var $saveChanges = $('#saveChanges');
     	let $monthId = $("#monthId");
-    	let $table = $("#table");
+        let $table = $("#table");
+        let $employeeId = $("#employeeId");
         var $companyId = $('#companyId');
         var $groupId = $('#groupId');
         var changedValues = [];
@@ -18,10 +19,18 @@
 
         app.populateSelect($payHeadId, document.payHeads, "PAY_ID", "PAY_EDESC", "Select Pay Head");
         app.populateSelect($fiscalYearId, document.fiscalYears, "FISCAL_YEAR_ID", "FISCAL_YEAR_NAME", "Select Fiscal Year");
+        app.populateSelect($employeeId, document.employees, "EMPLOYEE_ID", "FULL_NAME", "");
         var selectedYearMonthList = document.months.filter(function (item) {
             return item['FISCAL_YEAR_ID'] == $fiscalYearId.val();
         });
 
+        $groupId.on('change', function(){
+            let groupId = $groupId.val();
+            let filteredEmployees = document.employees.filter((x) => x.GROUP_ID == groupId);
+            if(groupId == -1){ filteredEmployees = document.employees; }
+            app.populateSelect($employeeId, filteredEmployees, "EMPLOYEE_ID", "FULL_NAME", "");
+        });
+        
         (function ($companyId, link) {
             var onDataLoad = function (data) {
                 companyList = data['company'];
@@ -87,6 +96,7 @@
                 payHeadId: payHeadId,
                 //fiscalYearId: $fiscalYearId.val(),
                 monthId: $monthId.val(),
+                employeeId: $employeeId.val(),
                 companyId: $companyId.val(),
                 groupId: $groupId.val()}).then(function (response) {
                 var columns = []; 

@@ -26,6 +26,35 @@ function setTemplate(temp) {
 }
 
 
+function setAbbr(temp){
+    var returnvalue = '';
+    if (temp == null || temp == 'null' || typeof temp =='undefined' ) {
+        var checkLeaveVal ='';
+    }else{
+        var checkLeaveVal = temp.slice(0, 2);
+    }
+    if (temp == 'PR') {
+        returnvalue = 'Present';
+    } 
+    else if (temp == 'AB') {
+        returnvalue = 'Absent';
+    } else if (checkLeaveVal  == "L-") {
+        returnvalue = 'On Leave';
+    } else if (checkLeaveVal  == "HL") {
+        returnvalue = 'On Half Leave';
+    } else if (temp == 'DO') {
+        returnvalue = 'Day Off';
+    } else if (temp == 'HD') {
+        returnvalue = 'Holiday';
+    } else if (temp == 'WD') {
+        returnvalue = 'Work On Day Off';
+    } else if (temp == 'WH') {
+        returnvalue = 'Work On Holiday';
+    }
+    return returnvalue;
+}
+
+
 (function ($, app) {
     'use strict';
     $(document).ready(function () {
@@ -123,7 +152,7 @@ function setTemplate(temp) {
                     field: temp,
                     title: "" + i,
                      width: 70,
-                     template: '<button type="button" style="padding: 8px 0px 7px;" class="btn btn-block #:setTemplate('+temp+')#">#:(' + temp + ' == null) ? " " :'+temp+'#</button>',
+                     template: '<abbr title="#:setAbbr('+temp+')#"><button type="button" style="padding: 8px 0px 7px;" class="btn btn-block #:setTemplate('+temp+')#">#:(' + temp + ' == null) ? " " :'+temp+'#</button></abbr>',
 //                     template: '<span  class="#: setTemplate(' + temp + ') #">#:(' + temp + ' == null) ? " " :'+temp+'#</span>',
                 });
             }

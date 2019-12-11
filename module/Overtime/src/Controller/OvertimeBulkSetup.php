@@ -61,12 +61,16 @@ class OvertimeBulkSetup extends HrisController {
 
             foreach($empList as $list){
                 $employeeId=$list['employeeId'];
-                $isChecked=$list['isChecked'];
+                $updateData = array();
+                $updateData['isChecked'] = $list['isChecked'];
+                $updateData['wohFlag'] = $list['wohFlag'];
+                $updateData['overtimeEligible'] = $list['overtimeEligible'];
+                $updateData['updateValue'] = $list['updateValue'];
 
-                $this->repository->makeNull($employeeId);
+//                $this->repository->makeNull($employeeId);
 
-                if($isChecked == 'true'){
-                    $this->repository->updateOvertime($employeeId);
+                if($updateData['isChecked'] == 'true'){
+                    $this->repository->updateOvertime($employeeId, $updateData);
                 }
             }
 

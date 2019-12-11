@@ -74,7 +74,7 @@
                 } else {
                     $bulkActionDiv.hide();
                 }
-            }});
+            }}, null, 'Work On Holiday Report.xlsx');
         app.searchTable('holidayWorkRequestStatusTable', ['FULL_NAME', 'EMPLOYEE_CODE', 'HOLIDAY_ENAME', 'REQUESTED_DATE_AD', 'FROM_DATE_AD', 'TO_DATE_AD', 'REQUESTED_DATE_BS', 'FROM_DATE_BS', 'TO_DATE_BS', 'DURATION', 'YOUR_ROLE', 'STATUS']);
 
         $search.on('click', function () {

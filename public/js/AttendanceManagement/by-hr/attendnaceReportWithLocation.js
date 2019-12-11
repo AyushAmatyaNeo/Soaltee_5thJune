@@ -154,7 +154,7 @@
                     {field: "START_TIME", title: "From" ,width: 80},
                     {field: "END_TIME", title: "To" ,width: 80},
                 ]}
-        ], detailInit);
+        ], detailInit, null, null, 'Attendance Report With Location.xlsx');
 
         $search.on('click', function () {
             var q = document.searchManager.getSearchValues();

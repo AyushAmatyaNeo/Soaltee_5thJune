@@ -273,8 +273,8 @@ class PayrollRepository extends HrisRepository {
 
     public function fetchEmployeeList() {
         $sql = "
-                SELECT E.EMPLOYEE_ID,
-                  CONCAT(CONCAT(CONCAT(INITCAP(TRIM(E.FIRST_NAME)),' '),
+                SELECT E.EMPLOYEE_ID, E.GROUP_ID,
+                  E.EMPLOYEE_CODE || '-' || CONCAT(CONCAT(CONCAT(INITCAP(TRIM(E.FIRST_NAME)),' '),
                   CASE
                     WHEN E.MIDDLE_NAME IS NOT NULL
                     THEN CONCAT(INITCAP(TRIM(E.MIDDLE_NAME)), ' ')
@@ -400,6 +400,18 @@ GROUP BY
             throw new Exception('No Report Found.');
         }
         return $resultList[0]['PAY_EMP_TYPE'];
+        
+    }
+    
+     public function getEmployeeServiceId($employeeId, $sheetNo){
+           $sql = "SELECT SERVICE_TYPE_ID AS SERVICE_TYPE_ID
+            FROM HRIS_SALARY_SHEET_EMP_DETAIL
+            WHERE SHEET_NO= {$sheetNo} AND EMPLOYEE_ID={$employeeId}";
+        $resultList = $this->rawQuery($sql);
+        if (!(sizeof($resultList) == 1)) {
+            throw new Exception('No Report Found.');
+        }
+        return $resultList[0]['SERVICE_TYPE_ID'];
         
     }
     

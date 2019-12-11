@@ -1,12 +1,17 @@
 
 function setTemplate(temp) {
     var returnvalue = '';
+    if (temp == null || temp == 'null' || typeof temp =='undefined' ) {
+        var checkLeaveVal ='';
+    }else{
+        var checkLeaveVal = temp.slice(0, 2);
+    }
     if (temp == 'PR') {
         returnvalue = 'blue';
     } 
     else if (temp == 'AB') {
         returnvalue = 'red';
-    } else if (temp == 'LV') {
+    } else if (checkLeaveVal  == "L-" || checkLeaveVal=="HL") {
         returnvalue = 'green';
     } else if (temp == 'DO') {
         returnvalue = 'yellow';
@@ -16,6 +21,35 @@ function setTemplate(temp) {
         returnvalue = 'purple-soft';
     } else if (temp == 'WH') {
         returnvalue = 'yellow-soft';
+    }
+    return returnvalue;
+}
+
+
+function setAbbr(temp){
+    var returnvalue = '';
+    if (temp == null || temp == 'null' || typeof temp =='undefined' ) {
+        var checkLeaveVal ='';
+    }else{
+        var checkLeaveVal = temp.slice(0, 2);
+    }
+    if (temp == 'PR') {
+        returnvalue = 'Present';
+    } 
+    else if (temp == 'AB') {
+        returnvalue = 'Absent';
+    } else if (checkLeaveVal  == "L-") {
+        returnvalue = 'On Leave';
+    } else if (checkLeaveVal  == "HL") {
+        returnvalue = 'On Half Leave';
+    } else if (temp == 'DO') {
+        returnvalue = 'Day Off';
+    } else if (temp == 'HD') {
+        returnvalue = 'Holiday';
+    } else if (temp == 'WD') {
+        returnvalue = 'Work On Day Off';
+    } else if (temp == 'WH') {
+        returnvalue = 'Work On Holiday';
     }
     return returnvalue;
 }
@@ -46,12 +80,19 @@ function setTemplate(temp) {
             data['monthCodeId'] = $month.val();
             app.serverRequest('', data).then(function (response) {
                 var monthDays=response.data.monthDetail.DAYS;
-                var columns=generateColsForKendo(monthDays);
+                var leaveDetails=response.data.leaveDetails;
+                var columns=generateColsForKendo(monthDays,leaveDetails);
                 
                 
                 $table.empty();
                 
                 $table.kendoGrid({
+                    toolbar: ["excel"],
+                    excel: {
+                        fileName: 'DepartmentWiseDaily',
+                        filterable: false,
+                        allPages: true
+                    },
                     height: 450,
                     scrollable: true,
                     columns: columns,
@@ -79,7 +120,7 @@ function setTemplate(temp) {
         });
         
         
-        function generateColsForKendo(dayCount) {
+        function generateColsForKendo(dayCount,leaveDetails) {
               exportVals={
             'FULL_NAME': 'Employee Name',
             'PRESENT': 'Present',
@@ -98,14 +139,14 @@ function setTemplate(temp) {
                 field: 'EMPLOYEE_CODE',
                 title: "Code",
                 locked: true,
-                width: 150
+                width: 70
             })
             cols.push({
                 field: 'FULL_NAME',
                 title: "Name",
                 locked: true,
                 template: '<span>#:FULL_NAME#</span>',
-                width: 150
+                width: 130
             });
             for (var i = 1; i <= dayCount; i++) {
                 var temp = 'D' + i;
@@ -113,8 +154,8 @@ function setTemplate(temp) {
                 cols.push({
                     field: temp,
                     title: "" + i,
-                     width: 60,
-                     template: '<button type="button" class="btn btn-block #:setTemplate('+temp+')#">#:(' + temp + ' == null) ? " " :'+temp+'#</button>',
+                     width: 70,
+                     template: '<abbr title="#:setAbbr('+temp+')#"><button type="button" style="padding: 8px 0px 7px;" class="btn btn-block #:setTemplate('+temp+')#">#:(' + temp + ' == null) ? " " :'+temp+'#</button></abbr>',
 //                     template: '<span  class="#: setTemplate(' + temp + ') #">#:(' + temp + ' == null) ? " " :'+temp+'#</span>',
                 });
             }
@@ -162,6 +203,7 @@ function setTemplate(temp) {
                 template: '<span>#:WORK_HOLIDAY#</span>',
                 width: 100
             });
+            
             cols.push({
                 field: 'NIGHT_SHIFT_6',
                 title: "Night Shift 6-6",
@@ -181,6 +223,14 @@ function setTemplate(temp) {
                 width: 100
             });
             
+            $.each(leaveDetails, function (index, value) {
+                exportVals[value.LEAVE_STRING]=value.LEAVE_ENAME;
+                cols.push({
+                field: value.LEAVE_STRING,
+                title: value.LEAVE_ENAME,
+                width: 100
+            });
+            });
 //            console.log(exportVals);
             return cols;
         }
@@ -191,7 +241,7 @@ function setTemplate(temp) {
             app.excelExport($table, exportVals, 'Employee_Wise_Attendance_Report');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportVals, 'Employee_Wise_Attendance_Report');
+            app.exportToPDF($table, exportVals, 'Employee_Wise_Attendance_Report','A1');
         });
 
 

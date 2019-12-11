@@ -18,7 +18,8 @@
             
             for(let i in id){
                 var data = {
-                    employeeId: id[i]
+                    employeeId: id[i],
+                    leaveId : $("#leaveId").val()
                 }; 
 
             app.serverRequest(document.pullLeaveReportCardLink , {'data': data}).then(function (response) {

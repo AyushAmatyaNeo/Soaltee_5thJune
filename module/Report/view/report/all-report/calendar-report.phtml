@@ -28,6 +28,7 @@ $this->headScript()
     document.preference =<?php echo json_encode($preference) ?>;
     document.calendarType = '<?php echo $calendarType ?>';
     document.empList =<?php echo json_encode($empList) ?>;
+    document.empProfile =<?php echo json_encode($empProfile) ?>;
 </script> 
 
 <div class="page-bar">
@@ -87,6 +88,116 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
             
             
             <div class="row">
+                
+                <div class="employeedashboard">
+    <div class="emplyoee-dashboard col-md-12">
+        <div class="row">
+            <div class="employe-descbox">
+                <div class="col-sm-2 col-md-1 profile_pic">
+                    <img id="employeeImageCalendar" src="<?php print $this->basePath("img/nobody_m.original.jpg"); ?>">
+                </div>
+                <div class="col-sm-3 col-md-3 employee-details">
+
+                    <h4 class="font-weight-bold" id="employeeFullName"></h4>
+                    <span id="employeeOfficialEmail"></span><br>
+                    <span id="employeeDesignationTitle"></span><br>
+                    <span id="employeeServiceDate"></span><br>
+                </div>
+                <div class="col-md-5">
+<!--                    <div class="row detailsbox">
+                        <a  href="<?php echo $presentUrl ?>">
+                            <div class="col-xs-6 col-sm-3 col-md-2 hexcustom">
+                                <div class="employee_details-box hexagon-bg1" >
+                                    <span id="employeePresentDays">0</span>
+                                    <div class="face1"></div>
+                                    <div class="face2"></div>
+                                    <div class="headtitle">Present</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a  href="<?php echo $OnLeaveUrl ?>">
+                            <div class="col-xs-6 col-sm-3 col-md-2 hexcustom">
+                                <div class="employee_details-box hexagon-bg2">
+                                    <span id="employeeLeaveDays">0</span>
+                                    <div class="face1"></div>
+                                    <div class="face2"></div>
+                                    <div class="headtitle">On Leave</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a  href="<?php echo $OnTrainingUrl ?>">
+                            <div class="col-xs-6 col-sm-3 col-md-2 hexcustom">
+                                <div class="employee_details-box hexagon-bg3">
+                                    <span id="employeeTrainingDays">0</span>
+                                    <div class="face1"></div>
+                                    <div class="face2"></div>
+                                    <div class="headtitle">Training</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a  href="<?php echo $OnTravelUrl ?>">
+                            <div class="col-xs-6 col-sm-3 col-md-2 hexcustom">
+                                <div class="employee_details-box hexagon-bg4">
+                                    <span id="employeeTravelDays">0</span>
+                                    <div class="face1"></div>
+                                    <div class="face2"></div>
+                                    <div class="headtitle">On Tour</div>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a  href="<?php echo $wohUrl ?>">
+                            <div class="col-xs-6 col-sm-3 col-md-2 hexcustom">
+                                <div class="employee_details-box hexagon-bg5">
+                                    <span id="employeeWOHDays">0</span>
+                                    <div class="face1"></div>
+                                    <div class="face2"></div>
+                                    <div class="headtitle">WOH</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>-->
+                </div>
+                <div class="col-xs-12  col-sm-7 col-md-3">
+<!--                    <div class="col-hris row attendence-box">
+                        <ul>
+                            <a  href="<?php echo $lateInUrl ?>">
+                                <li class="col-xs-4 col-sm-4 col-md-4">
+                                    <div class="hris efficiency efficiency-bg1">
+                                        <span id="employeeLateInDays">0</span>
+                                        <div>Late In</div>
+                                    </div>
+                                </li>
+                            </a>
+                            <a  href="<?php echo $earlyOutUrl ?>">
+                                <li class="col-xs-4 col-sm-4 col-md-4">
+                                    <div class="hris efficiency efficiency-bg2">
+                                        <span id="employeeEarlyOutDays">0</span>
+                                        <div>Early Out</div>
+                                    </div>
+                                </li>
+                            </a>
+                            <a  href="<?php echo $missPunchUrl ?>">
+                                <li class="col-xs-4 col-sm-4 col-md-4">
+                                    <div class="hris efficiency efficiency-bg3">
+                                        <span id="employeeMissPunch">0</span>
+                                        <div>Missed Punch</div>
+                                    </div>
+                                </li>
+                            </a>
+                        </ul>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                
+                
+                
     <div class="col-md-12">
         <div class="portlet light calendar boxborder">
             <div class="portlet-title ">

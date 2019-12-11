@@ -14,6 +14,7 @@ $this->headScript()->appendFile($this->basePath('js/Payroll/salary-sheet/pay-val
     document.payHeads =<?php echo json_encode($payHeads); ?>;
     document.fiscalYears =<?php echo json_encode($fiscalYears); ?>;
     document.months =<?php echo json_encode($months); ?>;
+    document.employees =<?php echo json_encode($employees); ?>;
     document.acl =<?php echo json_encode($acl); ?>;
     window.data =<?php echo json_encode($data); ?>;
 </script>
@@ -55,7 +56,12 @@ $this->headScript()->appendFile($this->basePath('js/Payroll/salary-sheet/pay-val
                             <select class="form-control" name="group" id="groupId">
                             </select>
                         </div>
-                        <div class="col-sm-4">
+                        <div class="col-sm-2">
+                        <label>Employees</label>
+                            <select class="form-control reset-field" id="employeeId" multiple="multiple">
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
                         <label>Pay Heads</label>
                             <select class="form-control reset-field" id="payHeadId" multiple="multiple">
                             </select>

@@ -206,7 +206,13 @@ window.nepaliCalendar = (function ($) {
         });
         
         $('#cal_emp').on('change', function () {
-            console.log('sdfsdf');
+            let selectedEmployeeId=$(this).val();
+            let selectedProfileVal=document.empProfile[selectedEmployeeId];
+            if (selectedProfileVal != null) {
+                $('#employeeImageCalendar').attr("src", document.basePath + '/uploads/' + selectedProfileVal);
+            }else{
+                $('#employeeImageCalendar').attr("src", document.basePath + '/img/nobody_m.original.jpg');
+            }
             loadCalendar($year.val(), $month.val());
         });
 

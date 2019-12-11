@@ -96,6 +96,11 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <select multiple class="form-control" name="employee" id="employeeId">
                 </select>
             </div>
+            <div class="col-sm-2">
+                <label>Leave</label>
+                <?php print $this->formElement($leaves); ?>
+                </select>
+            </div>
             <div class="col-sm-2 ">
             <label>----------------</label>
                 <button id="search" class="btn btn-default btn-sm">

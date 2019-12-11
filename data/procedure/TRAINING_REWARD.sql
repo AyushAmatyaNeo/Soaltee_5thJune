@@ -6,6 +6,18 @@ CREATE OR REPLACE PROCEDURE HRIS_TRAINING_REWARD (
 V_WOH_FLAG CHAR(1 BYTE);
 BEGIN
 
+ -- check if employeewise reward type set in  start
+  BEGIN
+  SELECT WOH_FLAG INTO V_WOH_FLAG FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID=P_EMPLOYEE_ID;
+   EXCEPTION
+  WHEN no_data_found THEN
+    NULL;
+  END;
+  
+  -- check if employeewise reward type set in  end
+
+IF(V_WOH_FLAG IS NULL OR (V_WOH_FLAG!='O' AND V_WOH_FLAG!='L'))
+  THEN
 
     BEGIN
         SELECT
@@ -24,6 +36,7 @@ BEGIN
         WHEN no_data_found THEN
             hris_raise_err(P_EMPLOYEE_ID,'Work on dayoff reward could not be given.','Employee position is not set');
     END;
+  END IF;
     
      dbms_output.put_line(V_WOH_FLAG);
     IF(V_WOH_FLAG='L')

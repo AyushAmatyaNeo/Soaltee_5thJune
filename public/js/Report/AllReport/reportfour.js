@@ -1,12 +1,17 @@
 
 function setTemplate(temp) {
     var returnvalue = '';
+    if (temp == null || temp == 'null' || typeof temp =='undefined' ) {
+        var checkLeaveVal ='';
+    }else{
+        var checkLeaveVal = temp.slice(0, 2);
+    }
     if (temp == 'PR') {
         returnvalue = 'blue';
     } 
     else if (temp == 'AB') {
         returnvalue = 'red';
-    } else if (temp == 'LV') {
+    } else if (checkLeaveVal  == "L-" || checkLeaveVal=="HL") {
         returnvalue = 'green';
     } else if (temp == 'DO') {
         returnvalue = 'yellow';
@@ -16,6 +21,34 @@ function setTemplate(temp) {
         returnvalue = 'purple-soft';
     } else if (temp == 'WH') {
         returnvalue = 'yellow-soft';
+    }
+    return returnvalue;
+}
+
+function setAbbr(temp){
+    var returnvalue = '';
+    if (temp == null || temp == 'null' || typeof temp =='undefined' ) {
+        var checkLeaveVal ='';
+    }else{
+        var checkLeaveVal = temp.slice(0, 2);
+    }
+    if (temp == 'PR') {
+        returnvalue = 'Present';
+    } 
+    else if (temp == 'AB') {
+        returnvalue = 'Absent';
+    } else if (checkLeaveVal  == "L-") {
+        returnvalue = 'On Leave';
+    } else if (checkLeaveVal  == "HL") {
+        returnvalue = 'On Half Leave';
+    } else if (temp == 'DO') {
+        returnvalue = 'Day Off';
+    } else if (temp == 'HD') {
+        returnvalue = 'Holiday';
+    } else if (temp == 'WD') {
+        returnvalue = 'Work On Day Off';
+    } else if (temp == 'WH') {
+        returnvalue = 'Work On Holiday';
     }
     return returnvalue;
 }
@@ -96,7 +129,7 @@ function setTemplate(temp) {
                     field: temp,
                     title: "" + i,
                      width: 60,
-                     template: '<button type="button" class="btn btn-block #:setTemplate('+temp+')#">#:(' + temp + ' == null) ? " " :'+temp+'#</button>',
+                     template: '<abbr title="#:setAbbr('+temp+')#"><button type="button" class="btn btn-block #:setTemplate('+temp+')#">#:(' + temp + ' == null) ? " " :'+temp+'#</button></abbr>',
 //                     template: '<span  class="#: setTemplate(' + temp + ') #">#:(' + temp + ' == null) ? " " :'+temp+'#</span>',
                 });
             }

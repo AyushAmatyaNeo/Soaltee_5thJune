@@ -29,6 +29,10 @@ $travelSubCycle = $form->get('travelSubCycle');
 $subLeaveReference = $form->get('subLeaveReference');
 $subLeaveMaxDays = $form->get('subLeaveMaxDays');
 $leaveEncashMaxDays = $form->get('leaveEncashMaxDays');
+$provinceWiseBranchFilter = $form->get('provinceWiseBranchFilter');
+$companyName = $form->get('companyName');
+$companyAddress = $form->get('companyAddress');
+$companyAccountNo = $form->get('companyAccountNo');
 
 $submit = $form->get('submit');
 
@@ -67,6 +71,27 @@ if ($this->messages) {
             <div class="portlet-body">
                 <?php print $this->form()->openTag($form); ?>
                 <div class=" row">
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <?php print $this->formLabel($companyName); ?>
+                            <?php print $this->formElement($companyName); ?>
+                            <?php print $this->formElementErrors()->render($companyName, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <?php print $this->formLabel($companyAddress); ?>
+                            <?php print $this->formElement($companyAddress); ?>
+                            <?php print $this->formElementErrors()->render($companyAddress, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <?php print $this->formLabel($companyAccountNo); ?>
+                            <?php print $this->formElement($companyAccountNo); ?>
+                            <?php print $this->formElementErrors()->render($companyAccountNo, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
                     <div class=" col-sm-4 ">
                         <div class="form-group padding-0">
                             <?php print $this->formLabel($allowSystemAttendance); ?>
@@ -221,8 +246,7 @@ if ($this->messages) {
                             <?php print $this->formElementErrors()->render($subLeaveMaxDays, ['class' => 'help-block error']); ?>
                         </div>
                     </div>
-                    
-                    
+
                     <div class="col-sm-4">
                         <div class="form-group">
                             <?php print $this->formLabel($leaveEncashMaxDays); ?>
@@ -230,8 +254,17 @@ if ($this->messages) {
                             <?php print $this->formElementErrors()->render($leaveEncashMaxDays, ['class' => 'help-block error']); ?>
                         </div>
                     </div>
-                    
-                    
+
+                    <div class=" col-sm-4 ">
+                        <div class="form-group padding-0">
+                            <?php print $this->formLabel($provinceWiseBranchFilter); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($provinceWiseBranchFilter); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($provinceWiseBranchFilter, ['class' => 'help-block error']); ?>
+                    </div>
+
                 </div>
                     <h3 class="form-section">Report</h3>
                 <div class="row">

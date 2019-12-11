@@ -9,6 +9,7 @@
         var addrTempDistrictId = $('#addrTempDistrictId');
         var addrTempVdcMunicipality = $('#addrTempVdcMunicipality');
 
+        var $serviceEventId  = $('#serviceEventId');
         /*
          * 
          */
@@ -256,6 +257,21 @@
         
         enableAbroadAddress($('#countryId').val());
 
+        // hide and unhide update service status div
+        $serviceEventId.hide();
+        $('input[name=update]').change(function(){
+            if($(this).is(':checked')) {
+                $serviceEventId.show();
+                $('#serviceEventTypeId').prop('required', 'required');
+                $('#eventDate').prop('required', 'required');
+                $('#startDate').prop('required', 'required');
+            } else {
+                 $serviceEventId.hide();
+                $('#serviceEventTypeId').prop('required', false);
+                $('#eventDate').prop('required', false);
+                $('#startDate').prop('required', false);
+            }
+        });
 
     });
 

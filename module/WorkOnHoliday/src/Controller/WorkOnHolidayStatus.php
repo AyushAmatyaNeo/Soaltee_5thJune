@@ -36,12 +36,12 @@ class WorkOnHolidayStatus extends HrisController {
         $statusSE = $this->getStatusSelectElement(['name' => 'status', "id" => "requestStatusId", "class" => "form-control reset-field", 'label' => 'Status']);
 
         return $this->stickFlashMessagesTo([
-                    'holidays' => $holidaySE,
-                    'status' => $statusSE,
-                    'searchValues' => EntityHelper::getSearchData($this->adapter),
-                    'preference' => $this->preference,
-                    'employeeDetail' => $this->storageData['employee_detail'],
-                    'acl' => $this->acl,
+            'holidays' => $holidaySE,
+            'status' => $statusSE,
+            'searchValues' => EntityHelper::getSearchData($this->adapter),
+            'preference' => $this->preference,
+            'employeeDetail' => $this->storageData['employee_detail'],
+            'acl' => $this->acl,
         ]);
     }
 
@@ -94,20 +94,21 @@ class WorkOnHolidayStatus extends HrisController {
         }
         $holidays = $this->getHolidayList($requestedEmployeeID);
         return Helper::addFlashMessagesToArray($this, [
-                    'form' => $this->form,
-                    'id' => $id,
-                    'employeeId' => $employeeId,
-                    'employeeName' => $employeeName,
-                    'requestedDt' => $detail['REQUESTED_DATE'],
-                    'recommender' => $authRecommender,
-                    'approvedDT' => $detail['APPROVED_DATE'],
-                    'approver' => $authApprover,
-                    'status' => $status,
-                    'holidays' => $holidays["holidayKVList"],
-                    'holidayObjList' => $holidays["holidayList"],
-                    'customRenderer' => Helper::renderCustomView(),
-                    'recommApprove' => $recommApprove,
-                    'acl' => $this->acl
+            'form' => $this->form,
+            'id' => $id,
+            'employeeId' => $employeeId,
+            'employeeName' => $employeeName,
+            'requestedDt' => $detail['REQUESTED_DATE'],
+            'recommender' => $authRecommender,
+            'approvedDT' => $detail['APPROVED_DATE'],
+            'approver' => $authApprover,
+            'status' => $status,
+//                    'holidays' => $holidays["holidayKVList"],
+//                    'holidayObjList' => $holidays["holidayList"],
+            'customRenderer' => Helper::renderCustomView(),
+            'recommApprove' => $recommApprove,
+            'detail' => $detail,
+            'acl' => $this->acl
         ]);
     }
 
@@ -151,7 +152,7 @@ class WorkOnHolidayStatus extends HrisController {
                 $this->makeSuperDecision($postData['id'], $postData['action'] == "approve");
             } else {
                 if ($postData['status'] == 'Rejected' || $postData['status'] == 'Cancelled' || $postData['status'] == 'Approved') {
-                    
+
                 } else {
                     $this->makeDecision($postData['id'], $postData['action'] == "approve");
                 }

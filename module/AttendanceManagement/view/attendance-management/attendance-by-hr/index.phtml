@@ -28,6 +28,7 @@ $this->headScript()
     document.allowShiftChange ='<?php echo $allowShiftChange; ?>';
     document.allowTimeChange ='<?php echo $allowTimeChange; ?>';
     document.preference =<?php echo json_encode($preference) ?>;
+    document.braProv = <?php echo json_encode($braProv);?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\attendancebyhr')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -60,6 +61,10 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
         </div>
         <div class="actions">
             <?php if ($acl['ALLOW_ADD'] == 'Y'): ?>
+                <a href="<?= $this->url('attendancebyhr', ['action' => 'checkIn']) ?>" class="btn default btn-sm">
+                    <i class="fa fa-plus-square icon-black"></i> Check In </a>
+                <a href="<?= $this->url('attendancebyhr', ['action' => 'checkOut']) ?>" class="btn default btn-sm">
+                    <i class="fa fa-plus-square icon-black"></i> Check Out </a>
                 <a href="<?= $this->url('attendancebyhr', ['action' => 'add']) ?>" class="btn default btn-sm">
                     <i class="fa fa-plus-square icon-black"></i> New </a>
             <?php endif; ?>
@@ -199,6 +204,20 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 </select>
             </div>
         </div>
+        <?php if($preference['provinceWiseBranchFilter'] == 'Y') {?>
+            <div class="row margin-top-10">
+                <div class="col-sm-2">
+                    <label>Province</label>
+                    <select class="form-control reset-field" name="province[]" id="province">
+                        <option>-----</option>
+                        <?php foreach($provinces as $key => $value ){?>
+                            <option value='<?=$key?>'><?=$value?></option>
+                        <?php  }?>
+                    </select>
+                    </select>
+                </div>
+            </div>
+        <?php } ?>
         <div class="row margin-top-10">
             <div class="col-sm-4">
                 <label><input id="impact_other_days" type="checkbox">Impact Other Days</label>

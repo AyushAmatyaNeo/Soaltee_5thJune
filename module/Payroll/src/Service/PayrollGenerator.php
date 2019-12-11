@@ -51,7 +51,8 @@ class PayrollGenerator {
         "BRANCH_ID",
         "CAFE_MEAL_PREVIOUS",
         "CAFE_MEAL_CURRENT",
-        "PAYROLL_EMPLOYEE_TYPE"
+        "PAYROLL_EMPLOYEE_TYPE",
+        "EMPLOYEE_SERVICE_ID"
     ];
     const SYSTEM_RULE = [
         "TOTAL_ANNUAL_AMOUNT",
@@ -109,6 +110,9 @@ class PayrollGenerator {
         foreach ($payList as $ruleDetail) {
             $ruleId = $ruleDetail[Rules::PAY_ID];
             $formula = $ruleDetail[Rules::FORMULA];
+            $ruleCode = $ruleDetail[Rules::PAY_CODE];
+            $ruleEdesc = $ruleDetail[Rules::PAY_EDESC];
+            $ruleFormula = $formula;
             
             // to override formula start
             $salaryTypeId=$ruleDetail['SALARY_TYPE_ID'];
@@ -149,8 +153,11 @@ class PayrollGenerator {
                 //print_r($processedformula);
                 
                 $current = file_get_contents($file);
-                file_put_contents($file, $current."\r\nstartRuleId=".$ruleId." ".$processedformula);
+                file_put_contents($file, $current."\r\nstartRuleId(".$ruleCode.")=".$ruleId."-".$ruleEdesc."\n".$ruleFormula."\n".$processedformula."\n");
                 $ruleValue = eval("return {$processedformula} ;");
+                    if(is_nan($ruleValue)){
+                        $ruleValue=0;
+                    }
             }
             $rule = ["ruleValue" => $ruleValue, "rule" => $ruleDetail];
             array_push($this->ruleDetailList, $rule);

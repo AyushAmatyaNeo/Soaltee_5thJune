@@ -667,7 +667,22 @@ EOT;
         return $returnArr;
     }
 
-    public function branchWiseDailyReport($monthId, $branchId) {
+    public function branchWiseDailyReport($data) {
+
+        $employeeId = $data['employeeId'];
+        $companyId = $data['companyId'];
+        $branchId = $data['branchId'];
+        $departmentId = $data['departmentId'];
+        $designationId = $data['designationId'];
+        $positionId = $data['positionId'];
+        $serviceTypeId = $data['serviceTypeId'];
+        $serviceEventTypeId = $data['serviceEventTypeId'];
+        $employeeTypeId = $data['employeeTypeId'];
+        $functionalTypeId = $data['functionalTypeId'];
+
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId,null,null,$functionalTypeId);
+
+        $monthId = $data['monthId'];
 
         $sql = <<<EOT
                       SELECT 
@@ -729,13 +744,22 @@ EOT;
                     FROM HRIS_ATTENDANCE_DETAIL AD
                     JOIN HRIS_EMPLOYEES E
                     ON (AD.EMPLOYEE_ID = E.EMPLOYEE_ID),
-                      ( SELECT FROM_DATE,TO_DATE FROM HRIS_MONTH_CODE WHERE MONTH_ID=$monthId
+                      ( SELECT FROM_DATE,TO_DATE FROM HRIS_MONTH_CODE WHERE MONTH_ID={$monthId}
                       ) M
                     WHERE AD.ATTENDANCE_DT BETWEEN M.FROM_DATE AND M.TO_DATE
-                    AND E.BRANCH_ID=$branchId
+                    {$searchCondition}
                     ORDER BY AD.ATTENDANCE_DT,
                       E.EMPLOYEE_ID
 EOT;
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return Helper::extractDbData($result);
+    }
+
+    public function getDaysInMonth($monthId) {
+
+        $sql = "SELECT TO_DATE - FROM_DATE +1 AS TOTAL_DAYS FROM HRIS_MONTH_CODE WHERE MONTH_ID = {$monthId}";
+
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return Helper::extractDbData($result);
@@ -1316,12 +1340,18 @@ EOT;
 E.FULL_NAME,
 AD.EMPLOYEE_ID,
 CASE WHEN AD.OVERALL_STATUS IN ('TV','TN','PR','BA','LA','TP','LP','VP')
-THEN 'PR' ELSE AD.OVERALL_STATUS END AS OVERALL_STATUS,
+THEN 'PR' 
+WHEN AD.OVERALL_STATUS = 'LV' AND AD.HALFDAY_FLAG='N' THEN 'L'||'-'||LMS.LEAVE_CODE
+WHEN AD.OVERALL_STATUS = 'LV' AND AD.HALFDAY_FLAG!='N' THEN 'HL'||'-'||LMS.LEAVE_CODE
+ELSE AD.OVERALL_STATUS
+END 
+AS OVERALL_STATUS,
                 MC.MONTH_ID,
                 MC.YEAR||MC.MONTH_EDESC AS MONTH_DTL,
                 MC.FISCAL_YEAR_MONTH_NO,
 (AD.ATTENDANCE_DT-MC.FROM_DATE+1) AS DAY_COUNT
 FROM HRIS_ATTENDANCE_DETAIL AD
+LEFT JOIN HRIS_LEAVE_MASTER_SETUP LMS ON (AD.LEAVE_ID = LMS.LEAVE_ID)
 LEFT JOIN HRIS_EMPLOYEES E ON (E.EMPLOYEE_ID=AD.EMPLOYEE_ID)
 JOIN (SELECT * FROM HRIS_MONTH_CODE WHERE FISCAL_YEAR_ID={$fiscalYearId} ) MC ON (AD.ATTENDANCE_DT BETWEEN MC.FROM_DATE AND MC.TO_DATE)
 WHERE AD.EMPLOYEE_ID = {$employeeId})
@@ -2025,10 +2055,11 @@ EOT;
         }
 
 
-
+        $leaveDetails=$this->getLeaveList();
+        $leavePivotString = $this->getLeaveCodePivot($leaveDetails);
         $searchConditon = EntityHelper::getSearchConditon($searchQuery['companyId'], $searchQuery['branchId'], $searchQuery['departmentId'], $searchQuery['positionId'], $searchQuery['designationId'], $searchQuery['serviceTypeId'], $searchQuery['serviceEventTypeId'], $searchQuery['employeeTypeId'], $searchQuery['employeeId']);
-        $sql = <<<EOT
-                SELECT PL.*,
+           $sql = <<<EOT
+                SELECT PL.*,MLD.*,
          CL.PRESENT,
          CL.ABSENT,
          CL.LEAVE,
@@ -2049,11 +2080,14 @@ EOT;
              CASE
                WHEN AD.OVERALL_STATUS IN ('TV','TN','PR','BA','LA','TP','LP','VP')
                THEN 'PR'
+               WHEN AD.OVERALL_STATUS = 'LV' AND AD.HALFDAY_FLAG='N' THEN 'L'||'-'||LMS.LEAVE_CODE
+               WHEN AD.OVERALL_STATUS = 'LV' AND AD.HALFDAY_FLAG!='N' THEN 'HL'||'-'||LMS.LEAVE_CODE
                ELSE AD.OVERALL_STATUS
              END AS OVERALL_STATUS,
              --AD.ATTENDANCE_DT,
              (AD.ATTENDANCE_DT-MC.FROM_DATE+1) AS DAY_COUNT
            FROM HRIS_ATTENDANCE_DETAIL AD
+           LEFT JOIN HRIS_LEAVE_MASTER_SETUP LMS ON (AD.LEAVE_ID=LMS.LEAVE_ID)
            LEFT JOIN HRIS_MONTH_CODE MC
            ON (AD.ATTENDANCE_DT BETWEEN MC.FROM_DATE AND MC.TO_DATE)
            JOIN HRIS_EMPLOYEES E
@@ -2119,12 +2153,38 @@ EOT;
          GROUP BY EMPLOYEE_ID
          )CL
        ON (PL.EMPLOYEE_ID=CL.EMPLOYEE_ID)
+          LEFT JOIN
+         (
+         select 
+ *
+ from
+ (select 
+AD.employee_id,
+AD.leave_id,
+ sum(
+ case AD.HALFDAY_FLAG
+ when 'N'  then 1
+ else 0.5 end
+ ) as LTBM
+from HRIS_ATTENDANCE_DETAIL AD
+ LEFT JOIN HRIS_MONTH_CODE MC  ON (AD.ATTENDANCE_DT BETWEEN MC.FROM_DATE AND MC.TO_DATE)  
+  WHERE 
+ leave_id  is not null and
+   MC.MONTH_ID = {$searchQuery['monthCodeId']}
+   group by AD.employee_id,AD.leave_id
+   )
+   PIVOT ( MAX (LTBM) FOR LEAVE_ID IN (
+   {$leavePivotString}
+   )
+   )
+         ) MLD
+       ON (PL.EMPLOYEE_ID=MLD.EMPLOYEE_ID)
                  
 EOT;
-
+         
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
-        return ['monthDetail' => $monthDetail, 'data' => Helper::extractDbData($result)];
+        return ['leaveDetails'=>$leaveDetails,'monthDetail' => $monthDetail, 'data' => Helper::extractDbData($result)];
     }
 
     public function checkAge($data) {

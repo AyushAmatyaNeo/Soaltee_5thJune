@@ -189,7 +189,7 @@ class SSPayValueModifiedRepo extends HrisRepository {
       return $statement->execute();
     }
 
-    public function modernFilter($monthId, $companyId = null, $groupId = null, $payId) {
+    public function modernFilter($monthId, $companyId = null, $groupId = null, $payId, $employeeId) {
         $csv = $payId;
         $employeeCondition = "";
         if ($companyId != null) {
@@ -198,6 +198,11 @@ class SSPayValueModifiedRepo extends HrisRepository {
 
         if ($groupId != null) {
             $employeeCondition = " AND E.GROUP_ID = {$groupId}";
+        }
+
+        if ($employeeId != null) {
+          $employeeId = implode(',', $employeeId);
+          $employeeCondition = " AND E.EMPLOYEE_ID IN ($employeeId)";
         }
         $sql = "SELECT E.EMPLOYEE_ID,
                   E.FULL_NAME,
@@ -217,6 +222,7 @@ class SSPayValueModifiedRepo extends HrisRepository {
                   ) PV
                 ON (E.EMPLOYEE_ID=PV.E_ID)
                 WHERE E.STATUS   ='E' {$employeeCondition} ORDER BY C.COMPANY_NAME,SSG.GROUP_NAME,E.FULL_NAME";
+                
         return $this->rawQuery($sql);
     }
 }

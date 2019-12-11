@@ -360,7 +360,25 @@ class EmployeeRepository extends HrisRepository implements RepositoryInterface {
 
     public function edit(Model $model, $id) {
         $tempArray = $model->getArrayCopyForDB();
+        if($tempArray['WOH_FLAG'] == null){
+            $tempArray['WOH_FLAG'] = $this->getWohRewardFromPosition($tempArray['POSITION_ID'])['WOH_FLAG'];
+        }
         $this->tableGateway->update($tempArray, ['EMPLOYEE_ID' => $id]);
+    }
+
+    public function getWohRewardFromPosition($positionId) {
+
+        if($positionId == null){
+            return;
+        }
+
+        $sql = "SELECT WOH_FLAG
+                    FROM HRIS_POSITIONS
+                    WHERE 
+                    POSITION_ID = {$positionId}";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return $result->current();
     }
 
     public function branchEmpCount() {
@@ -1023,6 +1041,53 @@ class EmployeeRepository extends HrisRepository implements RepositoryInterface {
         $sql = "BEGIN
                   HRIS_UPDATE_JOB_HISTORY({$employeeId});
                 END;";
+        $statement = $this->adapter->query($sql);
+        $statement->execute();
+    }
+
+    public function updateServiceStatus($data) {
+
+        $sql = "INSERT INTO HRIS_JOB_HISTORY (
+                JOB_HISTORY_ID,
+                EMPLOYEE_ID,
+                START_DATE,
+                END_DATE,
+                SERVICE_EVENT_TYPE_ID,
+                TO_BRANCH_ID,
+                TO_DEPARTMENT_ID,
+                TO_DESIGNATION_ID,
+                TO_POSITION_ID,
+                TO_SERVICE_TYPE_ID,
+                STATUS,
+                CREATED_BY,
+                CREATED_DT,
+                TO_COMPANY_ID,
+                TO_SALARY,
+                RETIRED_FLAG,
+                DISABLED_FLAG,
+                EVENT_DATE
+              )
+              VALUES
+              (
+                (SELECT MAX(JOB_HISTORY_ID)+1 FROM HRIS_JOB_HISTORY),
+                {$data->employeeId},
+                '{$data->startDate}',
+                '{$data->endDate}',
+                {$data->serviceEventTypeId},
+                {$data->branchId},
+                {$data->departmentId},
+                {$data->designationId},
+                {$data->positionId},
+                {$data->serviceTypeId},
+                'E',
+                {$data->createdBy},
+                TRUNC(SYSDATE),
+                (select company_id from hris_employees where employee_id={$data->employeeId}),
+                {$data->salary},
+                'N',
+                'N',
+                '{$data->eventDate}')";
+
         $statement = $this->adapter->query($sql);
         $statement->execute();
     }

@@ -46,16 +46,11 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <i class="icon-paper-plane font-green-haze"></i>
                 <span class="caption-subject bold font-green-haze uppercase"> Filter Employees</span>
             </div>
-            <?php /*
             <div class="tools">
                 <a href="javascript:;" class="collapse" data-original-title="" title=""> </a>
                 <a href="" class="fullscreen" data-original-title="" title=""> </a>
             </div>
             <div class="actions">
-                <?php if ($acl['ALLOW_ADD'] == 'Y'): ?>
-                    <a href="<?= $this->url('employee', ['action' => 'edit', 'tab' => 1]) ?>" class="btn default btn-sm">
-                        <i class="fa fa-plus-square icon-black"></i> New </a>
-                <?php endif; ?> 
                 <div class="btn-group">
                     <a class="btn btn-sm blue-soft" href="javascript:;" data-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-copy"></i> Tools
@@ -72,7 +67,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                         </li>
                     </ul>
                 </div> 
-            </div> */ ?>
+            </div> 
         </div>
         <div class="portlet-body">
             <div class="row">
@@ -124,15 +119,20 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                     </select>
                 </div>
                 <div class="col-sm-2">
-                            <label>Functional Type</label>
-                            <select multiple class="form-control" name="functionalType" id="functionalTypeId">
-                            </select>
+                    <label>Functional Type</label>
+                    <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                    </select>
                 </div>
                 <div class="col-sm-2">
                     <label>Employee</label>
                     <select multiple class="form-control" name="employee" id="employeeId">
                     </select>
                 </div> 
+                <div class="col-sm-8">
+                    <label>Columns</label>
+                    <select multiple class="form-control reset-field" name="exparams" id="exparamsId">
+                    </select>
+                </div>
             </div>
             <div class="row margin-top-10">
                 <div class="col-sm-4 col-sm-offset-8">

@@ -4,13 +4,14 @@
         $("select").select2();
         var $table = $("#table");
         var $search = $('#search');
+        var $leaveId = $("#leaveId");
         var columns = [
             {field: "EMPLOYEE_CODE", title: "Code", width: 150, locked: true},
             {field: "FULL_NAME", title: "Employee", width: 150, locked: true},
         ];
         var map = {
             'EMPLOYEE_CODE': 'Code',
-            'EMPLOYEE_ID': 'Id', 
+            //'EMPLOYEE_ID': 'Id', 
             'FULL_NAME': 'Name',
             'DEPARTMENT_NAME': 'Department',
             'FUNCTIONAL_TYPE_EDESC': 'Functional Type'
@@ -24,17 +25,23 @@
 
         var $options = $('#options');
         app.populateSelect($options, columnOptions, 'VALUES', 'COLUMNS');
-
+        
         var leaveList = document.leaves;
-
+        app.populateSelect($leaveId, leaveList, 'LEAVE_ID', 'LEAVE_ENAME');
         function reinitializeKendo(optionalColumns){
-            console.log('oplist',optionalColumns);
             columns = [
                 {field: "EMPLOYEE_CODE", title: "Code", width: 70, locked: true},
                 {field: "FULL_NAME", title: "Employee", width: 100, locked: true},
                 {field: "DEPARTMENT_NAME", title: "Department", width: 100, locked: true},
                 {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 100, locked: true},
             ];
+            map = {
+                'EMPLOYEE_CODE': 'Code',
+                //'EMPLOYEE_ID': 'Id', 
+                'FULL_NAME': 'Name',
+                'DEPARTMENT_NAME': 'Department',
+                'FUNCTIONAL_TYPE_EDESC': 'Functional Type'
+            };
             var flag, flag2;
             var columnsList;
             for (var i in leaveList) {
@@ -71,11 +78,6 @@
                     ]
                 };
                 
-                
-                console.log('aaa1',optionalColumns.indexOf("0"));
-                console.log('aaa2',optionalColumns.indexOf("1"));
-                console.log('aaa3',optionalColumns.indexOf("2"));
-                
                 if(optionalColumns.indexOf("0") == -1){
                     columnsList.columns.splice(0,1);
                     flag = true;
@@ -111,8 +113,6 @@
                         columnsList.columns.splice(1,1);
                     }
                 }
-                
-                
                 columns.push(columnsList);
 
                 if(optionalColumns.indexOf("1") != -1){
@@ -121,25 +121,24 @@
                 if(optionalColumns.indexOf("2") != -1){
                     map['L' + leaveList[i]['LEAVE_ID'] + '_' + 'TAKEN'] = leaveList[i]['LEAVE_ENAME'] + '(Taken)';
                 }
-            
                 map['L' + leaveList[i]['LEAVE_ID'] + '_' + 'BALANCE'] = leaveList[i]['LEAVE_ENAME'] + '(Balance)';
             } 
         }
         reinitializeKendo([]);
-        app.initializeKendoGrid($table, columns,null,null,null,'LeaveBalance.xlsx');
+        app.initializeKendoGrid($table, columns, null,null,null,'LeaveBalance.xlsx');
         app.searchTable($table, ['EMPLOYEE_ID', 'EMPLOYEE_CODE','FULL_NAME']);
 
         $search.on('click', function () {
             var optionalColumns = $options.val();
             $table.empty();
-            
-            if(optionalColumns != null){ reinitializeKendo(optionalColumns); }
-            else{ reinitializeKendo([]); }
-            app.initializeKendoGrid($table, columns,null,null,null,'Leave Balance Report.xlsx');
-
             var q = document.searchManager.getSearchValues();
+            q['leaveId'] = $leaveId.val();
             App.blockUI({target: "#hris-page-content"});
             app.pullDataById(document.pullLeaveBalanceDetailLink, q).then(function (success) {
+                leaveList = success.leaves;
+                if(optionalColumns != null){ reinitializeKendo(optionalColumns); }
+                else{ reinitializeKendo([]); }
+                app.initializeKendoGrid($table, columns,null,null,null,'Leave Balance Report.xlsx');
                 App.unblockUI("#hris-page-content");
                 app.renderKendoGrid($table, success.data);
             }, function (failure) {
@@ -153,11 +152,5 @@
         $('#pdfExport').on("click", function () {
             app.exportToPDF($table, map, "Employee Leave Balance Report.pdf", 'A2');
         });
-        
-//        $("#reset").on("click", function () {
-//            $(".form-control").val("");
-//            document.searchManager.reset();
-//        });
-
     });
 })(window.jQuery, window.app);

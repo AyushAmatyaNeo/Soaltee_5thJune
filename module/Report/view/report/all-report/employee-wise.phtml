@@ -18,6 +18,14 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reportfour.
     </script>
 <?php } ?>
 
+<style>
+abbr[title] {
+  border-bottom: none !important;
+  cursor: inherit !important;
+  text-decoration: none !important;
+}
+</style>
+
 <script>
      document.getFiscalYearMonthLink = '<?php echo $this->url('allreport', ['action' => 'getFiscalYearMonth']); ?>';
     document.wsEmployeeWiseDailyReport = '<?php echo $this->url('allreport', ['action' => 'employeeWiseDailyReport']); ?>';

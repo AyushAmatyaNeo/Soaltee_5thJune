@@ -186,10 +186,10 @@ class SalarySheetController extends HrisController {
             $salarySheetDetail = new SalarySheetDetail();
             $salarySheetDetail->sheetNo = $sheetNo;
             $salarySheetDetail->employeeId = $employeeId;
-
+            
             foreach ($returnData['ruleValueKV'] as $key => $value) {
                 $salarySheetDetail->payId = $key;
-                $salarySheetDetail->val = $value;
+                $salarySheetDetail->val =($value>0)?$value:0;
                 $salarySheetDetailRepo->add($salarySheetDetail);
             }
 
@@ -428,6 +428,8 @@ class SalarySheetController extends HrisController {
         $data['getSearchDataLink'] = $this->url()->fromRoute('salarySheet', ['action' => 'getSearchData']);
         $data['getGroupListLink'] = $this->url()->fromRoute('salarySheet', ['action' => 'getGroupList']);
         $fiscalYears = EntityHelper::getTableList($this->adapter, FiscalYear::TABLE_NAME, [FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME]);
+        $payrollRepo = new PayrollRepository($this->adapter);
+        $employeeList = $payrollRepo->fetchEmployeeList();
         $months = EntityHelper::getTableList($this->adapter, Months::TABLE_NAME, [Months::MONTH_ID, Months::MONTH_EDESC, Months::FISCAL_YEAR_ID],null,'','FISCAL_YEAR_MONTH_NO');
         $rulesRepo = new RulesRepository($this->adapter);
         $payHeads = $rulesRepo->fetchSSRules();
@@ -436,7 +438,8 @@ class SalarySheetController extends HrisController {
             'payHeads' => $payHeads,
             'fiscalYears' => $fiscalYears,
             'months' => $months,
-            'data' => $data 
+            'data' => $data,
+            'employees' => $employeeList 
         ]);
     }
 
@@ -454,7 +457,7 @@ class SalarySheetController extends HrisController {
                 $pivotString.= $payId[$i].' AS H_'.$payId[$i];
             }
             $sspvmRepo = new SSPayValueModifiedRepo($this->adapter);
-            $data = $sspvmRepo->modernFilter($postData['monthId'], $postData['companyId'], $postData['groupId'], $pivotString);
+            $data = $sspvmRepo->modernFilter($postData['monthId'], $postData['companyId'], $postData['groupId'], $pivotString, $postData['employeeId']);
             $columns = $sspvmRepo->getColumns($_POST['payHeadId']);
             return new JsonModel(['success' => true, 'data' => Helper::extractDbData($data), 'columns' => Helper::extractDbData($columns), 'error' => '']);
         } catch (Exception $e) {

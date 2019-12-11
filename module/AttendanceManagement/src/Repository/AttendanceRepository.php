@@ -164,4 +164,52 @@ class AttendanceRepository implements RepositoryInterface {
         $statement->execute();
     }
 
+    function insertAttendance($data){
+      $inTime = $data['inTime'] == null ? 'null' : "TO_DATE('{$data['attendanceDt']} {$data['inTime']}', 'DD-MON-YYYY HH:MI AM')" ;
+      $outTime = $data['outTime'] == null ? 'null' : "TO_DATE('{$data['attendanceDt']} {$data['outTime']}', 'DD-MON-YYYY HH:MI AM')" ;
+      if($data->totalHour == null){
+          $data->totalHour = 'NULL';
+      }
+      $sql = "
+      DECLARE 
+      V_REQ_ID NUMBER := {$data['requestId']};
+      V_IN_TIME TIMESTAMP;
+      V_OUT_TIME TIMESTAMP;
+      V_EMPLOYEE_ID HRIS_ATTENDANCE.EMPLOYEE_ID%TYPE;
+      V_ATTENDANCE_DT HRIS_ATTENDANCE.ATTENDANCE_DT%TYPE;
+      V_IN_REMARKS VARCHAR2(200);
+      V_OUT_REMARKS VARCHAR2(200);
+      BEGIN
+      INSERT INTO HRIS_ATTENDANCE_REQUEST (ID, EMPLOYEE_ID, ATTENDANCE_DT, IN_TIME, OUT_TIME, 
+      IN_REMARKS, OUT_REMARKS, TOTAL_HOUR, STATUS, APPROVED_BY, APPROVED_DT, REQUESTED_DT, APPROVED_REMARKS)
+      VALUES ({$data['requestId']}, {$data['employeeId']}, TO_DATE('{$data['attendanceDt']}', 'DD-MON-YYYY'), $inTime,
+      $outTime,
+      '{$data['inRemarks']}', '{$data['outRemarks']}', {$data['totalHour']}, '{$data['status']}', {$data['approvedBy']},
+      trunc(sysdate), trunc(sysdate), '{$data['approvedRemarks']}');
+
+      SELECT IN_TIME, OUT_TIME, EMPLOYEE_ID, ATTENDANCE_DT, IN_REMARKS, OUT_REMARKS INTO 
+      V_IN_TIME, V_OUT_TIME, V_EMPLOYEE_ID, V_ATTENDANCE_DT, V_IN_REMARKS, V_OUT_REMARKS
+      FROM HRIS_ATTENDANCE_REQUEST WHERE ID = V_REQ_ID;
+
+      IF V_IN_TIME IS NOT NULL THEN
+      INSERT INTO HRIS_ATTENDANCE (EMPLOYEE_ID, ATTENDANCE_DT, IP_ADDRESS, ATTENDANCE_FROM, 
+      ATTENDANCE_TIME, REMARKS, THUMB_ID, CHECKED) 
+      VALUES (V_EMPLOYEE_ID, V_ATTENDANCE_DT, '', 'ATTENDANCE APPLICATION', V_IN_TIME, 
+      V_IN_REMARKS, (SELECT ID_THUMB_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID = V_EMPLOYEE_ID),
+      'Y');
+      END IF;
+
+      IF V_OUT_TIME IS NOT NULL THEN
+      INSERT INTO HRIS_ATTENDANCE (EMPLOYEE_ID, ATTENDANCE_DT, IP_ADDRESS, ATTENDANCE_FROM, 
+      ATTENDANCE_TIME, REMARKS, THUMB_ID, CHECKED) 
+      VALUES (V_EMPLOYEE_ID, V_ATTENDANCE_DT, '', 'ATTENDANCE APPLICATION', V_OUT_TIME, 
+      V_OUT_REMARKS, (SELECT ID_THUMB_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID = V_EMPLOYEE_ID),
+      'Y');
+      END IF;
+
+      HRIS_REATTENDANCE(V_ATTENDANCE_DT, V_EMPLOYEE_ID, V_ATTENDANCE_DT);      
+      END;";
+      $statement = $this->adapter->query($sql);
+      $statement->execute();
+    }
 }

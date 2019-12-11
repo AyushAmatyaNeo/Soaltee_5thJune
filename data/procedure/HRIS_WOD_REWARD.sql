@@ -22,7 +22,21 @@ BEGIN
     RETURN;
   END IF;
   --
+  
+  -- check if employeewise reward type set in  start
+  BEGIN
+  SELECT WOH_FLAG INTO V_WOH_FLAG FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID=V_EMPLOYEE_ID;
+   EXCEPTION
+  WHEN no_data_found THEN
+    NULL;
+  END;
+  
+  -- check if employeewise reward type set in  end
+  
+  
   -- select employee reward type in  position and set in variable  if not found terminate
+  IF(V_WOH_FLAG IS NULL OR (V_WOH_FLAG!='O' AND V_WOH_FLAG!='L'))
+  THEN
   BEGIN
     SELECT P.WOH_FLAG
     INTO V_WOH_FLAG
@@ -34,6 +48,8 @@ BEGIN
   WHEN no_data_found THEN
     HRIS_RAISE_ERR(V_EMPLOYEE_ID,'Work on dayoff reward could not be given.','Employee position is not set');
   END;
+  
+  END IF;
   --
   --delete from from necessary tables
   DELETE FROM HRIS_EMPLOYEE_LEAVE_ADDITION WHERE WOD_ID=P_ID;

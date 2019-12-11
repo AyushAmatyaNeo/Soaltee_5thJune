@@ -1,4 +1,4 @@
-create or replace TRIGGER "TRG_SYNC_EMPLOYEE" AFTER
+create or replace TRIGGER TRG_SYNC_EMPLOYEE AFTER
   DELETE OR
   INSERT OR
   UPDATE ON HRIS_EMPLOYEES REFERENCING NEW AS NEW OLD AS OLD FOR EACH ROW DECLARE V_DELETED_FLAG CHAR(1 BYTE);
@@ -10,8 +10,8 @@ create or replace TRIGGER "TRG_SYNC_EMPLOYEE" AFTER
   V_SUB_CODE                                                                                                   NUMBER;
   V_EMPSUB_CODE                                                                                                VARCHAR2(50 BYTE);
   V_OLD_COMPANY_CODE VARCHAR2(30 BYTE);
+  V_CHECK_COMPANY NUMBER;
   BEGIN
-
     BEGIN
       SELECT COUNT (*)
       INTO V_COUNT
@@ -30,6 +30,7 @@ create or replace TRIGGER "TRG_SYNC_EMPLOYEE" AFTER
     WHEN OTHERS THEN
       V_COMPANY_CODE := TO_CHAR ('0'||:NEW.COMPANY_ID);
     END;
+
 
     BEGIN
       SELECT COMPANY_CODE
@@ -211,11 +212,59 @@ create or replace TRIGGER "TRG_SYNC_EMPLOYEE" AFTER
       END IF;
     ELSIF V_COUNT >= 1 THEN
       BEGIN
-
-      IF(V_OLD_COMPANY_CODE!=V_COMPANY_CODE)
+	  
+	  -- skip if already 
+	  
+	  SELECT COUNT (*)
+      INTO V_CHECK_COMPANY
+      FROM HR_EMPLOYEE_SETUP
+      WHERE TRIM(EMPLOYEE_CODE) = TO_CHAR (:NEW.EMPLOYEE_ID)
+      AND COMPANY_CODE=V_COMPANY_CODE;
+	  
+	   IF(V_CHECK_COMPANY>0)
       THEN
-       DELETE  FROM HR_EMPLOYEE_SETUP WHERE EMPLOYEE_CODE=:OLD.EMPLOYEE_ID AND COMPANY_CODE=V_COMPANY_CODE;
-      END IF;
+	   
+	   UPDATE HR_EMPLOYEE_SETUP
+        SET EMPLOYEE_EDESC = REPLACE(CONCAT(CONCAT(:NEW.FIRST_NAME
+          ||' ',:NEW.MIDDLE_NAME
+          ||' '),:NEW.LAST_NAME),'  ',' ') ,
+          EMPLOYEE_NDESC = NVL(:NEW.NAME_NEPALI, CONCAT(CONCAT(:NEW.FIRST_NAME
+          ||' ',:NEW.MIDDLE_NAME
+          ||' '),:NEW.LAST_NAME)) ,
+          EPERMANENT_ADDRESS1 = :NEW.ADDR_PERM_STREET_ADDRESS ,
+          EPERMANENT_COUNTRY  = TO_CHAR(:NEW.COUNTRY_ID) ,
+          PHONE               = :NEW.TELEPHONE_NO ,
+          MOBILE              = :NEW.MOBILE_NO ,
+          EMAIL               = :NEW.EMAIL_OFFICIAL ,
+          SEX                 = V_GENDER ,
+          MARITAL_STATUS      = V_MARITAL_STATUS ,
+          JOIN_DATE           = :NEW.JOIN_DATE ,
+          LINK_SUB_CODE       = 'E'
+          ||TO_CHAR(:NEW.EMPLOYEE_ID) ,
+          EMPLOYEE_TYPE_CODE   = TO_CHAR(:NEW.SERVICE_TYPE_ID,'FM00') ,
+          PERIOD_CODE          = '01' ,
+          CUR_DEPARTMENT_CODE  = TO_CHAR(:NEW.DEPARTMENT_ID,'FM000') ,
+          CUR_DESIGNATION_CODE = TO_CHAR(:NEW.DESIGNATION_ID,'FM000') ,
+          CUR_GRADE_CODE       = TO_CHAR(:NEW.POSITION_ID,'FM000') ,
+          CUR_BASIC_SALARY     = :NEW.SALARY ,
+          EMPLOYEE_STATUS      = V_EMPLOYEE_STATUS ,
+          COMPANY_CODE         = V_COMPANY_CODE ,
+          BRANCH_CODE          = V_COMPANY_CODE
+          ||'.01' ,
+          LOCK_FLAG               = V_DELETED_FLAG ,
+          ACCOUNT_NO              = :NEW.ID_ACCOUNT_NO ,
+          CIT_NUMBER              = :NEW.ID_LBRF ,
+          PAN_NO                  = :NEW.ID_PAN_NO ,
+          THUMB_ID                = :NEW.ID_THUMB_ID ,
+          PF_NUMBER               = :NEW.ID_PROVIDENT_FUND_NO ,
+          OVERTIME_APPLICABLE     = :NEW.OVERTIME_FLAG,
+          DEPOSIT_ACCOUNT         = :NEW.ID_ACC_CODE
+        WHERE TRIM(EMPLOYEE_CODE) = TO_CHAR(:OLD.EMPLOYEE_ID)
+         AND COMPANY_CODE=V_COMPANY_CODE;
+	   
+	   
+	   ELSE
+	   
 
         UPDATE HR_EMPLOYEE_SETUP
         SET EMPLOYEE_EDESC = REPLACE(CONCAT(CONCAT(:NEW.FIRST_NAME
@@ -254,14 +303,19 @@ create or replace TRIGGER "TRG_SYNC_EMPLOYEE" AFTER
           DEPOSIT_ACCOUNT         = :NEW.ID_ACC_CODE
         WHERE TRIM(EMPLOYEE_CODE) = TO_CHAR(:OLD.EMPLOYEE_ID)
          AND COMPANY_CODE=V_OLD_COMPANY_CODE;
+		 
+		 
+		 END IF;
+		 
         BEGIN
           UPDATE FA_SUB_LEDGER_SETUP
-          SET SUB_EDESC = REPLACE(CONCAT(CONCAT(:NEW.FIRST_NAME
+          SET SUB_EDESC = CONCAT(CONCAT(:NEW.FIRST_NAME
             ||' ',:NEW.MIDDLE_NAME
-            ||' '),:NEW.LAST_NAME),'  ',' '),
+            ||' '),:NEW.LAST_NAME),
             SUB_NDESC = NVL(:NEW.NAME_NEPALI, CONCAT(CONCAT(:NEW.FIRST_NAME
             ||' ',:NEW.MIDDLE_NAME
             ||' '),:NEW.LAST_NAME))
+
           WHERE TRIM(SUB_CODE) = 'E'
             ||:OLD.EMPLOYEE_ID;
         EXCEPTION
@@ -270,8 +324,4 @@ create or replace TRIGGER "TRG_SYNC_EMPLOYEE" AFTER
         END;
       END;
     END IF;
-
-
-
-
   END;

@@ -18,21 +18,21 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 <?php
 
 $this->headLink()
-        ->appendStylesheet($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.css'));
- 
+    ->appendStylesheet($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.css'));
+
 $this->headScript()
-        ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
-        ->appendFile($this->basePath('js/nepali-datepicker-ext.js'));
+    ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
+    ->appendFile($this->basePath('js/nepali-datepicker-ext.js'));
 
 $this->headScript()->appendFile($this->basePath('js/angular.min.js'));
-$this->headScript()->appendFile($this->basePath('js/SelfService/work-on-holiday/add.js'))
-            ->appendFile($this->basePath('js/manager-service/holiday-work-approve/view.js'));
+$this->headScript()
+    ->appendFile($this->basePath('js/manager-service/holiday-work-approve/view.js'));
 
 
 $form->setAttribute('role', 'form');
 
 $holidayId = $form->get('holidayId');
-$holidayId->setValueOptions($holidays);
+$holidayId->setValueOptions([$detail['HOLIDAY_ID'] => $detail['HOLIDAY_ENAME']]);
 $holidayId->setAttributes(["disabled" => "disabled"]);
 $fromDate = $form->get('fromDate');
 $fromDate->setAttributes(["disabled" => "disabled"]);
@@ -58,7 +58,7 @@ $form->prepare();
 print $this->form()->openTag($form);
 ?>
 <script>
-    document.holidayList =<?= json_encode($holidayObjList) ?>;
+
     document.employeeId =<?= json_encode($employeeId) ?>;
 </script>
 
@@ -158,7 +158,7 @@ print $this->form()->openTag($form);
                                 <?php print $this->formLabel($holidayId); ?>
                                 <?php print $this->formElement($holidayId); ?>
                                 <?php print $this->formElementErrors()->render($holidayId, ['class' => 'help-block']); ?>
-                            </div>               
+                            </div>
                         </div>
 
                         <div class="col-sm-4">
@@ -170,7 +170,7 @@ print $this->form()->openTag($form);
                                         <?php print $this->formElement($fromDate) ?>
                                     </div>
                                     <?php print $this->formElementErrors()->render($fromDate, ['class' => 'help-block error']) ?>
-                                </div>     
+                                </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label for="nepaliStartDate">&nbsp;</label>
@@ -179,8 +179,8 @@ print $this->form()->openTag($form);
                                                    class="form-control" value="" disabled="disabled">
                                         </div>
                                     </div>
-                                </div>     
-                            </div>  
+                                </div>
+                            </div>
 
                         </div>
 
@@ -194,7 +194,7 @@ print $this->form()->openTag($form);
                                         <span id="errorMsgDate" style="font-size:11px; color:red;"></span>
                                     </div>
                                     <?php print $this->formElementErrors()->render($toDate, ['class' => 'help-block error']) ?>
-                                </div>     
+                                </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <label for="nepaliEndDate">&nbsp;</label>
@@ -203,8 +203,8 @@ print $this->form()->openTag($form);
                                                    class="form-control" value="" disabled="disabled">
                                         </div>
                                     </div>
-                                </div>     
-                            </div>  
+                                </div>
+                            </div>
 
                         </div>
                     </div>
@@ -214,8 +214,8 @@ print $this->form()->openTag($form);
                         <div class="col-sm-4">
                             <div
                                 class="form-group required <?= empty($duration->getMessages()) ? "" : "error" ?>">
-                                    <?php print $this->formLabel($duration); ?>
-                                    <?php print $this->formElement($duration); ?>
+                                <?php print $this->formLabel($duration); ?>
+                                <?php print $this->formElement($duration); ?>
                                 <span id="errorMsg" style="font-size:11px; color:red;"></span>
                             </div>
                             <?php print $this->formElementErrors()->render($duration, ['class' => 'help-block error']); ?>
@@ -254,10 +254,10 @@ print $this->form()->openTag($form);
                 <?php } ?>
 
                 <?php if ($status == 'RQ' || $status == 'RC') { ?>
-                  <?php  if($acl['HR_APPROVE']=='Y'){  ?>
-                    <?php print $this->formSubmit($submit); ?>
+                    <?php  if($acl['HR_APPROVE']=='Y'){  ?>
+                        <?php print $this->formSubmit($submit); ?>
+                    <?php }      ?>
                     <input type="submit" name="submit" class="btn btn-success pull-right" value="Reject">
-                  <?php }      ?>
                 <?php } ?>
             </div>
         </div>

@@ -229,7 +229,7 @@ class LeaveApproveRepository implements RepositoryInterface {
                 from 
                 HRIS_EMPLOYEE_LEAVE_ADDITION LA
                 JOIN Hris_Employee_Work_Holiday WH ON (LA.WOH_ID=WH.ID)
-                LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID)) SLR ON (SLR.ID=LA.SUB_REF_ID),
+                LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID)) SLR ON (SLR.ID=LA.SUB_REF_ID AND SLR.EMPLOYEE_ID=LA.EMPLOYEE_ID),
                   HRIS_LEAVE_MONTH_CODE MTH,
                   HRIS_EMPLOYEE_LEAVE_ASSIGN ELA
                 WHERE LA.ID = {$id}
@@ -411,7 +411,7 @@ INITCAP(L.LEAVE_ENAME)||'('||SLR.SUB_NAME||')' END AS LEAVE_ENAME
                 from 
                 HRIS_EMPLOYEE_LEAVE_ADDITION LA
                 JOIN Hris_Employee_Work_Holiday WH ON (LA.WOH_ID=WH.ID)
-                LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID)) SLR ON (SLR.ID=LA.SUB_REF_ID),
+                LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID)) SLR ON (SLR.ID=LA.SUB_REF_ID AND SLR.EMPLOYEE_ID=LA.EMPLOYEE_ID),
                   HRIS_LEAVE_MONTH_CODE MTH,
                   HRIS_EMPLOYEE_LEAVE_ASSIGN ELA
                 WHERE LA.ID = {$id}

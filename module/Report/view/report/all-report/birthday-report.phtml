@@ -49,16 +49,16 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <i class="icon-paper-plane font-green-haze"></i>
                 <span class="caption-subject bold font-green-haze uppercase"> Filter Employees</span>
             </div> 
-            <?php /*
+            
             <div class="tools">
                 <a href="javascript:;" class="collapse" data-original-title="" title=""> </a>
                 <a href="" class="fullscreen" data-original-title="" title=""> </a>
             </div>
             <div class="actions">
-                <?php if ($acl['ALLOW_ADD'] == 'Y'): ?>
+                <?php /* if ($acl['ALLOW_ADD'] == 'Y'): 
                     <a href="<?= $this->url('employee', ['action' => 'edit', 'tab' => 1]) ?>" class="btn default btn-sm">
                         <i class="fa fa-plus-square icon-black"></i> New </a>
-                <?php endif; ?> 
+                 endif; */ ?> 
                 <div class="btn-group">
                     <a class="btn btn-sm blue-soft" href="javascript:;" data-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-copy"></i> Tools
@@ -75,7 +75,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                         </li>
                     </ul>
                 </div>
-            </div> */?>
+            </div> 
         </div>
         <div class="portlet-body">
             <div class="row">
@@ -141,26 +141,31 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label>From Date(AD)</label>
-                        <input type="text" id="fromDate" name="fromDate" class="input-sm" class="form-control reset-field" placeholder="From Date"/>
+                        <input type="text" id="fromDate" name="fromDate" class="form-control reset-field" placeholder="From Date"/>
                     </div>
                 </div> 
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label>From Date(BS)</label>
-                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="input-sm" class="form-control reset-field" placeholder="From Date Nepali"/>
+                        <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control reset-field" placeholder="From Date Nepali"/>
                     </div>
                 </div>  
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label>To Date(AD)</label>
-                        <input type="text" id="toDate" name="toDate" class="input-sm" class="form-control reset-field" placeholder="To Date"/>
+                        <input type="text" id="toDate" name="toDate" class="form-control reset-field" placeholder="To Date"/>
                     </div>
                 </div> 
                 <div class="col-sm-2">
                     <div class="form-group">
                         <label>To Date(BS)</label>
-                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="input-sm" class="form-control reset-field" placeholder="To Date Nepali"/>
+                        <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control reset-field" placeholder="To Date Nepali"/>
                     </div>
+                </div>
+                <div class="col-sm-8">
+                    <label>Columns</label>
+                    <select multiple class="form-control reset-field" name="exparams" id="exparamsId">
+                    </select>
                 </div>
                 <div class="col-sm-4 col-sm-offset-8">
                     <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">

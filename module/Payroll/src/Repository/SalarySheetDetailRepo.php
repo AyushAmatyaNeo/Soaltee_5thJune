@@ -106,7 +106,7 @@ class SalarySheetDetailRepo extends HrisRepository {
                 FROM HRIS_SALARY_SHEET_DETAIL TS
                 LEFT JOIN HRIS_PAY_SETUP P
                 ON (TS.PAY_ID         =P.PAY_ID)
-                WHERE P.INCLUDE_IN_SALARY='Y' AND TS.VAL >0
+                WHERE P.INCLUDE_IN_SALARY='Y' AND TS.VAL !=0
                 AND TS.SHEET_NO       IN
                   (SELECT SHEET_NO FROM HRIS_SALARY_SHEET WHERE MONTH_ID ={$monthId} 
                       AND SALARY_TYPE_ID={$salaryTypeId}
