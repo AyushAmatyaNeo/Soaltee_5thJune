@@ -5,13 +5,13 @@ window.app = (function ($, toastr, App) {
         
         // only for soaltee start
 //        $('#functionalTypeId').parent().children(':first-child').html('Main Dep(Funct Type)');
-//        $('#branchId').parent().children(':first-child').prepend('<button id="filBranch">Fill</button>');
-//        $('#filBranch').on('click',function(){
-//            if($('#branchId').prop('disabled')==false){
-//            $('#branchId').val([4,5,9]);
-//            $('#branchId').trigger('change');
-//            }
-//        })
+        $('#branchId').parent().children(':first-child').prepend('<button id="filBranch">Fill</button>');
+        $('#filBranch').on('click',function(){
+            if($('#branchId').prop('disabled')==false){
+            $('#branchId').val([4,5,9]);
+            $('#branchId').trigger('change');
+            }
+        })
         // only for soaltee end
         
     });
