@@ -26,7 +26,6 @@ class Cron extends AbstractActionController {
     }
 
     public function todayAction() {
-
         $responseData = [];
         try {
             $request = $this->getRequest();
@@ -101,7 +100,6 @@ class Cron extends AbstractActionController {
     public function getLateList($data) {
         $lateList = array();
         for ($i = 0; $i < count($data); $i++) {
-            
             if ($data[$i]['ABS_LATE'] == 'LATE' && $data[$i]['EMPLOYEE_MAIL'] != null) {
                 array_push($lateList, $data[$i]);
             }
@@ -143,10 +141,8 @@ class Cron extends AbstractActionController {
 Nepal Bangladesh Bank Ltd.<br>
 Head Office, Kamaladi</p>';
             $subject = "Early Check Out";
-			
 
             $this->sendEmail($to, $body, $subject, $cc);
-
         }
     }
 
@@ -156,15 +152,12 @@ Head Office, Kamaladi</p>';
             $cc = $missed[$i]['MANAGER_MAIL'];
             $date = (string) $missed[$i]['ATTENDANCE_DT'];
             $body = '<p>Dear Sir/Madam,</p>
-<p><span style="color: red;">'.$missed[$i]['EMPLOYEE_NAME'].'</span>   have missed punch on departure from office on <span style="color: red;">' . $date . '</span>. Kindly remember to punch to mark your presence.</p>
+<p><span style="color: red;">'.$missed[$i]['EMPLOYEE_NAME'].'</span>  have missed punch on departure from office on <span style="color: red;">' . $date . '</span>. Kindly remember to punch to mark your presence.</p>
 <p>Thank You.</p>
 <p>Human Resource Department <br>
 Nepal Bangladesh Bank Ltd.<br>
 Head Office, Kamaladi</p>';
             $subject = "Missed Punch";
-			
-			
-			
 
             $this->sendEmail($to, $body, $subject, $cc);
         }
@@ -182,7 +175,6 @@ Head Office, Kamaladi</p>';
 Nepal Bangladesh Bank Ltd.<br>
 Head Office, Kamaladi</p>';
 
-
             $subject = "Late Check In";
 
             $this->sendEmail($to, $body, $subject, $cc);
@@ -194,9 +186,6 @@ Head Office, Kamaladi</p>';
             $to = $absent[$i]['EMPLOYEE_MAIL'];
             $cc = $absent[$i]['MANAGER_MAIL'];
             $date = (string) $absent[$i]['ATTENDANCE_DT'];
-			
-			
-
             $body = '<p>Dear Sir/Madam,</p>
 <p><span style="color: red;">'.$absent[$i]['EMPLOYEE_NAME'].'</span>  have been marked absent on <span style="color: red;">' . $date . '</span>. Kindly apply for leave.</p>
 <p>Thank You.</p>
@@ -204,13 +193,9 @@ Head Office, Kamaladi</p>';
 Nepal Bangladesh Bank Ltd.<br>
 Head Office, Kamaladi</p>';
 
-
-
             $subject = "Missing Attendance";
 
-
             $this->sendEmail($to, $body, $subject, $cc);
-
         }
     }
 
@@ -237,6 +222,5 @@ Head Office, Kamaladi</p>';
             return $ex;
         }
     }
-
 
 }

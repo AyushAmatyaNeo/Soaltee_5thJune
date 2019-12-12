@@ -118,8 +118,15 @@
             $("#table").table2excel({
                 exclude: ".noExl",
                 name: "leave-card",
-                filename: "leave-report-card" 
+                filename: "leave-report-card.xlsx" 
             });
         });
+
+        $('#pdfExport').on('click', function () {
+            kendo.drawing.drawDOM($("#table")).then(function (group) {
+                kendo.drawing.pdf.saveAs(group, "Leave-report-card.pdf");
+            });
+        });
+
     });
 })(window.jQuery, window.app);

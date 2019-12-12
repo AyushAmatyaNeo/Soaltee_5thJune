@@ -38,7 +38,7 @@ class LeaveBalanceRepository {
             $leaveCondition .= " and leave_id in ($leaveId)";
         }
         $condition = $isMonthly ? " AND IS_MONTHLY = 'Y' " : "  AND IS_MONTHLY = 'N' ";
-        $sql = "SELECT LEAVE_ID,INITCAP(LEAVE_ENAME) AS LEAVE_ENAME FROM HRIS_LEAVE_MASTER_SETUP WHERE STATUS='E' {$condition} {$leaveCondition} ORDER BY LEAVE_ID";
+        $sql = "SELECT LEAVE_ID,INITCAP(LEAVE_ENAME) AS LEAVE_ENAME FROM HRIS_LEAVE_MASTER_SETUP WHERE STATUS='E' {$condition} {$leaveCondition} ORDER BY LEAVE_ENAME";
         $statement = $this->adapter->query($sql);
         return $statement->execute();
     }

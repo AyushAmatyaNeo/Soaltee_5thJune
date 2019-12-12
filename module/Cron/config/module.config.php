@@ -24,26 +24,11 @@ return [
                     ]
                 ],
             ],
-            'bottlers-cron' => [
-                'type' => Segment::class,
-                'options' => [
-                    'route' => '/bottlersCron[/:action[/:id]]',
-                    'constants' => [
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id' => '[0-9]+',
-                    ],
-                    'defaults' => [
-                        'controller' => BottlersCron::class,
-                        'action' => 'index'
-                    ]
-                ],
-            ],
         ]
     ],
     'controllers' => [
         'factories' => [
             Cron::class => ControllerFactory::class,
-            BottlersCron::class => ControllerFactory::class,
         ],
     ],
     'view_manager' => array(

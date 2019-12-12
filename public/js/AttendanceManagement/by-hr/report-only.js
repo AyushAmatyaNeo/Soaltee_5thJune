@@ -49,6 +49,11 @@
             //     ]}
         ], null, null, null, 'Attendance Report.xlsx');
 
+        var group = [
+            {field: "DEPARTMENT_NAME"},
+            {field: "FUNCTIONAL_TYPE"},
+            ];
+
         $search.on("click", function () {
 
             var q = document.searchManager.getSearchValues();
@@ -58,9 +63,7 @@
             q['presentStatus'] = $presentStatusId.val();
             app.serverRequest(document.pullAttendanceWS, q).then(function (response) {
                 if (response.success) {
-                    app.renderKendoGrid($table, response.data);
-                    selectItems = {};
-                    var data = response.data;
+                    renderKendoGrid($table, response.data, group);
                 } else {
                     app.showMessage(response.error, 'error');
                 }
@@ -68,6 +71,13 @@
                 app.showMessage(error, 'error');
             });
         });
+
+        var renderKendoGrid = function ($table, data, group) {
+            var dataSource = new kendo.data.DataSource({data: data, group: group});
+            var grid = $table.data("kendoGrid");
+            dataSource.read();
+            grid.setDataSource(dataSource);
+        }
 
         app.searchTable($table, ['EMPLOYEE_NAME', 'EMPLOYEE_CODE']);
         var exportMap = {

@@ -21,11 +21,7 @@
             {field: "BASIC", title: "Basic", width: 100},
             {field: "GRADE", title: "Grade", width: 100},
             {field: "ALLOWANCE", title: "Allowance", width: 100},
-            {field: "GROSS", title: "Gross", width: 100},
-            /*{field: "LEVEL_NO", title: "Level", width: 150},
-            {field: "LOCATION_EDESC", title: "Location", width: 150},
-            {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 150},
-            {field: "FUNCTIONAL_LEVEL_EDESC", title: "Functional Level", width: 150}*/
+            {field: "GROSS", title: "Gross", width: 100}
         ];
 
         app.initializeKendoGrid($employeeTable, columns, null, null, null, 'Job Duration Report.xlsx');
@@ -42,7 +38,7 @@
             'POSITION_NAME': 'Position',
             'BIRTH_DATE_AD': 'BirthDate',
             'AGE': 'Age',
-            'JOIN_DATE_AD': 'JoinDate',
+            'DOJ': 'JoinDate',
             'SERVICE_TYPE_NAME': 'Service Type',
             'BASIC': 'Basic',
             'GRADE': 'Grade',
