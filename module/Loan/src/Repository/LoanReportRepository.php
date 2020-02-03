@@ -142,7 +142,7 @@ class LoanReportRepository implements RepositoryInterface {
   
     public function fetchLoanVoucher($emp_id, $fromDate, $toDate, $loanId){
     $sql = "SELECT DT, particulars, debit_amount, credit_amount, balance FROM(
-        SELECT to_date(HLPD.FROM_DATE) AS DT, 'Opening Balance' as PARTICULARS,
+        SELECT to_date('{$fromDate}') AS DT, 'Opening Balance' as PARTICULARS,
     TRUNC(SUM(HLPD.PRINCIPLE_AMOUNT), 2) AS DEBIT_AMOUNT,
     0 AS CREDIT_AMOUNT, 0 AS BALANCE
     FROM 
@@ -157,6 +157,7 @@ class LoanReportRepository implements RepositoryInterface {
         AND HLPD.LOAN_REQUEST_ID IN(
         SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
         WHERE EMPLOYEE_ID = $emp_id)
+		AND helr.loan_status = 'OPEN'
     GROUP BY HLPD.FROM_DATE
     
     UNION ALL
@@ -172,6 +173,7 @@ class LoanReportRepository implements RepositoryInterface {
     from DUAL
     connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
     ) AND HELR.EMPLOYEE_ID = $emp_id
+	AND helr.loan_status = 'OPEN'
     GROUP BY HLPD.FROM_DATE
     
     UNION ALL
@@ -187,6 +189,7 @@ class LoanReportRepository implements RepositoryInterface {
     from DUAL
     connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
     ) AND HELR.EMPLOYEE_ID = $emp_id
+	AND helr.loan_status = 'OPEN'
     GROUP BY HLPD.FROM_DATE
     
     UNION ALL
@@ -202,6 +205,7 @@ class LoanReportRepository implements RepositoryInterface {
     from DUAL
     connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
     ) AND HELR.EMPLOYEE_ID = $emp_id
+	AND helr.loan_status = 'OPEN'
     GROUP BY HLPD.FROM_DATE
     ORDER BY DT, DEBIT_AMOUNT DESC, CREDIT_AMOUNT DESC)
             
@@ -219,8 +223,10 @@ WHERE
         loan_id = $loanId
     AND
         LOAN_DATE BETWEEN '{$fromDate}' AND '{$toDate}'    
+		AND trunc(to_date(LOAN_DATE), 'month') != trunc(TO_DATE('{$fromDate}'),'month') 
     AND
-        employee_id = $emp_id)
+        employee_id = $emp_id
+	AND loan_status = 'OPEN')
 
         UNION ALL
 
@@ -302,7 +308,7 @@ ORDER BY
         AND HELR.EMPLOYEE_ID = $emp_id
         AND HLPD.LOAN_REQUEST_ID IN(
         SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
-        WHERE EMPLOYEE_ID = $emp_id) 
+        WHERE EMPLOYEE_ID = $emp_id) AND loan_status = 'OPEN'
         group by hlpd.from_date";
         
         $statement = $this->adapter->query($sql); 

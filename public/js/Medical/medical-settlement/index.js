@@ -34,7 +34,7 @@
         }
 
         var pk = 'MEDICAL_ID';
-        var grid = app.initializeKendoGrid($table, columns, "Advance List.xlsx",
+        var grid = app.initializeKendoGrid($table, columns, "MedicalList.xlsx",
                 {id: pk, atLast: false, fn: function (selected) {
                         if (selected && selectedStatus == 'AP') {
                             $bulkActionDiv.show();
@@ -48,11 +48,11 @@
         app.searchTable($table, ['ADVANCE_ENAME']);
 
         $('#excelExport').on('click', function () {
-            app.excelExport($table, map, 'Advance List.xlsx');
+            app.excelExport($table, map, 'MedicalList.xlsx');
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, map, 'Advance List.pdf');
+            app.exportToPDF($table, map, 'MedicalList.pdf');
         });
 
 

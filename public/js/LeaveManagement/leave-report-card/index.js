@@ -35,31 +35,31 @@
                 htmlData+='<tr><td colspan="2">'+leaveDetails[0].FULL_NAME+'</td><td colspan="3">Permanent Address</td><td>'+leaveDetails[0].ADDR_PERM_STREET_ADDRESS+'</td><td>-</td></tr>';
                 htmlData+='<tr><td colspan="2">Date Of Join</td><td colspan="3">Designation</td><td>Department</td><td colspan="3">LEAVE B/F FROM LAST YEAR</td>';
                 for(let i = 0; i < leaves.length; i++){
-                    htmlData+='<td>'+leaves[i].TOTAL_DAYS+'</td>';
+                    htmlData+='<td>'+leaves[i].PREVIOUS_YEAR_BAL+'</td>';
                 }
                 htmlData+='</tr><tr><td colspan="2">'+leaveDetails[0].JOIN_DATE+'</td><td colspan="3">'+leaveDetails[0].DESIGNATION_TITLE+'</td><td>'+leaveDetails[0].DEPARTMENT+'</td><td colspan="3">LEAVE DUE THIS YEAR</td>';
                 for(let i = 0; i < leaves.length; i++){
-                    htmlData+='<td>0</td>';
+                    htmlData+='<td>'+leaves[i].TOTAL_DAYS+'</td>';
                 }
                 htmlData+='</tr><tr><td rowspan="2">Sr No</td><td rowspan="2">DATE</td><td rowspan="2">TYPE OF LEAVE</td><td colspan="3">Leave Required</td><td rowspan="2">Reason For Leave</td><td rowspan="2">Recommender</td><td rowspan="2">Approver</td><td colspan="'+leaves.length+'">Leave-to-Date</td></tr>';
                 htmlData+='<tr><td>No Of Days</td><td>From</td><td>To</td>';
                 for(let i = 0; i < leaves.length; i++){
-                    htmlData+='<td>'+leaves[i].TOTAL_DAYS+'</td>';
+                    htmlData+='<td>'+leaves[i].BALANCE+'</td>';
                 }
                 htmlData+='</tr>';
                 for(let i = 0; i < leaveDetails.length; i++){
                     htmlData+='<tr><td>'+(i+1)+'</td><td>'+leaveDetails[i].FROM_DATE_AD+'</td><td>'+leaveDetails[i].LEAVE_ENAME+'</td><td>'+leaveDetails[i].NO_OF_DAYS+'</td><td>'+leaveDetails[i].FROM_DATE_AD+'</td><td>'+leaveDetails[i].TO_DATE_AD+'</td><td>'+leaveDetails[i].REMARKS+'</td><td>'+leaveDetails[i].RECOMMENDED_BY_NAME+'</td><td>'+leaveDetails[i].APPROVED_BY_NAME+'</td>';
                     for(let j = 0; j < leaves.length; j++){
                         if(leaveDetails[i].LEAVE_ID == leaves[j].LEAVE_ID){
-                            leaves[j].TOTAL_DAYS = leaves[j].TOTAL_DAYS - leaveDetails[i].NO_OF_DAYS;
+                            leaves[j].BALANCE = leaves[j].BALANCE - leaveDetails[i].NO_OF_DAYS;
                         }
-                        htmlData+='<td>'+leaves[j].TOTAL_DAYS+'</td>';
+                        htmlData+='<td>'+leaves[j].BALANCE+'</td>';
                     }
                 }
                 htmlData+='</tr>';
                 htmlData+='<tr><td colspan="9" style="font-weight: bold; text-align: center;">Balance</td>';
                     for(let j = 0; j < leaves.length; j++){
-                        htmlData+='<td>'+leaves[j].TOTAL_DAYS+'</td>';
+                        htmlData+='<td>'+leaves[j].BALANCE+'</td>';
                     }
                 htmlData+='</tr></table><hr />';
                 $("#table").append(htmlData);

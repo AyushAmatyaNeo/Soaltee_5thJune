@@ -36,7 +36,7 @@ class Paysheet extends AbstractActionController
 
 //            print_r($count);
 //            die();
-            $printRepository->insertData($data, $this->employeeId);
+          
 
             if ($count < 2) {
                 $requestType = $request->getMethod();
@@ -52,8 +52,11 @@ class Paysheet extends AbstractActionController
                     default :
                         throw new Exception('The request is unknown');
                 }
+				  $printRepository->insertData($data, $this->employeeId);
+				
                 return new JsonModel(['success' => true, 'salaryDetail' => $responseData, 'employeeDetail' => $employeeDetail, 'message' => $requestType]);
             } else {
+				  //return new JsonModel(['success' => true, 'salaryDetail' => [], 'employeeDetail' => [], 'message' => 'Print limit reached']);
                 return new JsonModel(['success' => true, 'salaryDetail' => null, 'employeeDetail' => null, 'message' => 'Print limit reached for current month']);
             }
         } catch (Exception $e) {

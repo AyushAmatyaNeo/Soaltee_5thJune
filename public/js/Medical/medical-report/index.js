@@ -22,7 +22,7 @@
             'DEPENDENT': 'Dependent',
             'OPERATION': 'Operation'
         }
-        app.initializeKendoGrid($table, columns, "Advance List.xlsx");
+        app.initializeKendoGrid($table, columns, "MedicalBalance.xlsx");
 
         app.searchTable($table, ['EMPLOYEE_CODE', 'FULL_NAME', 'DEPARTMENT_NAME', 'FUNCTIONAL_TYPE_EDESC', 'SELF', 'DEPENDENT', 'OPERATION']);
 

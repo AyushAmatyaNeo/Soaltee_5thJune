@@ -26,16 +26,16 @@
             'ID_ACCOUNT_NO': 'Account No',
             'APPROVED_AMT': 'Amt'
         }
-        app.initializeKendoGrid($table, columns, "Advance List.xlsx");
+        app.initializeKendoGrid($table, columns, "MedicalList.xlsx");
 
         app.searchTable($table, ['EMPLOYEE_CODE', 'FULL_NAME', 'DEPARTMENT_NAME', 'FUNCTIONAL_TYPE_EDESC', 'SELF', 'DEPENDENT', 'OPERATION']);
 
         $('#excelExport').on('click', function () {
-            app.excelExport($table, map, 'MedicalBalance.xlsx',exportType);
+            app.excelExport($table, map, 'MedicalList.xlsx',exportType);
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, map, 'MedicalBalance.pdf');
+            app.exportToPDF($table, map, 'MedicalList.pdf');
         });
 
 

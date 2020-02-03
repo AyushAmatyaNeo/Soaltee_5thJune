@@ -158,6 +158,10 @@ class PayrollGenerator {
                     if(is_nan($ruleValue)){
                         $ruleValue=0;
                     }
+				$current = file_get_contents($file);
+				file_put_contents($file, $current."\r RETURNED".$ruleValue."\n");
+
+					
             }
             $rule = ["ruleValue" => $ruleValue, "rule" => $ruleDetail];
             array_push($this->ruleDetailList, $rule);

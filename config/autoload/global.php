@@ -11,8 +11,8 @@ return [
 	)
         )',
 
-    'username' => 'HRIS_7576',
-     'password' => 'HRIS_7576',
+    'username' => 'HRIS_KISOK',
+     'password' => 'HRIS_KISOK',
 
 
         

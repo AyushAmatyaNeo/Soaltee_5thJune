@@ -41,7 +41,7 @@
                 input: true,
                 numeric: false,
 //                 refresh: true,
-                pageSizes: true,
+                pageSizes: [20],
             },
             columns: columns,
             selectable: "multiple cell",

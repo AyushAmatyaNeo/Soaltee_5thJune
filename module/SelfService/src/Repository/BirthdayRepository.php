@@ -30,7 +30,7 @@ class BirthdayRepository {
                                   'TODAY' BIRTHDAYFOR
                                 FROM HRIS_EMPLOYEES EMP, HRIS_DESIGNATIONS DSG, HRIS_EMPLOYEE_FILE EFL
                                 WHERE TO_CHAR(EMP.BIRTH_DATE, 'MMDD') = TO_CHAR(SYSDATE,'MMDD')
-                                AND EMP.RETIRED_FLAG = 'N'
+                                AND EMP.RETIRED_FLAG = 'N' AND EMP.STATUS='E'
                                 AND EMP.DESIGNATION_ID = DSG.DESIGNATION_ID
                                 AND EMP.PROFILE_PICTURE_ID = EFL.FILE_CODE(+)
                                 UNION ALL
@@ -46,7 +46,7 @@ class BirthdayRepository {
                                   'UPCOMING' BIRTHDAYFOR
                                 FROM HRIS_EMPLOYEES EMP, HRIS_DESIGNATIONS DSG, HRIS_EMPLOYEE_FILE EFL
                                 WHERE TO_CHAR(EMP.BIRTH_DATE, 'MMDD') > TO_CHAR(SYSDATE,'MMDD')
-                                AND EMP.RETIRED_FLAG = 'N'
+                                AND EMP.RETIRED_FLAG = 'N' AND EMP.STATUS='E'
                                 AND EMP.DESIGNATION_ID = DSG.DESIGNATION_ID
                                 AND EMP.PROFILE_PICTURE_ID = EFL.FILE_CODE(+)
                 ) ORDER BY TO_CHAR(BIRTH_DATE,'MMDD')

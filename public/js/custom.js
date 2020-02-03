@@ -8,7 +8,7 @@ window.app = (function ($, toastr, App) {
         $('#branchId').parent().children(':first-child').prepend('<button id="filBranch">Fill</button>');
         $('#filBranch').on('click',function(){
             if($('#branchId').prop('disabled')==false){
-            $('#branchId').val([4,5,9]);
+            $('#branchId').val([1,2,9,10,14]);
             $('#branchId').trigger('change');
             }
         })

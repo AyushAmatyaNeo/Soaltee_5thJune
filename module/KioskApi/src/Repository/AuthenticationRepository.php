@@ -14,10 +14,11 @@ class AuthenticationRepository {
     }
 
     public function fetchEmployeeData($thumbId) {
-        $sql = "
+       $sql = "
             SELECT EMPLOYEE_ID,
             FULL_NAME 
             FROM HRIS_EMPLOYEES WHERE ID_THUMB_ID = {$thumbId}
+            and status = 'E' and resigned_flag <> 'Y' and retired_flag <> 'Y'
             ";
 
         $statement = $this->adapter->query($sql);

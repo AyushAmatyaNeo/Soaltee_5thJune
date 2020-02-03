@@ -1,0 +1,11 @@
+Shift 
+*********
+
+In NEO-HRIS shift there is a functionality where an ADMIN or HR can setup shift and assign it to an individual employee or to many employees in bulk.Shift setup incorporates three different options that can be choosen for everyday in a week.Customizable shift setup enhances modularity aspect of NEO-HRIS.Shift cycle basically includes two stages one of that is shift setup and another is shift assign.
+
+.. toctree::
+   :maxdepth: 3
+
+   add
+   view
+   

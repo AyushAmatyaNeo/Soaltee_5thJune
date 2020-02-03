@@ -36,16 +36,16 @@
             'ADVANCE_CODE': 'AdvanceCode',
             'ADVANCE_ENAME': 'Name'
         }
-        app.initializeKendoGrid($table, columns, "Advance List.xlsx");
+        app.initializeKendoGrid($table, columns, "MedicalList.xlsx");
 
         app.searchTable($table, ['ADVANCE_ENAME']);
 
         $('#excelExport').on('click', function () {
-            app.excelExport($table, map, 'Advance List.xlsx');
+            app.excelExport($table, map, 'MedicalList.xlsx');
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, map, 'Advance List.pdf');
+            app.exportToPDF($table, map, 'MedicalList.pdf');
         });
 
 

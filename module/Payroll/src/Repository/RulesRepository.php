@@ -125,9 +125,11 @@ class RulesRepository extends HrisRepository {
     public function fetchSSRules(): array {
         $sql = "SELECT PAY_ID,'H_'||PAY_ID AS PAY_ID_COL,PAY_EDESC
                 FROM HRIS_PAY_SETUP
-                WHERE INCLUDE_IN_SALARY='Y'
-                AND PAY_TYPE_FLAG     IN ('A','D')
-                AND STATUS ='E'
+                WHERE 
+				--INCLUDE_IN_SALARY='Y'
+             --   AND PAY_TYPE_FLAG     IN ('A','D')
+              --  AND 
+				STATUS ='E'
                 ORDER BY PRIORITY_INDEX";
         return $this->rawQuery($sql);
     }

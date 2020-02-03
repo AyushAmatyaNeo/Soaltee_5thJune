@@ -34,7 +34,7 @@
             {field: "EMPLOYEE_NAME", title: "Employee", width: 130, template: "<span>#: (EMPLOYEE_NAME == null) ? '-' : EMPLOYEE_NAME # </span>"},
             {field: "DEPARTMENT_NAME", title: "Department", width: 100},
             {field: "ATTENDANCE_DT", title: "Date", width: 90},
-            {field: "FUNCTIONAL_TYPE", title: "Functional Type", width: 70},
+            {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 70},
             // {field: "IN_TIME", title: "Check In", template: "<span>#: (IN_TIME == null) ? '-' : IN_TIME # </span>"},
             // {field: "OUT_TIME", title: "Check Out", template: "<span>#: (OUT_TIME == null) ? '-' : OUT_TIME # </span>"},
             // {field: "IN_REMARKS", title: "In Remarks"},
@@ -50,8 +50,8 @@
         ], null, null, null, 'Attendance Report.xlsx');
 
         var group = [
-            {field: "DEPARTMENT_NAME"},
-            {field: "FUNCTIONAL_TYPE"},
+		    {field: "FUNCTIONAL_TYPE_EDESC"},
+            {field: "EMPLOYEE_NAME"},
             ];
 
         $search.on("click", function () {

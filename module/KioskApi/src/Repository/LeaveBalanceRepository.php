@@ -19,7 +19,7 @@ class LeaveBalanceRepository {
             E.FULL_NAME, 
             LA.LEAVE_ID, 
             LMS.LEAVE_ENAME AS LEAVE_NAME,  
-            LA.TOTAL_DAYS, 
+            LA.PREVIOUS_YEAR_BAL + LA.TOTAL_DAYS  AS TOTAL_DAYS, 
             LA.BALANCE AS REMAINING_BALANCE
             FROM HRIS_EMPLOYEE_LEAVE_ASSIGN LA 
             LEFT JOIN HRIS_LEAVE_MASTER_SETUP LMS 
@@ -27,6 +27,8 @@ class LeaveBalanceRepository {
             LEFT JOIN HRIS_EMPLOYEES E 
             ON LA.EMPLOYEE_ID = E.EMPLOYEE_ID 
             WHERE LA.EMPLOYEE_ID = {$employeeId}
+			  AND LMS.STATUS='E'
+             AND LA.LEAVE_ID IN (21,22,23)
             ORDER BY LA.LEAVE_ID
             ";
 

@@ -127,7 +127,7 @@ class AttendanceDetailRepository implements RepositoryInterface {
         if($presentType == "P"){
             $presentTypeCondition = " AND A.IN_TIME IS NOT NULL AND A.OUT_TIME IS NULL ";
         }
-          $orderByString=EntityHelper::getOrderBy('A.ATTENDANCE_DT DESC ,A.IN_TIME ASC','A.ATTENDANCE_DT DESC ,A.IN_TIME ASC','E.SENIORITY_LEVEL','P.LEVEL_NO','E.JOIN_DATE','DES.ORDER_NO','E.FULL_NAME');
+          $orderByString=EntityHelper::getOrderBy('A.ATTENDANCE_DT DESC ,A.IN_TIME ASC','A.ATTENDANCE_DT DESC ,FUNT.FUNCTIONAL_TYPE_EDESC ASC','E.SENIORITY_LEVEL','P.LEVEL_NO','E.JOIN_DATE','DES.ORDER_NO','E.FULL_NAME');
         $sql = "
                SELECT ROWNUM AS SN,Q.* FROM (SELECT 
                   ROWNUM                                           AS R,
