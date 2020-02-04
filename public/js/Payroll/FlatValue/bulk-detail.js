@@ -15,7 +15,7 @@
 
         app.populateSelect($flatValueId, document.flatValues, "FLAT_ID", "FLAT_EDESC", "Select Flat Value");
         app.populateSelect($fiscalYearId, document.fiscalYears, "FISCAL_YEAR_ID", "FISCAL_YEAR_NAME", "Select Fiscal Year");
-
+        $('#fiscalYearId').val($('#fiscalYearId option:last').val());
         app.searchTable($table, ['FULL_NAME', 'EMPLOYEE_CODE']);
         $("#searchFieldDiv").hide();
         $("#assignFlatValueBtn").hide();
@@ -81,7 +81,7 @@
             dataItem[key] = updatedValue;
             //var dataSource = grid.dataSource.dataFiltered();
             
-            if(row.is(":last-child")){
+            if(row.is(":last-child") && (grid.dataSource.view().length == grid.dataSource.total())){
                 //var elms = document.getElementsByClassName(key);
                 //for (var i = 0; i < elms.length; i++) {
                    //elms[i].setAttribute("value", updatedValue);

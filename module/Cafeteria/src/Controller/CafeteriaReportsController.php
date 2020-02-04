@@ -27,6 +27,8 @@ class CafeteriaReportsController extends HrisController{
     }
     
     public function canteenReportAction(){
+		$modifiedAcl=$this->acl;
+		$modifiedAcl['CONTROL']='F';
         $request = $this->getRequest();
         if($request->isPost()){
             $data = $request->getPost();
@@ -41,7 +43,7 @@ class CafeteriaReportsController extends HrisController{
         return $this->stickFlashMessagesTo([
                 'timeList' => $timeList,
                 'searchValues' => ApplicationHelper::getSearchData($this->adapter),
-                'acl' => $this->acl,
+                'acl' => modifiedAcl,
                 'employeeDetail' => $this->storageData['employee_detail']
         ]);
     }

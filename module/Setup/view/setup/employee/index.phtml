@@ -21,6 +21,8 @@ $this->headScript()
     document.acl =<?php echo json_encode($acl); ?>;
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
     document.braProv = <?php echo json_encode($braProv);?>;
+    document.excelExportWithImageLink = '<?= $this->url("employee", ["action" => "excelExport"]) ?>';
+    document.excelExportWithImageDownload = '<?php echo $this->basePath('uploads/Employees_List.xlsx'); ?>';
 </script>
 
 <div class="page-bar">
@@ -70,6 +72,10 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                         <li >
                             <a href="javascript:;" id="pdfExport">
                                 <i class="fa fa-file-pdf-o" ></i> Export to PDF </a>
+                        </li>
+                        <li >
+                            <a href="javascript:;" id="excelExportWithImage">
+                                <i class="fa fa-file-excel-o" ></i> Export to Excel Image</a>
                         </li>
                     </ul>
                 </div>

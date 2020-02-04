@@ -111,7 +111,7 @@
             {field: 'FOOD_ALLOWANCE', title: "Food Allowance Count", width: 100},
             {field: 'SHIFT_ALLOWANCE', title: "Shift Allowance Count", width: 100},
             {field: 'NIGHT_SHIFT_ALLOWANCE', title: "Night Shift Allowance Count", width: 100},
-        ]);
+        ],null,null, 'Employee_Wise_Allowance_Report.xlsx');
 
 
         $search.on('click', function () {
@@ -148,10 +148,10 @@
 
 
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportVals, 'Employee_Wise_Allowance_Report');
+            app.excelExport($table, exportVals, 'Employee Wise Allowance Report');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportVals, 'Employee_Wise_Allowance_Report');
+            app.exportToPDF($table, exportVals, 'Employee Wise Allowance Report');
         });
 
 

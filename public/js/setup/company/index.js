@@ -9,7 +9,7 @@
             {field: "COMPANY_NAME", title: "Name"},
             {field: "ADDRESS", title: "Address"},
             {field: "COMPANY_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Company List');
 
         app.searchTable('companyTable', ["COMPANY_NAME", "ADDRESS"]);
 

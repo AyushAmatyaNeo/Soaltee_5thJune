@@ -39,6 +39,18 @@ class TravelRequest extends HrisController {
                 $data['requestedType'] = 'ad';
                 $rawList = $this->repository->getFilteredRecords($data);
                 $list = iterator_to_array($rawList, false);
+
+                if($this->preference['displayHrApproved'] == 'Y'){
+                    for($i = 0; $i < count($list); $i++){
+                        if($list[$i]['HARDCOPY_SIGNED_FLAG'] == 'Y'){
+                            $list[$i]['APPROVER_ID'] = '-1';
+                            $list[$i]['APPROVER_NAME'] = 'HR';
+                            $list[$i]['RECOMMENDER_ID'] = '-1';
+                            $list[$i]['RECOMMENDER_NAME'] = 'HR';
+                        }
+                    }
+                }
+
                 return new JsonModel(['success' => true, 'data' => $list, 'error' => '']);
             } catch (Exception $e) {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
@@ -247,6 +259,13 @@ class TravelRequest extends HrisController {
         }
 
         $detail = $this->repository->fetchById($id);
+
+        if($this->preference['displayHrApproved'] == 'Y' && $detail['HARDCOPY_SIGNED_FLAG'] == 'Y'){
+            $detail['APPROVER_ID'] = '-1';
+            $detail['APPROVER_NAME'] = 'HR';
+            $detail['RECOMMENDER_ID'] = '-1';
+            $detail['RECOMMENDER_NAME'] = 'HR';
+        }
         //$fileDetails = $this->repository->fetchAttachmentsById($id);
         $model = new TravelRequestModel();
         $model->exchangeArrayFromDB($detail);
@@ -254,7 +273,7 @@ class TravelRequest extends HrisController {
 
         $numberInWord = new NumberHelper();
         $advanceAmount = $numberInWord->toText($detail['REQUESTED_AMOUNT']);
-
+        
         return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
                     'recommender' => $detail['RECOMMENDED_BY_NAME'] == null ? $detail['RECOMMENDER_NAME'] : $detail['RECOMMENDED_BY_NAME'],

@@ -11,7 +11,7 @@
             {field: "COMPANY_NAME", title: "Company", width: 150},
             {field: "BRANCH_NAME", title: "Branch", width: 150},
             {field: "DEPARTMENT_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Department List');
 
         app.searchTable('departmentTable', ['DEPARTMENT_NAME', 'COMPANY_NAME', 'BRANCH_NAME']);
 

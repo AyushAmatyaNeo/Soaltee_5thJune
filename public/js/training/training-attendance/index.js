@@ -42,10 +42,10 @@
             'INSTITUTE_NAME': 'Institute'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, map, 'TrainingList');
+            app.excelExport($table, map, 'Training attendance');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, map, 'TrainingList');
+            app.exportToPDF($table, map, 'Training attendance');
         });
         app.serverRequest("", {}).then(function (response) {
             app.renderKendoGrid($table, response.data);

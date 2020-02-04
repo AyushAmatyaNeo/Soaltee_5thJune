@@ -251,11 +251,19 @@ class SystemSettingForm {
      * @Annotation\Attributes({ "id":"companyAccountNo", "class": "form-control"})
      */
     public $companyAccountNo;
+    
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"Display HR Approved"})
+     * @Annotation\Attributes({ "id":"displayHrApproved","value":"N"})
+     */
+    public $displayHrApproved;
 
     /**
      * @Annotation\Type("Zend\Form\Element\Submit")
      * @Annotation\Attributes({"value":"Submit","class":"btn btn-success","id":"btnSubmit"})
      */
+    
     public $submit;
 
 }

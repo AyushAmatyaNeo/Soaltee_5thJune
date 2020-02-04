@@ -71,7 +71,7 @@
                 } else {
                     $bulkActionDiv.hide();
                 }
-            }}, null, 'Work On DayOff Report.xlsx');
+            }}, null, 'Work On DayOff Request List.xlsx');
         app.searchTable('dayoffWorkRequestStatusTable', ['FULL_NAME', 'EMPLOYEE_CODE', 'REQUESTED_DATE_AD', 'FROM_DATE_AD', 'TO_DATE_AD', 'REQUESTED_DATE_BS', 'FROM_DATE_BS', 'TO_DATE_BS', 'DURATION', 'STATUS']);
 
         $search.on('click', function () {
@@ -88,10 +88,10 @@
             });
         });
         $('#excelExport').on('click', function () {
-            app.excelExport($tableContainer, map, "DayoffWorkRequestList.xlsx");
+            app.excelExport($tableContainer, map, "Work On DayOff Request List.xlsx");
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($tableContainer, map, "DayoffWorkRequestList.pdf");
+            app.exportToPDF($tableContainer, map, "Work On DayOff Request List.pdf");
         });
         $bulkBtns.bind("click", function () {
             var list = grid.getSelected();

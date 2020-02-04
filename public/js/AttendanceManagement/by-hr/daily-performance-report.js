@@ -132,10 +132,10 @@
             'FUNCTIONAL_TYPE_EDESC': 'Functional Type'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, "AttendanceList.xlsx");
+            app.excelExport($table, exportMap, "Daily Performance Report.xlsx");
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, "AttendanceList.pdf");
+            app.exportToPDF($table, exportMap, "Daily Performance Report.pdf");
 
         });
 

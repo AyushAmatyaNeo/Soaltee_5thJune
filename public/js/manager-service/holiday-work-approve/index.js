@@ -52,7 +52,7 @@
                     </a>
                 </span>
             `}
-        ]);
+        ], null, null, null, 'Holiday Work Request');
 
 
         app.pullDataById('', {}).then(function (response) {
@@ -92,11 +92,11 @@
 
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'Leave Request List');
+            app.excelExport($table, exportMap, 'Holiday Work Request');
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'Leave Request List');
+            app.exportToPDF($table, exportMap, 'Holiday Work Request');
         });
         var selectItems = {};
         var $bulkBtnContainer = $('#acceptRejectDiv');

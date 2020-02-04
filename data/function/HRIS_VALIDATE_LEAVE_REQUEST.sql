@@ -45,10 +45,19 @@ BEGIN
     RETURN 'Leave Request is overlapping other leave request.';
   END IF;
   
-  
+  BEGIN
   SELECT END_DATE INTO V_LEAVE_YEAR_END FROM HRIS_LEAVE_YEARS WHERE 
-           TRUNC(SYSDATE)  BETWEEN START_DATE AND END_DATE;
-           
+           P_START_DATE  BETWEEN START_DATE AND END_DATE;
+ EXCEPTION
+ WHEN NO_DATA_FOUND THEN
+      SELECT
+        MAX(END_DATE)
+        INTO
+        V_LEAVE_YEAR_END
+        FROM
+        HRIS_LEAVE_YEARS;
+    END;
+
            IF(P_END_DATE>V_LEAVE_YEAR_END) THEN
            RETURN 'You Are Requesting leave for next leave Year';
            END IF;

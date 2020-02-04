@@ -27,7 +27,7 @@
             {field: "DURATION", title: "Duration(in hour)"},
             {field: "INSTITUTE_NAME", title: "Institute"},
             {field: "TRAINING_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'TrainingList');
 
         app.searchTable('trainingTable', ['TRAINING_NAME', 'COMPANY_NAME', 'START_DATE_AD', 'END_DATE_AD', 'START_DATE_BS', 'END_DATE_BS', 'DURATION', 'INSTITUTE_NAME']);
 

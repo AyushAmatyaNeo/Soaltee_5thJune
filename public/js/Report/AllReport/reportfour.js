@@ -65,7 +65,7 @@ function setAbbr(temp){
          var exportVals;
          var columns=generateColsForKendo(32);
          
-          app.initializeKendoGrid($table, columns);
+          app.initializeKendoGrid($table, columns, null, null, 'Employee Wise Attendance Report.xlsx');
         
         
         app.populateSelect($employeeList,document.employeeList, 'EMPLOYEE_ID', 'FULL_NAME','Select','');
@@ -184,10 +184,10 @@ function setAbbr(temp){
         
         
          $('#excelExport').on('click', function () {
-            app.excelExport($table, exportVals, 'Employee_Wise_Attendance_Report');
+            app.excelExport($table, exportVals, 'Employee Wise Attendance Report');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportVals, 'Employee_Wise_Attendance_Report');
+            app.exportToPDF($table, exportVals, 'Employee Wise Attendance Report');
         });
 
         

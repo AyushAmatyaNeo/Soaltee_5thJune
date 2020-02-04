@@ -53,7 +53,7 @@
             {field: "STATUS_DETAIL", title: "Status"},
             {field: "YOUR_ROLE", title: "Role"},
             {field: ["REQUEST_ID", "ROLE"], title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Training Request List');
 
 
         app.pullDataById('', {}).then(function (response) {

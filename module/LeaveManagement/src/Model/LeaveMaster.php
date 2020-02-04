@@ -43,6 +43,7 @@ class LeaveMaster extends Model {
     const DAY_OFF_AS_LEAVE = "DAY_OFF_AS_LEAVE";
     const HOLIDAY_AS_LEAVE = "HOLIDAY_AS_LEAVE";
     const APPLY_LIMIT = "APPLY_LIMIT";
+    const HR_ONLY = "HR_ONLY";
 
 
     public $leaveId;
@@ -81,6 +82,7 @@ class LeaveMaster extends Model {
     public $dayOffAsLeave;
     public $holidayAsLeave;
     public $applyLimit;
+    public $hrOnly;
     public $mappings = [
         'leaveId' => self::LEAVE_ID,
         'leaveCode' => self::LEAVE_CODE,
@@ -117,7 +119,8 @@ class LeaveMaster extends Model {
         'employeeId' => self::EMPLOYEE_ID,
         'dayOffAsLeave' => self::DAY_OFF_AS_LEAVE,
         'holidayAsLeave' => self::HOLIDAY_AS_LEAVE,
-        'applyLimit' => self::APPLY_LIMIT
+        'applyLimit' => self::APPLY_LIMIT,
+        'hrOnly' => self::HR_ONLY,
     ];
 
 }

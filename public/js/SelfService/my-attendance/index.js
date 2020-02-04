@@ -34,7 +34,7 @@
             {field: "IN_REMARKS", title: "Late In Reason"},
             {field: "OUT_REMARKS", title: "Early Out Reason"},
             {field: ["ID", "LATE_STATUS"], title: "Action", template: actionTemplate}
-        ]);
+        ], null, null, null, 'Attendance List');
 
 
 

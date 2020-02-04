@@ -38,7 +38,7 @@
                 } else {
                     $bulkActionDiv.hide();
                 }
-            }});
+            }},null, 'Employee Shift List');
 
         app.searchTable('shiftAssignTable', ['COMPANY_NAME', 'EMPLOYEE_CODE', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'POSITION_NAME', 'DESIGNATION_TITLE', 'FULL_NAME', 'SHIFT_ENAME', 'FROM_DATE_AD', 'FROM_DATE_BS', 'TO_DATE_AD', 'TO_DATE_BS'], true);
         app.pdfExport(
@@ -180,9 +180,6 @@
 
         });
 
-//        $("#reset").on("click", function () {
-//            $(".form-control").val("");
-//        });
 
     });
 })(window.jQuery, window.app);

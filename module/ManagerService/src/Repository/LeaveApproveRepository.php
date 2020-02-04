@@ -184,6 +184,7 @@ class LeaveApproveRepository implements RepositoryInterface {
                   INITCAP(APRV.FULL_NAME)                             AS APPROVER_NAME,
                   ELA.TOTAL_DAYS                                      AS TOTAL_DAYS,
                   ELA.BALANCE                                         AS BALANCE,
+                  LA.HARDCOPY_SIGNED_FLAG                             AS HR_APPROVED,
                   (CASE WHEN (LA.HALF_DAY IS NULL OR LA.HALF_DAY = 'N')
                   then LA.NO_OF_DAYS
                   else LA.NO_OF_DAYS/2

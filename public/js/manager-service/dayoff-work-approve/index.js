@@ -45,7 +45,7 @@
             {field: "DURATION", title: "Duration"},
             {field: "YOUR_ROLE", title: "Your Role"},
             {field: ["ID", "ROLE"], title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Dayoff work Request');
 
 
         app.pullDataById('', {}).then(function (response) {
@@ -83,11 +83,11 @@
             'APPROVED_DATE': 'Approved Date'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'Leave Request List');
+            app.excelExport($table, exportMap, 'Dayoff Request List');
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'Leave Request List');
+            app.exportToPDF($table, exportMap, 'Dayoff Request List');
         });
         var selectItems = {};
         var $bulkBtnContainer = $('#acceptRejectDiv');

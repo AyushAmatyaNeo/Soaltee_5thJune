@@ -11,7 +11,7 @@
             {field: "TELEPHONE", title: "Telephone", width: 120},
             {field: "EMAIL", title: "Email", width: 150},
             {field: "INSTITUTE_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Institute List');
 
         app.searchTable('instituteTable', ['INSTITUTE_NAME', 'LOCATION', 'TELEPHONE', 'EMAIL']);
 

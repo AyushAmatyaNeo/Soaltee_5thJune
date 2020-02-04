@@ -10,7 +10,7 @@
             {field: "FLAG", title: "Flag", width: 150, template: '<select class="yes-no-flag"   data-style="btn-new" name="flag[]"><option value="N" #if(FLAG == "N"){#selected#}#>N</option><option value="Y" #if(FLAG == "Y"){#selected#}#>Y</option></select>'},
             {field: "PAY_TYPE_FLAG", title: "Pay Type Flag", width: 150, template: '<select class="pay-type-flag"   data-style="btn-new" name="payTypeFlag[]"><option value="D" #if(PAY_TYPE_FLAG == "D"){#selected#}#>DEBIT</option><option value="C" #if(PAY_TYPE_FLAG == "C"){#selected#}#>CREDIT</option></select>'}
             // {field: "BRANCH_NAME", title: "Branch", width: 150}
-        ]);
+        ], null, null, null, 'JV List');
 
         app.searchTable('jvTable', ['PAY_EDESC', 'JV_NAME']);
 

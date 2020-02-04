@@ -84,13 +84,14 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
         <div class="row margin-top-10">
             <div class="col-sm-2">
                 <label>Employee</label>
-                <select multiple="multiple" required class="form-control" name="employee" id="employeeId">
+                <select required class="form-control" name="employee" id="employeeId">
                 </select>
             </div>
 
             <div class="col-sm-2">
                 <label>Account</label>
                 <select required class="form-control" name="account" id="account">
+                <option value="-1">Total Hotel Loan</option>
                     <?php foreach($loanList as $value){ ?>
                     <option value="<?=$value['LOAN_ID']?>"><?=$value['LOAN_NAME']?></option>
                     <?php } ?>

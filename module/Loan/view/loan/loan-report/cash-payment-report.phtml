@@ -22,8 +22,7 @@ $this->headScript()
     document.ids =<?php echo json_encode(["loanId" => -1, "loanRequestStatusId" => -1, "fromDate1" => "", "nepaliFromDate" => "", "toDate1" => "", "nepaliToDate" => ""]) ?>;
     document.url = '<?= $this->url("restful", ["action" => "index"]) ?>';
     document.searchValues =<?php echo json_encode($searchValues) ?>;
-    document.viewLink = '<?= $this->url("loanStatus", ["action" => "view"]) ?>';
-    document.editLink = '<?= $this->url("loanStatus", ["action" => "edit"]) ?>';
+    document.editLink = '<?= $this->url("loanApply", ["action" => "edit"]) ?>';
     document.loanClosing = '<?= $this->url("loanApply", ["action" => "loanClosing"]) ?>';
     document.pullCashPaymentListLink = '<?= $this->url("loanReport", ["action" => "pullCashPaymentList"]) ?>';
     document.preference =<?php echo json_encode($preference) ?>;

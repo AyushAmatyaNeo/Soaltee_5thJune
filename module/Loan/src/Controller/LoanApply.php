@@ -7,7 +7,7 @@ use Application\Helper\Helper;
 use Application\Helper\EntityHelper;
 use Zend\Form\Annotation\AnnotationBuilder;
 use SelfService\Form\LoanRequestForm;
-use Loan\Form\LoanCLosing AS LoanCLosingForm;
+use Loan\Form\LoanClosing AS LoanClosingForm;
 use Setup\Model\HrEmployees;
 use Zend\Authentication\Storage\StorageInterface;
 use Loan\Model\LoanClosing AS LoanClosingModel;
@@ -19,7 +19,7 @@ use ManagerService\Repository\LoanApproveRepository;
 
 class LoanApply extends HrisController{
     protected $form;
-    protected $loanCLosingForm;
+    protected $loanClosingForm;
     protected $adapter;
     protected $loanRequesteRepository;
     protected $loanClosingRepository;
@@ -36,8 +36,8 @@ class LoanApply extends HrisController{
     }
     public function initializeClosingForm(){
         $builder = new AnnotationBuilder();
-        $loanCLosingForm = new LoanCLosingForm();
-        $this->loanCLosingForm = $builder->createForm($loanCLosingForm);
+        $loanClosingForm = new LoanClosingForm();
+        $this->loanClosingForm = $builder->createForm($loanClosingForm);
     }
     
     public function indexAction() {
@@ -113,11 +113,11 @@ class LoanApply extends HrisController{
         $model = new LoanClosingModel();
         $id = (int) $this->params()->fromRoute('id');
         if ($request->isPost()) {
-            $this->loanCLosingForm->setData($request->getPost());
-            if ($this->loanCLosingForm->isValid()) {
-                $model->exchangeArrayFromForm($this->loanCLosingForm->getData());
+            $this->loanClosingForm->setData($request->getPost());
+            if ($this->loanClosingForm->isValid()) {
+                $model->exchangeArrayFromForm($this->loanClosingForm->getData());
                 $model->id = ((int) Helper::getMaxId($this->adapter, LoanClosingModel::TABLE_NAME, LoanClosingModel::ID)) + 1;
-                $model->paymentDate = Helper::getcurrentExpressionDate();
+                //$model->paymentDate = Helper::getcurrentExpressionDate();
                 $model->loanReqId = (int) $this->params()->fromRoute('id');
                 $this->loanClosingRepository->add($model);
                 $this->loanClosingRepository->updateLoanStatus($model->loanReqId);
@@ -136,7 +136,35 @@ class LoanApply extends HrisController{
         $emp_id = $this->loanClosingRepository->getEmployeeByLoanRequestId($id);
         $emp_id = Helper::extractDbData($emp_id)[0]['EMPLOYEE_ID'];
         return Helper::addFlashMessagesToArray($this, [
-            'form' => $this->loanCLosingForm,
+            'form' => $this->loanClosingForm,
+            'id' => $id,
+            'rate' => Helper::extractDbData($this->loanClosingRepository->getRateByLoanReqId($id))[0]['INTEREST_RATE'],
+            'employee'=> EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["FIRST_NAME", "MIDDLE_NAME", "LAST_NAME"],["EMPLOYEE_ID"=>$emp_id,"STATUS"=>'E','RETIRED_FLAG'=>'N'],"FIRST_NAME","ASC"," ",FALSE,TRUE),
+            'unpaidAmount'=>Helper::extractDbData($this->loanClosingRepository->getUnpaidAmount($id))[0]['UNPAID_AMOUNT']
+        ]);
+    }
+
+    public function rectifyAction() {
+        $this->initializeClosingForm();
+        $request = $this->getRequest();
+        $id = (int) $this->params()->fromRoute('id');
+        $model = new LoanClosingModel();
+        $paymentId = Helper::extractDbData($this->loanClosingRepository->getPaymentId($id))[0]["ID"];
+        if ($request->isPost()) {
+            $data = $request->getPost();
+            //echo '<pre>'; print_r($data); die;
+            $this->loanClosingRepository->rectify($paymentId, $data);
+            $this->flashmessenger()->addMessage("Amount has been rectified successfully!!!");
+            return $this->redirect()->toRoute("loanStatus");
+        }  
+        $detail = $this->loanClosingRepository->fetchById($paymentId);
+        $model->exchangeArrayFromDB($detail);
+        $this->loanClosingForm->bind($model);
+        $emp_id = $this->loanClosingRepository->getEmployeeByLoanRequestId($id);
+        $emp_id = Helper::extractDbData($emp_id)[0]['EMPLOYEE_ID'];
+        
+        return Helper::addFlashMessagesToArray($this, [
+            'form' => $this->loanClosingForm,
             'id' => $id,
             'rate' => Helper::extractDbData($this->loanClosingRepository->getRateByLoanReqId($id))[0]['INTEREST_RATE'],
             'employee'=> EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["FIRST_NAME", "MIDDLE_NAME", "LAST_NAME"],["EMPLOYEE_ID"=>$emp_id,"STATUS"=>'E','RETIRED_FLAG'=>'N'],"FIRST_NAME","ASC"," ",FALSE,TRUE),

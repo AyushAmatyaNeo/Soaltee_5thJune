@@ -163,6 +163,7 @@ print $this->form()->openTag($form);
                             <span class="required" aria-required="true">*</span>
                             <?php print $this->formElement($noOfDays); ?>
                             <span id="errorMsg" style="font-size:11px; color:red;"></span>
+                            <span id="halfDayMsg" style="font-size:12px; color:green; font-weight: bold"></span>
                         </div>
                         <?php print $this->formElementErrors()->render($noOfDays, ['class' => 'help-block error']); ?>
                     </div>

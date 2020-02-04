@@ -8,7 +8,7 @@
         app.initializeKendoGrid($table, [
             {field: "ACADEMIC_PROGRAM_NAME", title: "Academic Program", width: 400},
             {field: "ACADEMIC_PROGRAM_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'AcademicProgramList');
 
         app.searchTable('academicProgramTable', ['ACADEMIC_PROGRAM_NAME']);
 

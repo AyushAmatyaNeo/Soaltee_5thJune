@@ -276,6 +276,7 @@ AS LEAVE_ENAME,
                   LA.APPROVED_BY                                     AS APPROVED_BY,
                   LA.RECOMMENDED_REMARKS                             AS RECOMMENDED_REMARKS,
                   LA.APPROVED_REMARKS                                AS APPROVED_REMARKS,
+                  LA.HARDCOPY_SIGNED_FLAG                            AS HARDCOPY_SIGNED_FLAG,
                   LS.APPROVED_FLAG                                   AS SUB_APPROVED_FLAG,
                   INITCAP(TO_CHAR(LS.APPROVED_DATE, 'DD-MON-YYYY'))  AS SUB_APPROVED_DATE,
                   LS.EMPLOYEE_ID                                     AS SUB_EMPLOYEE_ID

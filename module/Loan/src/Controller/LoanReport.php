@@ -57,9 +57,16 @@ class LoanReport extends HrisController {
                 //$loan_id = !empty($_POST['loan_id']) ? $_POST['loan_id'] : null ;
                 $result = $this->repository->fetchLoanVoucher($emp_id, $fromDate, $toDate, $loanId);
                 $loanVoucherDetails = Helper::extractDbData($result);
+                
                 $fromDate = '1-Jul-'.date('Y', strtotime($fromDate));
                 $result = $this->repository->fetchOpeningBalance($emp_id, $fromDate, $loanId);
                 $openingBalanceDetails = Helper::extractDbData($result);
+                $openingBalanceDetails[0]["OPENING_BALANCE"] = $openingBalanceDetails[0]["OPENING_BALANCE"] == null ? "0.00" : $openingBalanceDetails[0]["OPENING_BALANCE"];
+                array_unshift($loanVoucherDetails, ["DT" => $fromDate, 
+                "PARTICULARS" => "Opening Balance", 
+                "DEBIT_AMOUNT" =>  $openingBalanceDetails[0]["OPENING_BALANCE"],
+                "CREDIT_AMOUNT" => "0",
+                "BALANCE" => "0"]);
                 return new JsonModel(['success' => true, 'data' => $loanVoucherDetails, 'balanceData' => $openingBalanceDetails, 'message' => null]);
             } catch (Exception $e) {
                 return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
@@ -113,5 +120,44 @@ class LoanReport extends HrisController {
         $postedData = $getData = $request->getPost();
         $data = Helper::extractDbData($this->repository->getCashPaymentsList($postedData));
         return new JSONModel(['success' => true, 'data' => $data, 'message' => null]);
+    }
+
+    public function loanSummaryAction(){
+        $request = $this->getRequest();
+        if ($request->isPost()){
+            try {
+                $emp_id = !empty($_POST['emp_id']) ? $_POST['emp_id'] : null ;
+                $fromDate = !empty($_POST['fromDate']) ? $_POST['fromDate'] : null ;
+                $toDate = !empty($_POST['toDate']) ? $_POST['toDate'] : null ;
+                $loanId = !empty($_POST['loanId']) ? $_POST['loanId'] : null ;
+                $data = [];
+                
+                foreach($emp_id as $eid){
+                    $result = $this->repository->fetchLoanSummary($eid, $fromDate, $toDate, $loanId);
+                    $loanSummary = Helper::extractDbData($result);
+                    array_push($data, $loanSummary[0]);
+                }
+                
+                return new JsonModel(['success' => true, 'data' => $data, 'message' => null]);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+            }
+        } 
+        $loanList = $this->repository->getLoanlist();
+        $loanList = Helper::extractDbData($loanList);
+        
+        $searchValues = ApplicationHelper::getSearchData($this->adapter);
+
+        $allEmployees = Helper::extractDbData($this->repository->getAllEmployees());
+
+        $searchValues['employee'] = $allEmployees;
+
+        return $this->stickFlashMessagesTo([
+                'searchValues' => $searchValues,
+                'acl' => $this->acl,
+                'employeeDetail' => $this->storageData['employee_detail'],
+                'loanList' => $loanList,
+                'preference' => $this->preference
+        ]);
     }
 }

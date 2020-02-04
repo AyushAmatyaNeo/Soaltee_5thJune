@@ -11,7 +11,7 @@
             {field: "SERVICE_EVENT_TYPE_NAME", title: "Service Event Type", width: 100},
             {field: "QA_INDEX", title: "Question Index", width: 90},
             {field: "QA_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'ServiceQuestionList');
 
         app.searchTable('serviceQuestionTable', ['QUESTION_EDESC', 'PARENT_QUESTION_EDESC', 'SERVICE_EVENT_TYPE_NAME', 'QA_INDEX']);
 

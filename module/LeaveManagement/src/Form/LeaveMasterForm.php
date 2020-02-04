@@ -188,4 +188,13 @@ class LeaveMasterForm {
      * @Annotation\Attributes({ "id":"applyLimit","min":"0", "class":"form-control"})
      */
     public $applyLimit;
+
+    /**
+     * @Annotation\Type("Zend\Form\Element\Radio")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"value_options":{"Y":"Yes","N":"No"},"label":"HR only"})
+     * @Annotation\Required(false)
+     * @Annotation\Attributes({ "id":"hrOnly","value":"Y"})
+     */
+    public $hrOnly;
 }

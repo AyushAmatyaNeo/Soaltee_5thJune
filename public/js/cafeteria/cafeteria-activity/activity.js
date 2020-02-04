@@ -79,7 +79,7 @@
             alert("Time is not selected."); return false;
         }
         for(let i = 0; i < qtyValues.length; i++){
-            if(qtyValues[i] > 0){
+            if(qtyValues[i] > 0 || qtyValues[i] < 0){
                 qtyValidate = true;
             }
         }

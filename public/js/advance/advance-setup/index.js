@@ -25,7 +25,7 @@
             'ADVANCE_CODE': 'AdvanceCode',
             'ADVANCE_ENAME': 'Name'
         }
-        app.initializeKendoGrid($table, columns, "Advance List.xlsx");
+        app.initializeKendoGrid($table, columns, null, null, null, 'Advance List');
 
         app.searchTable($table, ['ADVANCE_ENAME']);
 

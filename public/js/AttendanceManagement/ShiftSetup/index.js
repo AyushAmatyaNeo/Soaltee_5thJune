@@ -13,7 +13,7 @@
             {field: "START_TIME", title: "Start Time", width: 120},
             {field: "END_TIME", title: "End Time", width: 120},
             {field: "SHIFT_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Shift List');
 
         app.searchTable('shiftTable', ['SHIFT_ENAME', 'COMPANY_NAME', 'START_TIME', 'END_TIME']);
 
@@ -27,7 +27,7 @@
                 'HALF_DAY_END_TIME': 'Half End Time',
                 'LATE_IN': 'late In',
                 'EARLY_OUT': 'Early Out'
-            }, 'ShiftList');
+            }, 'Shift List');
         });
         $('#pdfExport').on('click', function () {
             app.exportToPDF($table, {
@@ -39,7 +39,7 @@
                 'HALF_DAY_END_TIME': 'Half End Time',
                 'LATE_IN': 'late In',
                 'EARLY_OUT': 'Early Out'
-            }, 'ShiftList');
+            }, 'Shift List');
         });
 
 

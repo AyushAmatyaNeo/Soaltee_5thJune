@@ -19,7 +19,7 @@
             {field: "POSITION_NAME", title: "Position", width: 120}
         ];
 
-        app.initializeKendoGrid($employeeTable, columns, null, null, null, 'Birthday Report.xlsx');
+        app.initializeKendoGrid($employeeTable, columns, null, null, null, 'Birthday List.xlsx');
 
         app.searchTable('employeeTable', ['EMPLOYEE_CODE', 'FULL_NAME', 'MOBILE_NO', 'BIRTH_DATE', 'COMPANY_NAME', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'DESIGNATION_TITLE'], false);
   

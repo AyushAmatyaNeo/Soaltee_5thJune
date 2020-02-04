@@ -51,7 +51,7 @@
             {field: "DURATION", title: "Duration"},
             {field: "STATUS_DETAIL", title: "Status"},
             {field: "ID", title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Dayoff Work Request');
 
         app.searchTable('workOnDayoffTbl', ['REQUESTED_DATE_AD', 'REQUESTED_DATE_BS', 'FROM_DATE_AD', 'FROM_DATE_BS', 'TO_DATE_AD', 'TO_DATE_BS', 'DURATION', 'STATUS_DETAIL']);
 
@@ -78,10 +78,10 @@
             'APPROVED_DATE': 'Approved Dt'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'Work On day Off List');
+            app.excelExport($table, exportMap, 'Work On day Off Request');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'Work On day Off List');
+            app.exportToPDF($table, exportMap, 'Work On day Off Request');
         });
 
     });

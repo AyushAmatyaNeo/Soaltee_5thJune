@@ -102,6 +102,11 @@ class TravelApply extends HrisController {
 //                $model->status = 'RQ';
                 $model->deductOnSalary = 'Y';
                 $model->status = ($postData['applyStatus'] == 'AP') ? 'AP' : 'RQ';
+
+                if($model->status == 'AP'){
+                    $model->hardcopySignedFlag = 'Y';
+                }
+
                 $this->travelRequesteRepository->add($model);
                 $this->flashmessenger()->addMessage("Travel Request Successfully added!!!");
 

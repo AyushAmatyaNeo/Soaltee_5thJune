@@ -7,10 +7,10 @@
         var $search = $('#search');
         
         $('#excelExport').on('click', function () {
-            app.excelExport($employeeTable, map, 'Birthday Employee List.xlsx');        
+            app.excelExport($employeeTable, map, 'Leave Report Card.xlsx');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($employeeTable, map, 'Birthday Employee List.pdf');
+            app.exportToPDF($employeeTable, map, 'Leave Report Card.pdf');
         });
         
         $search.on('click', function () {
@@ -43,8 +43,6 @@
                         tableData+='<tr><td>'+responseData[index].JOIN_DATE_AD+'</td><td>-</td><td>-</td></tr>';
                         tableData+='<tr><td rowspan="2">SrNo</td><td rowspan="2">Date</td><td rowspan="2">Type Of Leave</td><td colspan="3">Leave Required</td></tr></table>';
 
-
-
                         $('#table').append(tableData);
                     }
                 } else {
@@ -55,8 +53,5 @@
             });  
         });
         
-//        $("#reset").on("click", function () {
-//            $(".form-control").val("");
-//        });
-    }); 
+    });
 })(window.jQuery, window.app);

@@ -33,6 +33,7 @@ $provinceWiseBranchFilter = $form->get('provinceWiseBranchFilter');
 $companyName = $form->get('companyName');
 $companyAddress = $form->get('companyAddress');
 $companyAccountNo = $form->get('companyAccountNo');
+$displayHrApproved = $form->get('displayHrApproved');
 
 $submit = $form->get('submit');
 
@@ -373,7 +374,15 @@ if ($this->messages) {
                         <?php print $this->formElementErrors()->render($orderBySeniority, ['class' => 'help-block error']); ?>
                     </div>
                     
-                    
+                    <div class=" col-sm-4 ">
+                        <div class="form-group padding-0">
+                            <?php print $this->formLabel($displayHrApproved); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($displayHrApproved); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($displayHrApproved, ['class' => 'help-block error']); ?>
+                    </div>
                     
                     
                 </div>

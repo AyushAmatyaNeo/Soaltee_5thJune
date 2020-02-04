@@ -36,6 +36,18 @@ class LeaveRequest extends HrisController {
                 $data = $request->getPost();
                 $rawList = $this->repository->getfilterRecords($data);
                 $list = Helper::extractDbData($rawList);
+                
+                if($this->preference['displayHrApproved'] == 'Y'){
+                    for($i = 0; $i < count($list); $i++){
+                        if($list[$i]['HARDCOPY_SIGNED_FLAG'] == 'Y'){
+                            $list[$i]['APPROVER_ID'] = '-1';
+                            $list[$i]['APPROVER_NAME'] = 'HR';
+                            $list[$i]['RECOMMENDER_ID'] = '-1';
+                            $list[$i]['RECOMMENDER_NAME'] = 'HR';
+                        }
+                    }
+                }
+
                 return new JsonModel(['success' => true, 'data' => $list, 'error' => '']);
             } catch (Exception $e) {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
@@ -193,9 +205,21 @@ class LeaveRequest extends HrisController {
         $leaveApproveRepository = new LeaveApproveRepository($this->adapter);
 
         $detail = $leaveApproveRepository->fetchById($id);
+
+        if($this->preference['displayHrApproved'] == 'Y' && $detail['HR_APPROVED'] == 'Y'){
+            $detail['APPROVER_ID'] = '-1';
+            $detail['APPROVER_NAME'] = 'HR';
+            $detail['RECOMMENDER_ID'] = '-1';
+            $detail['RECOMMENDER_NAME'] = 'HR';
+            $detail['RECOMMENDED_BY_NAME'] = 'HR';
+            $detail['APPROVED_BY_NAME'] = 'HR';
+        }
+
         $fileDetails = $leaveApproveRepository->fetchAttachmentsById($id);
         $authRecommender = $detail['RECOMMENDED_BY_NAME'] == null ? $detail['RECOMMENDER_NAME'] : $detail['RECOMMENDED_BY_NAME'];
         $authApprover = $detail['APPROVED_BY_NAME'] == null ? $detail['APPROVER_NAME'] : $detail['APPROVED_BY_NAME'];
+
+        
 
         //to get the previous balance of selected leave from assigned leave detail
         $result = $leaveApproveRepository->assignedLeaveDetail($detail['LEAVE_ID'], $detail['EMPLOYEE_ID']);

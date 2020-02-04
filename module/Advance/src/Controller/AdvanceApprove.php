@@ -173,7 +173,7 @@ class AdvanceApprove extends HrisController {
                                 $advanceRequestModel->recommendedDate = Helper::getcurrentExpressionDate();
                                 $advanceRequestModel->recommendedBy = (int) $this->employeeId;
                             }
-                            $this->advancePaymentAdd($detail);
+//                            $this->advancePaymentAdd($detail);
                             $this->repository->edit($advanceRequestModel, $id);
                             try {
                                 $advanceRequestModel->advanceRequestId = $id;

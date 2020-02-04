@@ -8,7 +8,7 @@
         app.initializeKendoGrid($table, [
             {field: "NAME", title: "File Type Name", width: 150},
             {field: "BRANCH_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'FileType List');
 
         app.searchTable('fileTypeTable', ['NAME']);
         $('#excelExport').on('click', function () {

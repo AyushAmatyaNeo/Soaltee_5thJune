@@ -65,14 +65,14 @@
             column['columns'] = innerColumns;
             columns.push(column);
         }
-        app.initializeKendoGrid($table, columns);
+        app.initializeKendoGrid($table, columns, null, null, 'Department wise monthly attendance report');
 
         app.searchTable($table, ['FULL_NAME', 'EMPLOYEE_CODE']);
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'Employee_Wise_Attendance_Report');
+            app.excelExport($table, exportMap, 'Department wise monthly attendance report');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'Employee_Wise_Attendance_Report');
+            app.exportToPDF($table, exportMap, 'Department wise monthly attendance report');
         });
 
         $('.hris-filter-container select').select2();

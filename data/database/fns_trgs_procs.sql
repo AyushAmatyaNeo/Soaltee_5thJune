@@ -1535,9 +1535,9 @@ ST.SERVICE_TYPE_NAME,
 ST.TYPE AS SERVICE_TYPE,
 (
 CASE
-WHEN EHM.PERMANENT_FLAG IS NULL
-THEN E.PERMANENT_FLAG
-ELSE EHM.PERMANENT_FLAG
+WHEN ST.SERVICE_TYPE_NAME='Permanent'
+THEN 'Y'
+ELSE 'N'
 END),
 E.PERMANENT_DATE,
 E.ADDR_PERM_STREET_ADDRESS,
@@ -4232,6 +4232,8 @@ AS
   v_NEXT_HALF_INTERVAL DATE;
   v_training_id          number;
   v_roaster_shift_id number;
+  V_BREAK_DEDUCT_FLAG char(1 byte);
+  v_middle_diff number;
 BEGIN
   IF P_TO_ATTENDANCE_DT IS NOT NULL THEN
     V_TO_ATTENDANCE_DT  :=P_TO_ATTENDANCE_DT;
@@ -4286,6 +4288,8 @@ BEGIN
       V_IGNORE_TIME    :=employee.IGNORE_TIME;
       V_SHIFT_ID       := employee.SHIFT_ID;
       v_roaster_shift_id := null;
+      V_BREAK_DEDUCT_FLAG :=null;
+      v_middle_diff :=0;
       
       begin
       select CASE when  shift_id > 0 then shift_id else null end into v_roaster_shift_id
@@ -4588,13 +4592,52 @@ BEGIN
           END IF;
         END IF;
         --
+        
+        -- to minus from shift special case for maruti start
+        begin
+        select BREAK_DEDUCT_FLAG into V_BREAK_DEDUCT_FLAG from hris_shifts where shift_id=V_SHIFT_ID;
+        
+        if V_BREAK_DEDUCT_FLAG='Y'
+        then
+        
+        SELECT 
+ nvl(
+ SUM(ABS(EXTRACT( HOUR FROM middle_diff ))*60 + ABS(EXTRACT( MINUTE FROM middle_diff )))
+ ,0) into v_middle_diff
+ from(
+select 
+(
+max(attendance_time) - min(attendance_time) ) as middle_diff
+from HRIS_ATTENDANCE where 
+attendance_dt=TO_DATE (employee.ATTENDANCE_DT, 'DD-MON-YY') 
+and 
+employee_id= employee.EMPLOYEE_ID 
+and attendance_time between 
+to_timestamp(V_IN_TIME)  + INTERVAL '1' HOUR and
+to_timestamp(V_OUT_TIME)  - INTERVAL '1' HOUR
+order by attendance_time asc
+);
+
+DBMS_OUTPUT.PUT_LINE('middle diff start');
+DBMS_OUTPUT.PUT_LINE(v_middle_diff);
+DBMS_OUTPUT.PUT_LINE('middle diff end');
+
+       -- V_TOTAL_WORKING_MIN := V_TOTAL_WORKING_MIN -v_middle_diff ;
+ 
+        end if;
+        
+        
+        end;
+        -- to minus from shift special case for maruti end
+        
+        
         UPDATE HRIS_ATTENDANCE_DETAIL
         SET IN_TIME         = V_IN_TIME,
           OUT_TIME          =V_OUT_TIME,
           OVERALL_STATUS    = V_OVERALL_STATUS,
           LATE_STATUS       = V_LATE_STATUS,
-          TOTAL_HOUR        = V_DIFF_IN_MIN,
-          OT_MINUTES        = (V_DIFF_IN_MIN - V_TOTAL_WORKING_MIN),
+          TOTAL_HOUR        = V_DIFF_IN_MIN - v_middle_diff ,
+          OT_MINUTES        = (V_DIFF_IN_MIN - V_TOTAL_WORKING_MIN - v_middle_diff),
           IN_REMARKS  = (select remarks from HRIS_ATTENDANCE where EMPLOYEE_ID = employee.EMPLOYEE_ID and ATTENDANCE_TIME=V_IN_TIME AND ROWNUM=1),
           OUT_REMARKS = (select remarks from HRIS_ATTENDANCE where EMPLOYEE_ID = employee.EMPLOYEE_ID and ATTENDANCE_TIME=V_OUT_TIME AND ROWNUM=1)
         WHERE ATTENDANCE_DT = TO_DATE (employee.ATTENDANCE_DT, 'DD-MON-YY')
@@ -5809,7 +5852,21 @@ BEGIN
     RETURN;
   END IF;
   --
+  
+  -- check if employeewise reward type set in  start
+  BEGIN
+  SELECT WOH_FLAG INTO V_WOH_FLAG FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID=V_EMPLOYEE_ID;
+   EXCEPTION
+  WHEN no_data_found THEN
+    NULL;
+  END;
+  
+  -- check if employeewise reward type set in  end
+  
+  
   -- select employee reward type in  position and set in variable  if not found terminate
+  IF(V_WOH_FLAG IS NULL OR (V_WOH_FLAG!='O' AND V_WOH_FLAG!='L'))
+  THEN
   BEGIN
     SELECT P.WOH_FLAG
     INTO V_WOH_FLAG
@@ -5821,6 +5878,8 @@ BEGIN
   WHEN no_data_found THEN
     HRIS_RAISE_ERR(V_EMPLOYEE_ID,'Work on dayoff reward could not be given.','Employee position is not set');
   END;
+  
+  END IF;
   --
   --delete from from necessary tables
   DELETE FROM HRIS_EMPLOYEE_LEAVE_ADDITION WHERE WOD_ID=P_ID;
@@ -6112,6 +6171,21 @@ BEGIN
     RETURN;
   END IF;
   --
+  
+   -- check if employeewise reward type set in  start
+  BEGIN
+  SELECT WOH_FLAG INTO V_WOH_FLAG FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID=V_EMPLOYEE_ID;
+   EXCEPTION
+  WHEN no_data_found THEN
+    NULL;
+  END;
+  
+  -- check if employeewise reward type set in  end
+  
+  
+  -- select employee reward type in  position and set in variable  if not found terminate
+  IF(V_WOH_FLAG IS NULL OR (V_WOH_FLAG!='O' AND V_WOH_FLAG!='L'))
+  THEN
   BEGIN
     SELECT P.WOH_FLAG
     INTO V_WOH_FLAG
@@ -6123,6 +6197,7 @@ BEGIN
   WHEN no_data_found THEN
     HRIS_RAISE_ERR(V_EMPLOYEE_ID,'Work on dayoff reward could not be given.','Employee position is not set');
   END;
+  END IF;
   --
 DELETE FROM HRIS_EMPLOYEE_LEAVE_ADDITION WHERE WOH_ID=P_ID;
        DELETE FROM HRIS_OVERTIME_DETAIL WHERE WOH_ID= P_ID;
@@ -6462,6 +6537,18 @@ END;/
 V_WOH_FLAG CHAR(1 BYTE);
 BEGIN
 
+ -- check if employeewise reward type set in  start
+  BEGIN
+  SELECT WOH_FLAG INTO V_WOH_FLAG FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID=P_EMPLOYEE_ID;
+   EXCEPTION
+  WHEN no_data_found THEN
+    NULL;
+  END;
+  
+  -- check if employeewise reward type set in  end
+
+IF(V_WOH_FLAG IS NULL OR (V_WOH_FLAG!='O' AND V_WOH_FLAG!='L'))
+  THEN
 
     BEGIN
         SELECT
@@ -6480,6 +6567,7 @@ BEGIN
         WHEN no_data_found THEN
             hris_raise_err(P_EMPLOYEE_ID,'Work on dayoff reward could not be given.','Employee position is not set');
     END;
+  END IF;
     
      dbms_output.put_line(V_WOH_FLAG);
     IF(V_WOH_FLAG='L')
@@ -7940,10 +8028,19 @@ BEGIN
     RETURN 'Leave Request is overlapping other leave request.';
   END IF;
   
-  
+  BEGIN
   SELECT END_DATE INTO V_LEAVE_YEAR_END FROM HRIS_LEAVE_YEARS WHERE 
-           TRUNC(SYSDATE)  BETWEEN START_DATE AND END_DATE;
-           
+           P_START_DATE  BETWEEN START_DATE AND END_DATE;
+ EXCEPTION
+ WHEN NO_DATA_FOUND THEN
+      SELECT
+        MAX(END_DATE)
+        INTO
+        V_LEAVE_YEAR_END
+        FROM
+        HRIS_LEAVE_YEARS;
+    END;
+
            IF(P_END_DATE>V_LEAVE_YEAR_END) THEN
            RETURN 'You Are Requesting leave for next leave Year';
            END IF;

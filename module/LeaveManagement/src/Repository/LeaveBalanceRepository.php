@@ -408,6 +408,7 @@ where 1=1  {$leaveCondition} {$searchCondition}
                     ]), false);
 
             $select->where([LeaveMonths::STATUS => 'E']);
+            $select->order("LEAVE_YEAR_MONTH_NO ASC");
         });
         return $rowset;
     }

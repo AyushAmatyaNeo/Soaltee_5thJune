@@ -12,7 +12,7 @@
             {field: "AMOUNT_TO_ALLOW", title: "Amount To Allow", width: 120},
             {field: "MONTH_TO_ALLOW", title: "Month To Allow", width: 110},
             {field: "ADVANCE_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Advance List');
 
         app.searchTable('advanceTable', ['ADVANCE_NAME', 'COMPANY_NAME', 'MIN_SALARY_AMT', 'AMOUNT_TO_ALLOW', 'MONTH_TO_ALLOW']);
 

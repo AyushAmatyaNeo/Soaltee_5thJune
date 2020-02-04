@@ -46,7 +46,7 @@
             {field: "STATUS_DETAIL", title: "Status"},
             {field: "YOUR_ROLE", title: "Role"},
             {field: ["ID", "ROLE"], title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Attendance Request List');
 
 
         app.pullDataById('', {}).then(function (response) {
@@ -86,11 +86,11 @@
             'APPROVED_REMARKS': 'Approver Remarks'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'Training Request List');
+            app.excelExport($table, exportMap, 'Attendance Request List');
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'Training Request List');
+            app.exportToPDF($table, exportMap, 'Attendance Request List');
         });
         var selectItems = {};
         var $bulkBtnContainer = $('#acceptRejectDiv');

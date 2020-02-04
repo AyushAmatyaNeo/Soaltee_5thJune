@@ -31,10 +31,9 @@
 
         $search.on('click', function () {
             var employee = $("#employeeId").val();
-            var empName = [];
-            $('#employeeId option:selected').each(function() {
-                empName.push($(this).text());
-            });
+            
+            var empName = employee != '' && employee != null ? $("#employeeId option:selected").text() : 'Total';
+
             var summaryTotal = {
                 drSalary : 0,
                 drInt : 0,
@@ -46,13 +45,11 @@
             let shtmlData = '<table class="table table-bordered table-dark">';
             shtmlData += '<tr><th>Name</th><th>opening</th><th>Dr. Salary</th><th>Dr. Int</th><th>Cr. Salary</th><th>Cr. Int</th><th>Balance</th></tr>';
 
-            for(let j = 0; j < employee.length; j++){
-                //var empName = $("#employeeId option:selected").text();
                 var fromDate = $("#fromDate").val();
                 var toDate = $("#toDate").val();
                 var loanType = $("#account").val();
-                if (employee == -1 || fromDate == "" || toDate == "") {
-                    alert("Employee, From date and To Date are required");
+                if (fromDate == "" || toDate == "") {
+                    alert("From date and To Date are required");
                     return false;
                 }
                 var summaryData = {
@@ -65,10 +62,8 @@
                 
                 $tableContainer.empty();
                 $summaryTable.empty();
-                //employee = employee == -1 ? null : employee ;
-                //employee = employee == -1 ? null : employee ;
                 var data = {
-                    'emp_id': employee[j],
+                    'emp_id': employee,
                     'fromDate': fromDate,
                     'toDate': toDate,
                     'loanId' : loanType
@@ -95,7 +90,7 @@
                         data[data.length - 1].CREDIT_AMOUNT = parseFloat(data[data.length - 1].CREDIT_AMOUNT) + parseFloat(data[i].CREDIT_AMOUNT);
                     }
                     data[data.length - 1].BALANCE = data[data.length - 1].DEBIT_AMOUNT - data[data.length - 1].CREDIT_AMOUNT;
-                    var htmlData = '<table class="table table-bordered table-dark"><caption style="text-align : center; font-weight : bold;">'+empName[j]+'</caption>';
+                    var htmlData = '<table class="table table-bordered table-dark"><caption style="text-align : center; font-weight : bold;">'+empName+'</caption>';
                     htmlData += '<tr><th>Date</th><th>Particulars</th><th>Debit Amount</th><th>Credit Amount</th><th>Balance</th></tr>';
                     
                     var span = true;
@@ -114,6 +109,7 @@
                     for (var i = 0; i < data.length; i++) {
                         summaryData.drInt += data[i].PARTICULARS == 'Interest Due' ? parseFloat(data[i].DEBIT_AMOUNT) : 0 ;
                         summaryData.crSalary += data[i].PARTICULARS == 'Amount Paid' ? parseFloat(data[i].CREDIT_AMOUNT) : 0 ;
+                        summaryData.crSalary += data[i].PARTICULARS == 'Cash Amount Paid' ? parseFloat(data[i].CREDIT_AMOUNT) : 0 ;
 
 
                         if(spanTracker % 3 === 0){
@@ -146,7 +142,7 @@
                     summaryData.crInt = summaryData.drInt;
                     summaryData.balance = parseFloat(data[data.length-1].BALANCE);
                     
-                    shtmlData += '<tr><td>'+empName[j]+'</td><td>'+balanceData[0].OPENING_BALANCE+'</td><td>'+Math.abs(summaryData.drSalary).toFixed(2)+'</td><td>'+Math.abs(summaryData.drInt).toFixed(2)+'</td><td>'+Math.abs(summaryData.crSalary).toFixed(2)+'</td><td>'+Math.abs(summaryData.crInt).toFixed(2)+'</td><td>'+Math.abs(summaryData.balance).toFixed(2)+'</td></tr>';
+                    shtmlData += '<tr><td>'+empName+'</td><td>'+balanceData[0].OPENING_BALANCE+'</td><td>'+Math.abs(summaryData.drSalary).toFixed(2)+'</td><td>'+Math.abs(summaryData.drInt).toFixed(2)+'</td><td>'+Math.abs(summaryData.crSalary).toFixed(2)+'</td><td>'+Math.abs(summaryData.crInt).toFixed(2)+'</td><td>'+Math.abs(summaryData.balance).toFixed(2)+'</td></tr>';
 
                     summaryTotal.drInt += parseFloat(summaryData.drInt);
                     summaryTotal.crInt += parseFloat(summaryData.crInt);
@@ -154,13 +150,7 @@
                     summaryTotal.crSalary += parseFloat(summaryData.crSalary);
                     summaryTotal.drSalary += parseFloat(summaryData.drSalary);
                     summaryTotal.opening += parseFloat(balanceData[0].OPENING_BALANCE);
-                    if(j == employee.length-1){
-                        shtmlData += '<tr><td>Total</td><td>'+summaryTotal.opening+'</td><td>'+Math.abs(summaryTotal.drSalary).toFixed(2)+'</td><td>'+Math.abs(summaryTotal.drInt).toFixed(2)+'</td><td>'+Math.abs(summaryTotal.crSalary).toFixed(2)+'</td><td>'+Math.abs(summaryTotal.crInt).toFixed(2)+'</td><td>'+Math.abs(summaryTotal.balance).toFixed(2)+'</td></tr>';
-                        shtmlData += '</table>';
-                        $summaryTable.append(shtmlData);
-                        $summaryTable.css('border', '1px solid gray');
-                    }
-                    
+                    $summaryTable.append(shtmlData);
                     if(document.getElementById('summary').checked) {
                         $tableContainer.hide();
                         $summaryTable.show();
@@ -169,12 +159,9 @@
                         $summaryTable.hide();
                         $tableContainer.show();
                     }
-                    
                 }, function (failure) {
                     App.unblockUI("#hris-page-content");
                 });
-            }
-
         });
 
         $("#excelExport").click(function () {

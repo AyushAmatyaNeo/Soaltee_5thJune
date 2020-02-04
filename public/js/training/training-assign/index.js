@@ -45,7 +45,7 @@
             {field: "EMPLOYEE_CODE", title: "Code"},  
             {field: "EMPLOYEE_NAME", title: "Employee"},
             {field: "EMPLOYEE_ID", title: "Action", template: action}
-        ]);
+        ],null, null, null, 'Employee Training Assigned List');
         $search.on('click', function () {
             var search = document.searchManager.getSearchValues();
             search['trainingId'] = $training.val();

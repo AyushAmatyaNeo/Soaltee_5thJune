@@ -25,7 +25,7 @@
                     }]},
             {field: "HALFDAY_DETAIL", title: "Interval", template: "<span>#: (HALFDAY_DETAIL == null) ? '-' : HALFDAY_DETAIL #</span>"}
             ,
-        ]);
+        ], null, null, null, 'Holiday List');
 
         app.searchTable('holidayTable', ["HOLIDAY_ENAME", "START_DATE_AD", "START_DATE_BS", "END_DATE_AD", "END_DATE_BS", "HALFDAY_DETAIL"]);
 

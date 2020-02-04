@@ -52,7 +52,7 @@
             {field: "NO_OF_DAYS", title: "Duration"},
             {field: "STATUS_DETAIL", title: "Status"},
             {field: ["ID", "ROLE"], title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Leave Request');
 
 
         app.pullDataById('', {}).then(function (response) {

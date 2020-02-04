@@ -3,6 +3,7 @@
 namespace Loan\Repository;
 
 use Zend\Db\TableGateway\TableGateway;
+use Application\Helper\EntityHelper;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Select;
 use Application\Repository\RepositoryInterface;
@@ -196,6 +197,9 @@ class LoanStatusRepository implements RepositoryInterface {
                   LR.REQUESTED_AMOUNT,
                   INITCAP(TO_CHAR(LR.LOAN_DATE, 'DD-MON-YYYY'))                   AS LOAN_DATE_AD,
                   (CASE WHEN LR.STATUS = 'AP' AND LR.LOAN_STATUS = 'OPEN' THEN 'Y' ELSE 'N' END)              AS ALLOW_EDIT,
+                  (CASE WHEN LR.LOAN_STATUS = 'CLOSED' AND LR.LOAN_REQUEST_ID IN (
+                    SELECT LOAN_REQ_ID FROM HRIS_LOAN_CASH_PAYMENT
+                  ) THEN 'Y' ELSE 'N' END) AS ALLOW_CORRECTION,
                   BS_DATE(TO_CHAR(LR.LOAN_DATE, 'DD-MON-YYYY'))                   AS LOAN_DATE_BS,
                   INITCAP(TO_CHAR(LR.REQUESTED_DATE, 'DD-MON-YYYY'))              AS REQUESTED_DATE_AD,
                   BS_DATE(TO_CHAR(LR.REQUESTED_DATE, 'DD-MON-YYYY'))              AS REQUESTED_DATE_BS,
@@ -381,5 +385,49 @@ class LoanStatusRepository implements RepositoryInterface {
       $sql = "SELECT STATUS FROM HRIS_EMPLOYEE_LOAN_REQUEST WHERE LOAN_REQUEST_ID = $id";
       $statement = $this->adapter->query($sql); 
       return $statement->execute();
+    }
+
+    public function getLoanDetails($searchQuery){
+      $searchConditon = EntityHelper::getSearchConditon($searchQuery['companyId'], $searchQuery['branchId'], $searchQuery['departmentId'], $searchQuery['positionId'], $searchQuery['designationId'], $searchQuery['serviceTypeId'], $searchQuery['serviceEventTypeId'], $searchQuery['employeeTypeId'], $searchQuery['employeeId'], $searchQuery['genderId'], $searchQuery['locationId'], $searchQuery['functionalTypeId']);
+
+      $sql = "SELECT
+      e.employee_id,
+      e.employee_code,
+      e.full_name,
+      lr.loan_id,
+      lms.loan_name,
+      lr.amount as REQUESTED_AMOUNT,
+      cp.total_paid as PAID,
+      (lr.amount-cp.total_paid) as BALANCE
+  FROM
+      hris_employees           e
+      JOIN (
+          SELECT
+              employee_id,
+              loan_id,
+              SUM(requested_amount) amount
+          FROM
+              hris_employee_loan_request
+          GROUP BY
+              employee_id,
+              loan_id
+      ) lr ON ( e.employee_id = lr.employee_id )
+      JOIN hris_loan_master_setup   lms ON ( lms.loan_id = lr.loan_id )
+      JOIN (
+        SELECT employee_id, loan_id, PAID_AMONUT+CASH_PAID_AMOUNT TOTAL_PAID FROM
+        (SELECT lr.employee_id, lr.loan_id, NVL(SUM(LPD.AMOUNT), 0) AS PAID_AMONUT
+        , NVL(SUM(lcp.payment_amount), 0) AS CASH_PAID_AMOUNT 
+        FROM HRIS_LOAN_PAYMENT_DETAIL LPD
+        JOIN hris_employee_loan_request LR ON (lr.loan_request_id = lpd.loan_request_id)
+        LEFT JOIN hris_loan_cash_payment LCP ON (lcp.loan_req_id = lr.loan_request_id)
+        WHERE lpd.paid_flag = 'Y'
+        GROUP BY lr.employee_id, LR.LOAN_ID)
+      ) CP ON ( lr.employee_id = cp.employee_id and lr.loan_id = cp.loan_id)
+      WHERE lr.status = 'AP' and lr.EMPLOYEE_ID IN
+                  ( SELECT E.EMPLOYEE_ID FROM HRIS_EMPLOYEES E WHERE 1=1 AND E.STATUS='E' 
+                  ) {$searchConditon}";
+
+    $statement = $this->adapter->query($sql); 
+    return $statement->execute();
     }
 }

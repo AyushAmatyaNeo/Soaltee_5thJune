@@ -41,7 +41,7 @@
             {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 150},
             {field: "FUNCTIONAL_LEVEL_EDESC", title: "Functional Level", width: 150},
             {field: "EMPLOYEE_ID", title: "Action", width: 60, locked: true, template: app.genKendoActionTemplate(actiontemplateConfig)}
-        ]);
+        ], null, null, null, 'Resigned or Retired Employees List');
         app.searchTable('employeeTable', ['EMPLOYEE_CODE', 'FULL_NAME', 'MOBILE_NO', 'BIRTH_DATE', 'COMPANY_NAME', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'DESIGNATION_TITLE'], false);
   
         var map = {
@@ -121,7 +121,7 @@
                     }
                 }
             }
-            app.excelExport($employeeTable, map, 'Employee List.xlsx');
+            app.excelExport($employeeTable, map, 'Resigned or Retired Employees List.xlsx');
             map = map_bk;
         });
         $('#pdfExport').on('click', function () {
@@ -136,7 +136,7 @@
                     }
                 }
             }
-            app.exportToPDF($employeeTable, map, 'Employee List.pdf');
+            app.exportToPDF($employeeTable, map, 'Resigned or Retired Employees List.pdf');
             map = map_bk;
         });
 

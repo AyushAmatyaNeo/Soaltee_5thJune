@@ -111,7 +111,7 @@
             {field: "REVIEWER_NAME", title: "Reviewer Name", width: 150},
             {field: ["APPRAISAL_ID", "EMPLOYEE_ID"], title: "Action", width: 90, template: action}
         ];
-        app.initializeKendoGrid($tableContainer, columns);
+        app.initializeKendoGrid($tableContainer, columns, null, null, null, 'Appraisal Review');
         app.searchTable($tableContainer, ['FULL_NAME', 'APPRAISAL_EDESC', 'APPRAISAL_TYPE_EDESC', 'STAGE_EDESC', 'START_DATE', 'END_DATE', 'APPRAISER_NAME', 'REVIEWER_NAME']);
 
         var map = {
@@ -145,10 +145,10 @@
         });
 
         $('#excelExport').on('click', function () {
-            app.excelExport($tableContainer, map, "Appraisal Evaluation List.xlsx");
+            app.excelExport($tableContainer, map, "Appraisal Review.xlsx");
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($tableContainer, map, "Appraisal Evaluation List.pdf");
+            app.exportToPDF($tableContainer, map, "Appraisal Review.pdf");
         });
 
         document.searchManager.registerResetEvent(function () {

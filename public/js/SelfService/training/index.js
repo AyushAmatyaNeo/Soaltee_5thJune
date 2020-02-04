@@ -32,7 +32,7 @@
             },
             {field: "LOCATION", title: "Location"},
             {field: ["EMPLOYEE_ID", "TRAINING_ID"], title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Training Request');
 
 
         app.pullDataById("", {}).then(function (response) {

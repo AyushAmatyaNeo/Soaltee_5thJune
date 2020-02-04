@@ -13,7 +13,7 @@
             {field: "COMPANY_NAME", title: "Company", width: 120},
             {field: "FULL_NAME", title: "Branch Manager", width: 120},
             {field: "BRANCH_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Branch List');
 
         app.searchTable('branchTable', ['BRANCH_NAME', 'STREET_ADDRESS', 'TELEPHONE', 'EMAIL', 'COMPANY_NAME']);
         $('#excelExport').on('click', function () {

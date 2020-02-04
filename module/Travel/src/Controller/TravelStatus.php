@@ -39,6 +39,18 @@ class TravelStatus extends HrisController {
             try {
                 $search = $request->getPost();
                 $list = $this->travelStatusRepository->getFilteredRecord($search);
+
+                if($this->preference['displayHrApproved'] == 'Y'){
+                    for($i = 0; $i < count($list); $i++){
+                        if($list[$i]['HARDCOPY_SIGNED_FLAG'] == 'Y'){
+                            $list[$i]['APPROVER_ID'] = '-1';
+                            $list[$i]['APPROVER_NAME'] = 'HR';
+                            $list[$i]['RECOMMENDER_ID'] = '-1';
+                            $list[$i]['RECOMMENDER_NAME'] = 'HR';
+                        }
+                    }
+                }
+
                 return new JsonModel(['success' => true, 'data' => $list, 'error' => '']);
             } catch (Exception $e) {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
@@ -90,11 +102,21 @@ class TravelStatus extends HrisController {
         }
         $travelRequestModel = new TravelRequest();
         $detail = $this->travelApproveRepository->fetchById($id);
+
+        if($this->preference['displayHrApproved'] == 'Y' && $detail['HARDCOPY_SIGNED_FLAG'] == 'Y'){
+            $detail['APPROVER_ID'] = '-1';
+            $detail['APPROVER_NAME'] = 'HR';
+            $detail['RECOMMENDER_ID'] = '-1';
+            $detail['RECOMMENDER_NAME'] = 'HR';
+            $detail['RECOMMENDED_BY_NAME'] = 'HR';
+            $detail['APPROVED_BY_NAME'] = 'HR';
+        }
         //$fileDetails = $this->travelApproveRepository->fetchAttachmentsById($id);
         $travelRequestModel->exchangeArrayFromDB($detail);
         $this->form->bind($travelRequestModel);
         $numberInWord = new NumberHelper();
         $advanceAmount = $numberInWord->toText($detail['REQUESTED_AMOUNT']);
+
         return Helper::addFlashMessagesToArray($this, [
                     'id' => $id,
                     'form' => $this->form,

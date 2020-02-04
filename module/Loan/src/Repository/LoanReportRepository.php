@@ -141,176 +141,185 @@ class LoanReportRepository implements RepositoryInterface {
     }
   
     public function fetchLoanVoucher($emp_id, $fromDate, $toDate, $loanId){
-    $sql = "SELECT DT, particulars, debit_amount, credit_amount, balance FROM(
-        SELECT to_date('{$fromDate}') AS DT, 'Opening Balance' as PARTICULARS,
-    TRUNC(SUM(HLPD.PRINCIPLE_AMOUNT), 2) AS DEBIT_AMOUNT,
-    0 AS CREDIT_AMOUNT, 0 AS BALANCE
-    FROM 
-    HRIS_LOAN_PAYMENT_DETAIL HLPD JOIN 
-    HRIS_EMPLOYEE_LOAN_REQUEST HELR ON(HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID)
-        WHERE 
-        to_char(to_date(hlpd.from_date,'dd-mon-yy'),'mm') = 7
-        AND HLPD.FROM_DATE >= trunc(TO_DATE('{$fromDate}'),'month') 
-        AND hlpd.paid_flag = 'Y'
-            AND  HELR.LOAN_ID = $loanId
-        AND HELR.EMPLOYEE_ID = $emp_id
-        AND HLPD.LOAN_REQUEST_ID IN(
-        SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
-        WHERE EMPLOYEE_ID = $emp_id)
-		AND helr.loan_status = 'OPEN'
-    GROUP BY HLPD.FROM_DATE
-    
-    UNION ALL
-    
-    SELECT LAST_DAY(HLPD.FROM_DATE) AS DT, 'Interest Due' as PARTICULARS,
-    TRUNC(SUM(HLPD.INTEREST_AMOUNT), 2) AS DEBIT_AMOUNT, 
-    0 AS CREDIT_AMOUNT, 0 AS BALANCE
-    FROM 
-    HRIS_LOAN_PAYMENT_DETAIL HLPD JOIN 
-    HRIS_EMPLOYEE_LOAN_REQUEST HELR ON(HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID)
-        WHERE hlpd.PAID_FLAG = 'Y' AND  HELR.LOAN_ID = $loanId AND trunc(HLPD.FROM_DATE, 'month') IN(
-    select trunc(add_Months('{$fromDate}', level-1),'month') result
-    from DUAL
-    connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
-    ) AND HELR.EMPLOYEE_ID = $emp_id
-	AND helr.loan_status = 'OPEN'
-    GROUP BY HLPD.FROM_DATE
-    
-    UNION ALL
-    
-    SELECT LAST_DAY(HLPD.FROM_DATE) AS DT, 'Interest Paid' as PARTICULARS,
-        0 AS DEBIT_AMOUNT,
-        TRUNC(SUM(HLPD.INTEREST_AMOUNT), 2) AS CREDIT_AMOUNT, 0 AS BALANCE
-    FROM 
-    HRIS_LOAN_PAYMENT_DETAIL HLPD JOIN 
-    HRIS_EMPLOYEE_LOAN_REQUEST HELR ON(HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID)
-        WHERE hlpd.PAID_FLAG = 'Y' AND  HELR.LOAN_ID = $loanId AND trunc(HLPD.FROM_DATE, 'month') IN(
-    select trunc(add_Months('{$fromDate}', level-1),'month') result
-    from DUAL
-    connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
-    ) AND HELR.EMPLOYEE_ID = $emp_id
-	AND helr.loan_status = 'OPEN'
-    GROUP BY HLPD.FROM_DATE
-    
-    UNION ALL
-    
-    SELECT LAST_DAY(HLPD.FROM_DATE) AS DT, 'Amount Paid' as PARTICULARS,
-        0 AS DEBIT_AMOUNT,
-        TRUNC(SUM(HLPD.AMOUNT), 2) AS CREDIT_AMOUNT, 0 AS BALANCE
-    FROM 
-    HRIS_LOAN_PAYMENT_DETAIL HLPD JOIN 
-    HRIS_EMPLOYEE_LOAN_REQUEST HELR ON(HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID)
-    WHERE hlpd.PAID_FLAG = 'Y' AND  trunc(HELR.LOAN_ID) = $loanId AND trunc(HLPD.FROM_DATE, 'month') IN(
-    select trunc(add_Months('{$fromDate}', level-1),'month') result
-    from DUAL
-    connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
-    ) AND HELR.EMPLOYEE_ID = $emp_id
-	AND helr.loan_status = 'OPEN'
-    GROUP BY HLPD.FROM_DATE
-    ORDER BY DT, DEBIT_AMOUNT DESC, CREDIT_AMOUNT DESC)
-            
-    UNION ALL
 
-    (SELECT
-    LOAN_DATE AS dt,
-    'Loan Taken' AS particulars,
-    REQUESTED_AMOUNT AS debit_amount,
-    0 AS credit_amount,
-    0 AS balance
-FROM
-    hris_employee_loan_request
-WHERE
-        loan_id = $loanId
-    AND
-        LOAN_DATE BETWEEN '{$fromDate}' AND '{$toDate}'    
-		AND trunc(to_date(LOAN_DATE), 'month') != trunc(TO_DATE('{$fromDate}'),'month') 
-    AND
-        employee_id = $emp_id
-	AND loan_status = 'OPEN')
+        $employeeCondition = $emp_id == '' || $emp_id == null || $emp_id == -1? '' : " AND HELR.EMPLOYEE_ID = $emp_id";
+        $loanCondition = $loanId == '' || $loanId == null || $loanId == -1? ' AND HELR.LOAN_ID IN (1,2,3,7) ' : " AND  HELR.LOAN_ID = $loanId" ;
+        $loanRequestCondition = $emp_id == '' || $emp_id == null || $emp_id == -1? '' : " AND EMPLOYEE_ID = $emp_id" ;
+        $loanRequestCondition2 = $loanId == '' || $loanId == null || $loanId == -1? ' AND LOAN_ID IN (1,2,3,7) ' : " AND loan_id = $loanId" ;
+        $employeeCondition2 = $emp_id == '' || $emp_id == null || $emp_id == -1? '' : " AND EMPLOYEE_ID = $emp_id";
+
+        $sql = "SELECT DT, particulars, debit_amount, credit_amount, balance FROM(
+        SELECT LAST_DAY(HLPD.FROM_DATE) AS DT, 'Interest Due' as PARTICULARS,
+        TRUNC(SUM(HLPD.INTEREST_AMOUNT), 2) AS DEBIT_AMOUNT, 
+        0 AS CREDIT_AMOUNT, 0 AS BALANCE
+        FROM 
+        HRIS_LOAN_PAYMENT_DETAIL HLPD JOIN 
+        HRIS_EMPLOYEE_LOAN_REQUEST HELR ON(HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID)
+            WHERE hlpd.PAID_FLAG = 'Y' {$loanCondition} AND trunc(HLPD.FROM_DATE, 'month') IN(
+        select trunc(add_Months('{$fromDate}', level-1),'month') result
+        from DUAL
+        connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
+        ) {$employeeCondition}
+        and (helr.loan_status = 'OPEN' or helr.modified_date >= '{$fromDate}' or 
+        helr.loan_request_id in 
+            (select loan_req_id from hris_loan_cash_payment)
+             ) 
+        GROUP BY HLPD.FROM_DATE
+        
+        UNION ALL
+        
+        SELECT LAST_DAY(HLPD.FROM_DATE) AS DT, 'Interest Paid' as PARTICULARS,
+            0 AS DEBIT_AMOUNT,
+            TRUNC(SUM(HLPD.INTEREST_AMOUNT), 2) AS CREDIT_AMOUNT, 0 AS BALANCE
+        FROM 
+        HRIS_LOAN_PAYMENT_DETAIL HLPD JOIN 
+        HRIS_EMPLOYEE_LOAN_REQUEST HELR ON(HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID)
+            WHERE hlpd.PAID_FLAG = 'Y' {$loanCondition} AND trunc(HLPD.FROM_DATE, 'month') IN(
+        select trunc(add_Months('{$fromDate}', level-1),'month') result
+        from DUAL
+        connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
+        ) {$employeeCondition}
+        and (helr.loan_status = 'OPEN' or helr.modified_date >= '{$fromDate}' or 
+        helr.loan_request_id in 
+            (select loan_req_id from hris_loan_cash_payment)
+             )
+        GROUP BY HLPD.FROM_DATE
+        
+        UNION ALL
+        
+        SELECT LAST_DAY(HLPD.FROM_DATE) AS DT, 'Amount Paid' as PARTICULARS,
+            0 AS DEBIT_AMOUNT,
+            TRUNC(SUM(HLPD.AMOUNT), 2) AS CREDIT_AMOUNT, 0 AS BALANCE
+        FROM 
+        HRIS_LOAN_PAYMENT_DETAIL HLPD JOIN 
+        HRIS_EMPLOYEE_LOAN_REQUEST HELR ON(HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID)
+        WHERE hlpd.PAID_FLAG = 'Y' {$loanCondition} AND trunc(HLPD.FROM_DATE, 'month') IN(
+        select trunc(add_Months('{$fromDate}', level-1),'month') result
+        from DUAL
+        connect by level <= MONTHS_BETWEEN('{$toDate}', '{$fromDate}')+1
+        ) {$employeeCondition}
+        and (helr.loan_status = 'OPEN' or helr.modified_date >= '{$fromDate}' 
+        or helr.loan_request_id in 
+            (select loan_req_id from hris_loan_cash_payment)
+              )
+        GROUP BY HLPD.FROM_DATE
+        ORDER BY DT, DEBIT_AMOUNT DESC, CREDIT_AMOUNT DESC)
+                
+        UNION ALL
+
+        (SELECT
+        LOAN_DATE AS dt,
+        'Loan Taken' AS particulars,
+        REQUESTED_AMOUNT AS debit_amount,
+        0 AS credit_amount,
+        0 AS balance
+    FROM
+        hris_employee_loan_request
+    WHERE 1=1
+        {$loanRequestCondition2}
+        AND
+            (LOAN_DATE BETWEEN '{$fromDate}' AND '{$toDate}')    
+            and to_char(to_date(loan_date,'dd-mon-yy'),'mm') <> 7
+            {$employeeCondition2}
+            and loan_request_id not in (select new_loan_req_id from hris_loan_cash_payment))
+
+            UNION ALL
+
+        (SELECT
+        PAYMENT_DATE AS dt,
+        'Cash Interest Paid' AS particulars,
+        INTEREST AS debit_amount,
+        0 AS credit_amount,
+        0 AS balance
+        FROM
+        HRIS_LOAN_CASH_PAYMENT
+        WHERE
+            LOAN_REQ_ID IN (SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
+            WHERE 1=1 {$loanRequestCondition2} {$employeeCondition2})
+        AND
+            PAYMENT_DATE BETWEEN '{$fromDate}' AND '{$toDate}'    
+        )
 
         UNION ALL
 
-    (SELECT
-    PAYMENT_DATE AS dt,
-    'Cash Interest Paid' AS particulars,
-    INTEREST AS debit_amount,
-    0 AS credit_amount,
-    0 AS balance
-    FROM
-    HRIS_LOAN_CASH_PAYMENT
-    WHERE
-        LOAN_REQ_ID IN (SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
-        WHERE LOAN_ID = $loanId and EMPLOYEE_ID = $emp_id)
-    AND
-        PAYMENT_DATE BETWEEN '{$fromDate}' AND '{$toDate}'    
-    )
+        (SELECT
+        PAYMENT_DATE AS dt,
+        'Cash Interest Paid' AS particulars,
+        0 AS debit_amount,
+        INTEREST AS credit_amount,
+        0 AS balance
+        FROM
+        HRIS_LOAN_CASH_PAYMENT
+        WHERE
+            LOAN_REQ_ID IN (SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
+            WHERE 1=1 {$loanRequestCondition2} {$employeeCondition2})
+        AND
+            PAYMENT_DATE BETWEEN '{$fromDate}' AND '{$toDate}'    
+        )
 
-    UNION ALL
+        UNION ALL
 
-    (SELECT
-    PAYMENT_DATE AS dt,
-    'Cash Interest Paid' AS particulars,
-    0 AS debit_amount,
-    INTEREST AS credit_amount,
-    0 AS balance
-    FROM
-    HRIS_LOAN_CASH_PAYMENT
-    WHERE
-        LOAN_REQ_ID IN (SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
-        WHERE LOAN_ID = $loanId and EMPLOYEE_ID = $emp_id)
-    AND
-        PAYMENT_DATE BETWEEN '{$fromDate}' AND '{$toDate}'    
-    )
+        (SELECT
+        PAYMENT_DATE AS dt,
+        'Cash Amount Paid' AS particulars,
+        0 AS debit_amount,
+        PAYMENT_AMOUNT AS credit_amount,
+        0 AS balance
+        FROM
+        HRIS_LOAN_CASH_PAYMENT
+        WHERE
+            LOAN_REQ_ID IN (SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
+            WHERE 1=1 {$loanRequestCondition2} {$employeeCondition2})
+        AND
+            PAYMENT_DATE BETWEEN '{$fromDate}' AND '{$toDate}'    
+        )
 
-    UNION ALL
-
-    (SELECT
-    PAYMENT_DATE AS dt,
-    'Cash Amount Paid' AS particulars,
-    0 AS debit_amount,
-    PAYMENT_AMOUNT AS credit_amount,
-    0 AS balance
-    FROM
-    HRIS_LOAN_CASH_PAYMENT
-    WHERE
-        LOAN_REQ_ID IN (SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
-        WHERE LOAN_ID = $loanId and EMPLOYEE_ID = $emp_id)
-    AND
-        PAYMENT_DATE BETWEEN '{$fromDate}' AND '{$toDate}'    
-    )
-
-ORDER BY
-    dt,
-    debit_amount DESC,
-    credit_amount DESC
-            ";        
-    //echo $sql; die;
-    $statement = $this->adapter->query($sql); 
-    return $statement->execute();
+    ORDER BY
+        dt,
+        debit_amount DESC,
+        credit_amount DESC
+                ";        
+        //echo $sql; die;
+        $statement = $this->adapter->query($sql); 
+        return $statement->execute();
     }
     
     public function getLoanlist(){
-    $sql = "SELECT LOAN_ID, LOAN_NAME FROM HRIS_LOAN_MASTER_SETUP ORDER BY LOAN_ID";
-    $statement = $this->adapter->query($sql); 
-    return $statement->execute();
+        $sql = "SELECT LOAN_ID, LOAN_NAME FROM HRIS_LOAN_MASTER_SETUP ORDER BY LOAN_ID";
+        $statement = $this->adapter->query($sql); 
+        return $statement->execute();
     }
       
     public function fetchOpeningBalance($emp_id, $fromDate, $loanId){
-        $sql = " SELECT 
+        $employeeCondition = $emp_id == '' || $emp_id == null || $emp_id == -1? '' : " AND HELR.EMPLOYEE_ID = $emp_id";
+        $loanCondition = $loanId == '' || $loanId == null || $loanId == -1? ' AND HELR.LOAN_ID IN (1,2,3,7) ' : " AND  HELR.LOAN_ID = $loanId" ;
+        $loanRequestCondition = $emp_id == '' || $emp_id == null || $emp_id == -1? '' : " AND EMPLOYEE_ID = $emp_id" ;
+        $loanRequestCondition2 = $loanId == '' || $loanId == null || $loanId == -1? ' AND LOAN_ID IN (1,2,3,7) ' : " AND loan_id = $loanId" ;
+        $employeeCondition2 = $emp_id == '' || $emp_id == null || $emp_id == -1? '' : " AND EMPLOYEE_ID = $emp_id";
+
+        $sql = "SELECT 
     TRUNC(SUM(HLPD.PRINCIPLE_AMOUNT), 2) AS OPENING_BALANCE
     FROM 
     HRIS_LOAN_PAYMENT_DETAIL HLPD JOIN 
     HRIS_EMPLOYEE_LOAN_REQUEST HELR ON(HELR.LOAN_REQUEST_ID = HLPD.LOAN_REQUEST_ID)
         WHERE 
-        HLPD.FROM_DATE = trunc(TO_DATE('{$fromDate}'),'month') 
+        to_char(to_date(hlpd.from_date,'dd-mon-yy'),'mm') = 7
+        and HLPD.FROM_DATE >= trunc(TO_DATE('{$fromDate}'), 'month') 
         AND hlpd.paid_flag = 'Y'
-            AND  HELR.LOAN_ID = $loanId
-        AND HELR.EMPLOYEE_ID = $emp_id
+        {$loanCondition}
+        {$employeeCondition}
         AND HLPD.LOAN_REQUEST_ID IN(
         SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
         WHERE EMPLOYEE_ID = $emp_id) AND loan_status = 'OPEN'
-        group by hlpd.from_date";
+        group by hlpd.from_date
+            SELECT LOAN_REQUEST_ID FROM hris_employee_loan_request
+        where 1=1 {$loanRequestCondition})
+        and (helr.loan_status = 'OPEN' or helr.modified_date >= '{$fromDate}' or helr.loan_request_id in 
+        (select loan_req_id from hris_loan_cash_payment)
+        )
         
+        ";
+        //echo $sql; die;
         $statement = $this->adapter->query($sql); 
         return $statement->execute();
     }
@@ -333,14 +342,14 @@ ORDER BY
         $sql = "SELECT
                 e.employee_code AS employee_code,
                 e.FULL_NAME AS FULL_NAME,
+                HLCP.id,
                 initcap(l.loan_name) AS LOAN_NAME,
                 lr.requested_amount AS TOTAL_AMOUNT,
                 HLCP.PAYMENT_AMOUNT AS PAID_AMOUNT,
-                (lr.requested_amount-HLCP.PAYMENT_AMOUNT) AS BALANCE,
                 INITCAP(TO_CHAR(HLCP.payment_date, 'DD-MON-YYYY'))        AS PAID_DATE_AD,
                 BS_DATE(TO_CHAR(HLCP.payment_date, 'DD-MON-YYYY'))        AS PAID_DATE_BS,
                 HLCP.REMARKS AS REMARKS
-                
+                             
                 FROM HRIS_EMPLOYEE_LOAN_REQUEST LR
                 JOIN HRIS_LOAN_CASH_PAYMENT HLCP 
                 ON LR.LOAN_REQUEST_ID = HLCP.LOAN_REQ_ID
@@ -359,19 +368,7 @@ ORDER BY
                 LEFT OUTER JOIN HRIS_EMPLOYEES APRV
                 ON APRV.EMPLOYEE_ID = RA.APPROVED_BY
                 WHERE L.STATUS   ='E'
-                AND E.STATUS     ='E'
-                AND (RECM.STATUS =
-                  CASE
-                    WHEN RECM.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR RECM.STATUS  IS NULL)
-                AND (APRV.STATUS =
-                  CASE
-                    WHEN APRV.STATUS IS NOT NULL
-                    THEN ('E')
-                  END
-                OR APRV.STATUS   IS NULL)";
+                AND E.STATUS     ='E' ";
 
         if ($loanId != -1) {
             $sql .= " AND LR.LOAN_ID ='" . $loanId . "'";
@@ -420,5 +417,184 @@ ORDER BY
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result;
+    }
+
+    public function fetchLoanSummary($emp_id, $fromDate, $toDate, $loanId){
+        $employeeCondition = $emp_id == '' || $emp_id == null? '' : " AND HELR.EMPLOYEE_ID = $emp_id";
+        $loanCondition = $loanId == '' || $loanId == null || $loanId == -1? ' AND HELR.LOAN_ID IN (1,2,3,7) ' : " AND  HELR.LOAN_ID = $loanId" ;
+        $loanRequestCondition = $emp_id == '' || $emp_id == null? '' : " AND EMPLOYEE_ID = $emp_id" ;
+        $loanRequestCondition2 = $loanId == '' || $loanId == null || $loanId == -1? ' AND LOAN_ID IN (1,2,3,7) ' : " AND loan_id = $loanId" ;
+        $employeeCondition2 = $emp_id == '' || $emp_id == null? '' : " AND EMPLOYEE_ID = $emp_id";
+
+        $sql = "select e.employee, opening_balance, dr_salary, dr_interest, cr_salary, dr_interest as cr_interest,
+        (opening_balance + dr_salary - cr_salary) as balance
+        from (
+        select 
+        nvl(sum(opening_balance), 0) as opening_balance,
+        sum(dr_salary) as dr_salary,
+        sum(dr_interest) as dr_interest,
+        sum(cr_salary) as cr_salary
+        from (
+        SELECT
+        0 as opening_balance,
+        0 AS dr_salary,
+        trunc(SUM(hlpd.interest_amount), 2) AS dr_interest,
+        0 AS cr_salary
+        FROM
+        hris_loan_payment_detail     hlpd
+        JOIN hris_employee_loan_request   helr ON ( helr.loan_request_id = hlpd.loan_request_id )
+        WHERE
+        hlpd.paid_flag = 'Y'
+        {$loanCondition}
+        AND trunc(hlpd.from_date, 'month') IN (
+        SELECT
+        trunc(add_months('{$fromDate}', level - 1), 'month') result
+        FROM
+        dual
+        CONNECT BY
+        level <= months_between('{$toDate}', '{$fromDate}') 
+        )
+        {$employeeCondition}
+        AND ( helr.loan_status = 'OPEN' or helr.modified_date >= '{$fromDate}'
+        OR helr.loan_request_id IN (
+        SELECT
+        loan_req_id
+        FROM
+        hris_loan_cash_payment
+        ) 
+        OR 
+                (SELECT TO_CHAR(TO_DATE(FROM_DATE, 'DD-MM-YY'), 'MM') FROM HRIS_LOAN_PAYMENT_DETAIL 
+                WHERE LOAN_REQUEST_ID = HELR.LOAN_REQUEST_ID AND SNO = (SELECT MAX(SNO) FROM 
+                HRIS_LOAN_PAYMENT_DETAIL WHERE LOAN_REQUEST_ID = HELR.LOAN_REQUEST_ID)
+              )  = 7)
+        GROUP BY
+        hlpd.from_date
+        
+        union all
+        
+        SELECT
+        0 as opening_balance,
+        0 AS dr_salary,
+        0 AS dr_interest,
+        trunc(SUM(hlpd.amount), 2) AS cr_salary
+        FROM
+        hris_loan_payment_detail     hlpd
+        JOIN hris_employee_loan_request   helr ON ( helr.loan_request_id = hlpd.loan_request_id )
+        WHERE
+        hlpd.paid_flag = 'Y'
+        {$loanCondition}
+        AND trunc(hlpd.from_date, 'month') IN (
+        SELECT
+        trunc(add_months('{$fromDate}', level - 1), 'month') result
+        FROM
+        dual
+        CONNECT BY
+        level <= months_between('{$toDate}', '{$fromDate}')
+        )
+        {$employeeCondition}
+        AND ( helr.loan_status = 'OPEN' or helr.modified_date >= '{$fromDate}'
+        OR helr.loan_request_id IN (
+        SELECT
+        loan_req_id
+        FROM
+        hris_loan_cash_payment
+        )
+        OR 
+                (SELECT TO_CHAR(TO_DATE(FROM_DATE, 'DD-MM-YY'), 'MM') FROM HRIS_LOAN_PAYMENT_DETAIL 
+                WHERE LOAN_REQUEST_ID = HELR.LOAN_REQUEST_ID AND SNO = (SELECT MAX(SNO) FROM 
+                HRIS_LOAN_PAYMENT_DETAIL WHERE LOAN_REQUEST_ID = HELR.LOAN_REQUEST_ID)
+              )  = 7)
+        
+        GROUP BY
+        hlpd.from_date
+        
+        union all
+        
+        SELECT
+        0 as opening_balance,
+        requested_amount AS dr_salary,
+        0 AS dr_interest,
+        0 AS cr_salary
+        
+        FROM
+        hris_employee_loan_request
+        WHERE
+        1 = 1
+        {$loanRequestCondition2}
+        AND ( loan_date BETWEEN '{$fromDate}' AND '{$toDate}' )
+        AND to_char(TO_DATE(loan_date, 'dd-mon-yy'), 'mm') <> 7
+        {$employeeCondition2}
+        AND loan_request_id NOT IN (
+        SELECT
+        new_loan_req_id
+        FROM
+        hris_loan_cash_payment
+        )
+        
+        union all
+        
+        SELECT
+            0 as opening_balance,
+            0 AS dr_salary,
+            0 AS dr_interest,
+            payment_amount AS cr_salary
+        FROM
+            hris_loan_cash_payment
+        WHERE
+            loan_req_id IN (
+                SELECT
+                    loan_request_id
+                FROM
+                    hris_employee_loan_request
+                WHERE
+                    1 = 1
+                    {$loanRequestCondition2}
+                    {$employeeCondition2}
+            )
+            AND payment_date BETWEEN '{$fromDate}' AND '{$toDate}'
+        
+        union all
+        
+        SELECT
+            trunc(SUM(hlpd.principle_amount), 2) as opening_balance,
+            0 AS dr_salary,
+            0 AS dr_interest,
+            0 AS cr_salary
+        FROM
+            hris_loan_payment_detail     hlpd
+            JOIN hris_employee_loan_request   helr ON ( helr.loan_request_id = hlpd.loan_request_id )
+        WHERE
+            to_char(to_date(hlpd.from_date, 'dd-mon-yy'), 'mm') = 7 AND
+            hlpd.from_date >= trunc(to_date('$fromDate'), 'month')
+            AND hlpd.paid_flag = 'Y'
+            {$loanCondition}
+            {$employeeCondition}
+            AND hlpd.loan_request_id IN (
+                SELECT
+                    loan_request_id
+                FROM
+                    hris_employee_loan_request
+                WHERE
+                    1 = 1
+                    {$employeeCondition2}
+            )
+        )) join 
+        (select employee_id, employee_code || '-' || full_name as employee 
+        from hris_employees where employee_id = {$emp_id}) e
+        on 1=1
+        ";
+        //echo $sql; die;
+        $statement = $this->adapter->query($sql); 
+        return $statement->execute();
+    }
+
+    public function getAllEmployees(){
+        $sql = "SELECT EMPLOYEE_ID, EMPLOYEE_CODE, EMPLOYEE_CODE || '-' || FULL_NAME AS FULL_NAME, FULL_NAME AS FULL_NAME_SCIENTIFIC, COMPANY_ID, 
+        BRANCH_ID, DEPARTMENT_ID, 
+        DESIGNATION_ID, POSITION_ID, SERVICE_TYPE_ID, SERVICE_EVENT_TYPE_ID, GENDER_ID, EMPLOYEE_TYPE, 
+        GROUP_ID, FUNCTIONAL_TYPE_ID FROM HRIS_EMPLOYEES";
+    
+        $statement = $this->adapter->query($sql); 
+        return $statement->execute();
     }
 }

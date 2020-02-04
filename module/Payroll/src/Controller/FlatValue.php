@@ -156,7 +156,7 @@ class FlatValue extends HrisController {
         return $this->stickFlashMessagesTo([
                     'fiscalYears' => $fiscalYears,
                     'flatValues' => $flatValues,
-                    'positions' => $positions,
+                    'positions' => $positions
         ]);
     }
 
@@ -319,6 +319,7 @@ class FlatValue extends HrisController {
                     'fiscalYears' => $fiscalYears,
                     'flatValues' => $flatValues,
                     'positions' => $positions,
+                    'acl' => $this->acl
         ]);
     }
 

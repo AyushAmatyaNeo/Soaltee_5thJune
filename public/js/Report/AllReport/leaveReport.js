@@ -32,7 +32,7 @@
                     cols.push(tempObj);
                 });
         
-        app.initializeKendoGrid($leaveReportTable, cols, "leave_report.xlsx");
+        app.initializeKendoGrid($leaveReportTable, cols, "Leave Report.xlsx");
         
         app.searchTable('leaveReportTable',['NAME']);
         
@@ -57,10 +57,7 @@
                 app.showMessage(error, 'error');
             });
         });
-        
-//        $("#reset").on("click", function () {
-//            $(".form-control").val("");
-//        });
+
     });
 })(window.jQuery, window.app);
 

@@ -51,7 +51,7 @@
             {field: "DURATION", title: "Duration"},
             {field: "STATUS_DETAIL", title: "Status"},
             {field: "ID", title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Holiday Work Request');
 
 
         app.pullDataById("", {}).then(function (response) {
@@ -81,11 +81,11 @@
             'APPROVED_DATE': 'Approved Dt'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'workOnHoliday List');
+            app.excelExport($table, exportMap, 'Holiday Work Request');
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'workOnHoliday List');
+            app.exportToPDF($table, exportMap, 'Holiday Work Request');
         });
 
 

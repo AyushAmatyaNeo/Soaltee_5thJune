@@ -65,14 +65,14 @@
             column['columns'] = innerColumns;
             columns.push(column);
         }
-        app.initializeKendoGrid($table, columns);
+        app.initializeKendoGrid($table, columns, null, null, 'Department Wise Attendance Report');
 
         app.searchTable($table, ['DEPARTMENT_NAME']);
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'Department_Wise_Attendance_Report');
+            app.excelExport($table, exportMap, 'Department Wise Attendance Report');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'Department_Wise_Attendance_Report');
+            app.exportToPDF($table, exportMap, 'Department Wise Attendance Report');
         });
 
         var $fiscalYearId = $('#fiscalYearId');

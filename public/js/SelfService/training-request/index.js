@@ -56,7 +56,7 @@
             {field: "TRAINING_TYPE_DETAIL", title: "Training Type"},
             {field: "STATUS_DETAIL", title: "Status"},
             {field: "REQUEST_ID", title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Training Request');
 
         app.pullDataById("", {}).then(function (response) {
             app.renderKendoGrid($table, response.data);

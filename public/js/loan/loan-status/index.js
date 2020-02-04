@@ -45,16 +45,23 @@
             </span>
             #if(ALLOW_EDIT == 'Y'){#
             <span> 
-            <a class="btn  btn-icon-only btn-success" href="${document.editLink}/#: LOAN_REQUEST_ID #" style="height:17px;" title="edit">
+            <a class="btn btn-icon-only btn-success" href="${document.editLink}/#: LOAN_REQUEST_ID #" style="height:17px;" title="edit">
                 <i class="fa fa-edit"></i>
             </a>
         </span>
           <span> 
-            <a class="btn  btn-icon-only btn-success" href="${document.loanClosing}/#: LOAN_REQUEST_ID #" style="height:17px;" title="Loan Closing">
+            <a class="btn btn-icon-only btn-success" href="${document.loanClosing}/#: LOAN_REQUEST_ID #" style="height:17px;" title="Loan Closing">
                 <i class="fa fa-money"></i>
             </a>
         </span>
-            #}#`, width: 120}
+            #} if(ALLOW_CORRECTION == 'Y'){#
+            <span> 
+            <a class="btn btn-icon-only btn-success" href="${document.rectifyLink}/#: LOAN_REQUEST_ID #" style="height:17px;" title="rectify">
+                <i class="fa fa-money"></i>
+            </a>
+        </span>
+        # } #`
+            , width: 120}
         ];
 
         var map = {

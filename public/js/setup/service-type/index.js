@@ -10,7 +10,7 @@
             {field: "SERVICE_TYPE_NAME", title: "Service Type Name", width: 400},
             {field: "TYPE", title: "Type", width: 400},
             {field: "SERVICE_TYPE_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'ServiceType List');
 
         app.searchTable('serviceTypeTable', ['SERVICE_TYPE_NAME']);
 

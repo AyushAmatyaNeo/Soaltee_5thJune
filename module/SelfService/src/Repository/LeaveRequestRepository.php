@@ -139,7 +139,7 @@ class LeaveRequestRepository implements RepositoryInterface {
                       )
                   END
                 OR LA.FISCAL_YEAR_MONTH_NO IS NULL ) 
-                AND {$date} < LY.END_DATE";
+                ";
         $statement = $this->adapter->query($sql);
         return $statement->execute()->current();
     }
@@ -246,6 +246,7 @@ class LeaveRequestRepository implements RepositoryInterface {
             new Expression("LA.ID AS ID"),
             new Expression("LA.EMPLOYEE_ID AS EMPLOYEE_ID"),
             new Expression("LA.LEAVE_ID AS LEAVE_ID"),
+            new Expression("LA.HARDCOPY_SIGNED_FLAG AS HARDCOPY_SIGNED_FLAG"),
             new Expression("INITCAP(TO_CHAR(LA.START_DATE, 'DD-MON-YYYY')) AS FROM_DATE_AD"),
             new Expression("BS_DATE(TO_CHAR(LA.START_DATE, 'DD-MON-YYYY')) AS FROM_DATE_BS"),
             new Expression("INITCAP(TO_CHAR(LA.END_DATE, 'DD-MON-YYYY')) AS TO_DATE_AD"),

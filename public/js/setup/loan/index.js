@@ -13,7 +13,7 @@
             {field: "REPAYMENT_AMOUNT", title: "Repayment Amount", width: 130},
             {field: "REPAYMENT_PERIOD", title: "Repayment(In Month)", width: 150},
             {field: "LOAN_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Loan List');
 
         app.searchTable('loanTable', ['LOAN_NAME', 'COMPANY_NAME', 'MIN_AMOUNT', 'INTEREST_RATE', 'REPAYMENT_AMOUNT', 'REPAYMENT_PERIOD']);
 

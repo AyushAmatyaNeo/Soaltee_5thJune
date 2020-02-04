@@ -18,7 +18,7 @@
             {field: "FUNCTIONAL_TYPE_CODE", title: "Functional Types Code", width: 200},
             {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Types Name", width: 200},
             {field: "FUNCTIONAL_TYPE_ID", title: "Action", width: 120, template: app.genKendoActionTemplate(actiontemplateConfig)}
-        ]);
+        ], null, null, null, 'Functional Types List');
         app.searchTable('functionalTypesTable', ['FUNCTIONAL_TYPE_EDESC']);
         var map = {
           FUNCTIONAL_TYPE_CODE:'Functional Types Code',  FUNCTIONAL_TYPE_EDESC: 'Functional Types Name'

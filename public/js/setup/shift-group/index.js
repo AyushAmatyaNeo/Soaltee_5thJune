@@ -10,7 +10,7 @@
             {field: "START_DATE", title: "Start Date", width: 100},
             {field: "END_DATE", title: "End Date", width: 100},
             {field: "CASE_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Shift Group List');
 
         app.searchTable('bestShiftTable', ['CASE_NAME']);
 
@@ -19,14 +19,14 @@
                 'CASE_NAME': 'Group Name',
                 'START_DATE': 'Start Date',
                 'END_DATE': 'End Date'
-            }, 'Best Shift Group');
+            }, 'Shift Group List');
         });
         $('#pdfExport').on('click', function () {
             app.exportToPDF($table, {
                'CASE_NAME': 'Group Name',
                 'START_DATE': 'Start Date',
                 'END_DATE': 'End Date'
-            }, 'Best Shift Group');
+            }, 'Shift Group List');
         });
 
 

@@ -56,6 +56,13 @@ use Setup\Model\Location;
 use Setup\Model\Position;
 use Setup\Model\ServiceEventType;
 use Setup\Model\ServiceType;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xls;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\IWriter;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class EmployeeController extends HrisController {
 
@@ -424,6 +431,7 @@ class EmployeeController extends HrisController {
 //                'relation' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_RELATIONS", "RELATION_ID", ["RELATION_NAME"], ["STATUS" => 'E'], "RELATION_NAME", "ASC", null, false, true),
             'relation' => ApplicationHelper::getTableList($this->adapter, "HRIS_RELATIONS", ["RELATION_ID","RELATION_NAME"], ["STATUS" => 'E']),
             'serviceEventTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SERVICE_EVENT_TYPES", "SERVICE_EVENT_TYPE_ID", ["SERVICE_EVENT_TYPE_NAME"], ["STATUS" => 'E'], "SERVICE_EVENT_TYPE_NAME", "ASC", null, true, true),
+            'group' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SALARY_SHEET_GROUP", "GROUP_ID", ["GROUP_NAME"],null, "GROUP_NAME", "ASC", null, true, true),
         ]);
     }
 
@@ -1257,5 +1265,51 @@ class EmployeeController extends HrisController {
         ];
         return $searchValues;
     }
-    
+
+    public function excelExportAction(){
+        $request = $this->getRequest();
+        $data = $request->getPost();
+        $columns = $data['map'];
+        $columns['PROFILE_PICTURE'] = 'Profile Picture';
+        $employeeData = $data['exportData'];
+
+        unlink(realpath(Helper::UPLOAD_DIR . "/Employees_List.xlsx"));
+
+        $spreadsheet = new Spreadsheet();
+        $writer = new Xlsx($spreadsheet);
+        $writer->setPreCalculateFormulas(false);
+        $this->employeeFileRepo = new EmployeeFile($this->adapter);
+        $row = 2;
+        foreach($employeeData as $employee){
+            $column = 1;
+            foreach($employee as $key => $value){
+                if(array_key_exists($key, $columns)){
+                    $currentColumn = Coordinate::stringFromColumnIndex($column);
+                    $cell = $currentColumn.''.$row;
+                    $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(40);
+                    $spreadsheet->getActiveSheet()->getColumnDimension($currentColumn)->setWidth(40);
+                    if($column == 1){
+                        $drawing = new Drawing();
+                        $drawing->setName('Profile Picture');
+                        $drawing->setDescription('Profile Picture');
+                        $drawing->setWidthAndHeight(40, 40);
+                        $profile = $this->employeeFileRepo->fetchByEmpId($employee['EMPLOYEE_ID']);
+                        $drawing->setPath(Helper::UPLOAD_DIR . '/1516775880.jpg'); 
+                        $drawing->setCoordinates($cell);
+                        //$drawing->setOffsetX(110);
+                        //$drawing->setRotation(25);
+                        $drawing->getShadow()->setVisible(true);
+                        $drawing->getShadow()->setDirection(45);
+                        $drawing->setWorksheet($spreadsheet->getActiveSheet());
+                        $column++;
+                        continue;
+                    }
+                    $spreadsheet->getActiveSheet()->setCellValue($cell, $value);
+                    $column++;
+                } 
+            } 
+        } 
+        $writer->save(Helper::UPLOAD_DIR . "/Employees_List.xlsx");
+        return new JsonModel(['success' => true, 'message' => null]);
+    }
 }

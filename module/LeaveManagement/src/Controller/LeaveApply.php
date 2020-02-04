@@ -85,6 +85,11 @@ class LeaveApply extends HrisController {
                 $leaveRequest->subRefId = $postedData['subRefId'];
                 }
                 $leaveRequest->status = ($postedData['applyStatus'] == 'AP') ? 'AP' : 'RQ';
+
+                if($leaveRequest->status == 'AP'){
+                    $leaveRequest->hardcopySignedFlag = 'Y';
+                }
+
                 $this->repository->add($leaveRequest);
                 $this->flashmessenger()->addMessage("Leave Request Successfully added!!!");
                 if ($leaveRequest->status == 'RQ') {

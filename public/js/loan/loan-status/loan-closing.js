@@ -3,6 +3,7 @@
     $(document).ready(function () {
         $('select').select2();
         app.datePickerWithNepali("paidDate","nepaliDate");
+        $("#totalPaid").val($("#principlePaid").val());
         var rate = parseFloat(document.rate);
         var principlePaid, interestPaid = 0, totalPaid;
         

@@ -27,7 +27,7 @@
             {field: "FROM_DESIGNATION_TITLE", title: "Designation (From-To)", width: 300, template: "#: (FROM_DESIGNATION_TITLE == null) ? ' ' : FROM_DESIGNATION_TITLE # - #: (TO_DESIGNATION_TITLE == null) ? ' ' : TO_DESIGNATION_TITLE #"},
             {field: "FROM_POSITION_NAME", title: "Position (From-To)", width: 300, template: "#: (FROM_POSITION_NAME == null) ? ' ' : FROM_POSITION_NAME # - #: (TO_POSITION_NAME == null) ? ' ' : TO_POSITION_NAME #"},
             {field: ["JOB_HISTORY_ID"], title: "Action", width: 100, template: action}
-        ]);
+        ], null, null, null, 'Service List');
 
 
         $('#myServiceHistory').on('click', function () {

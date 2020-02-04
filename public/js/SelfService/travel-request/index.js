@@ -60,7 +60,7 @@
             {field: "TRANSPORT_TYPE_DETAIL", title: "Transport"},
             {field: "STATUS_DETAIL", title: "Status"},
             {field: "TRAVEL_ID", title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Travel Request List');
 
 
         $('#search').on('click', function () {

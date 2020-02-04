@@ -97,7 +97,6 @@
                         });
                     }
                 }
-
                 rowCount = document.getElementById('fileDetailsTbl').rows.length;
                 dateDiff1 = dateDiff;
                 if (dateDiff1 != null) {
@@ -106,8 +105,7 @@
                         $($request).attr('disabled', 'disabled');
                     }
                 }
-
-
+                
 
             }, function (error) {
                 app.showMessage(error, 'error');
@@ -121,7 +119,7 @@
             }
             leaveChange($leave[0]);
             var halfDayValue = $halfDay.is(':visible') ? $halfDay.val() : 'N';
-            calculateAvailableDays(startDateStr, endDateStr, halfDayValue, employeeId, leaveId);
+            calculateAvailableDays(startDateStr, endDateStr, halfDayValue, employeeId, leaveId); 
             checkForErrors(startDateStr, endDateStr, employeeId);
         });
 
@@ -224,8 +222,6 @@
                     $('#SubReferenceDiv').hide()
                 }
                 availableDays = (typeof leaveDetail.BALANCE == 'undefined') ? 0 : parseFloat(leaveDetail.BALANCE);
-
-
                 if ($subRefId.val() == ' ' || subLeaveReference != 'Y') {
                     $availableDays.val(availableDays);
                 }

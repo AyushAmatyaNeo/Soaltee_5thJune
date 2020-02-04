@@ -19,7 +19,7 @@
             {field: "LOCATION_EDESC", title: "Location Name", width: 200},
             {field: "PARENT_LOCATION_EDESC", title: "Parent Location Name", width: 200},
             {field: "LOCATION_ID", title: "Action", width: 120, template: app.genKendoActionTemplate(actiontemplateConfig)}
-        ]);
+        ], null, null, null, 'Location List');
         app.searchTable('locationTable', ['LOCATION_EDESC']);
         var map = {
           LOCATION_CODE:'Location Code',  LOCATION_EDESC: 'Location Name', PARENT_LOCATION_EDESC: 'Parent Location Name'

@@ -38,11 +38,12 @@
                     app.initializeKendoGrid($table, columns);
                     app.renderKendoGrid($table, resData);
 
+                    app.showMessage(response.message, 'info');
                 } else {
                     app.showMessage(response.message, 'error');
                 }
             }, function (error) {
-//                app.showMessage(error, 'error');
+                app.showMessage(error, 'error');
             });
         });
 

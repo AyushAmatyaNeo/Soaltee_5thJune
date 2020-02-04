@@ -48,7 +48,7 @@
             {field: "TOTAL_HOUR", title: "Total Hour"},
             {field: "YOUR_ROLE", title: "Your Role"},
             {field: ["OVERTIME_ID", "ROLE"], title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Overtime Request List');
 
 
         app.pullDataById('', {}).then(function (response) {

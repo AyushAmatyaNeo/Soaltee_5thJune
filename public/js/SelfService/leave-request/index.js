@@ -53,7 +53,7 @@
             {field: "HALF_DAY_DETAIL", title: "Type"},
             {field: "STATUS_DETAIL", title: "Status"},
             {field: ["ID"], title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Leave Request List');
 
 
         $('#viewLeaveRequestStatus').on('click', function () {
@@ -103,11 +103,11 @@
             'APPROVED_DT': 'Aprroved Date'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'leave Request List');
+            app.excelExport($table, exportMap, 'Leave Request List');
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'leave Request List');
+            app.exportToPDF($table, exportMap, 'Leave Request List');
         });
 
     });

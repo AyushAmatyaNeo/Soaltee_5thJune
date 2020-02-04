@@ -246,5 +246,41 @@ class SalarySheetDetailRepo extends HrisRepository {
         $resultList = $this->rawQuery($sql);
         return $resultList[0]['VALUE'];
     }
+    
+    public function fetchEmployeeGrade($monthId,$employeeId){
+        $sql="select 
+                    aa.*
+                    ,case when new_Grade=0 
+                    then 
+                    aa.month_days
+                    else
+                    aa.month_days - (aa.to_date - aa.grade_date) - 1
+                    end as cur_Grade_days
+                    ,case when new_Grade=0 
+                    then 
+                    0
+                    else
+                    (aa.to_date - aa.grade_date) + 1
+                    end as new_Grade_days
+                    from 
+
+                    (select 
+                    eg.employee_code,eg.OPENING_GRADE,eg.additional_grade,eg.grade_value,eg.grade_date
+                    ,mc.FROM_DATE,mc.TO_DATE
+                    ,eg.OPENING_GRADE+eg.additional_grade as cur_grade
+                    ,case when
+                    eg.grade_date between mc.from_date and mc.to_date
+                    then
+                    eg.OPENING_GRADE+eg.additional_grade +eg.GRADE_VALUE
+                    else
+                    0
+                    end as new_Grade,
+                    (mc.to_date-mc.from_date +1) as month_days
+                    from HR_EMPLOYEE_GRADE_INFO eg
+                    left join HRIS_MONTH_CODE mc on (mc.month_id={$monthId})
+                    where employee_code='{$employeeId}') aa";
+        $resultList = $this->rawQuery($sql);
+        return $resultList[0];
+    }
 
 }

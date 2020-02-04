@@ -449,4 +449,51 @@ class AttendanceByHr extends HrisController {
             'braProv' => EntityHelper::getBranchFromProvince($this->adapter),
         ]);
     }
+    
+    public function attdBotAction() {
+        $shiftRepo = new ShiftRepository($this->adapter);
+        $shiftList = iterator_to_array($shiftRepo->fetchAll(), false);
+        return Helper::addFlashMessagesToArray($this, [
+                'status' => $this->getStatusSelect(),
+                'presentStatus' => $this->getPresentStatusSelect(),
+                'searchValues' => EntityHelper::getSearchData($this->adapter),
+                'acl' => $this->acl, 
+                'shiftList' => $shiftList,
+                'employeeDetail' => $this->storageData['employee_detail'],
+                'allowShiftChange' =>  isset($this->preference['attAppShiftChangeable'])? $this->preference['attAppShiftChangeable']  : 'N',
+                'allowTimeChange' =>  isset($this->preference['attAppTimeChangeable'])? $this->preference['attAppTimeChangeable']  : 'N'
+        ]);
+    } 
+    
+    public function pullAttendanceBotAction() {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+
+            $companyId = isset($data['companyId']) ? $data['companyId'] : -1;
+            $branchId = isset($data['branchId']) ? $data['branchId'] : -1;
+            $departmentId = isset($data['departmentId']) ? $data['departmentId'] : -1;
+            $designationId = isset($data['designationId']) ? $data['designationId'] : -1;
+            $positionId = isset($data['positionId']) ? $data['positionId'] : -1;
+            $serviceTypeId = isset($data['serviceTypeId']) ? $data['serviceTypeId'] : -1;
+            $serviceEventTypeId = isset($data['serviceEventTypeId']) ? $data['serviceEventTypeId'] : -1;
+            $employeeTypeId = isset($data['employeeTypeId']) ? $data['employeeTypeId'] : -1;
+            $genderId = isset($data['genderId']) ? $data['genderId'] : -1;
+            $functionalTypeId = isset($data['functionalTypeId']) ? $data['functionalTypeId'] : -1;
+            $employeeId = isset($data['employeeId']) ? $data['employeeId'] : -1;
+            $fromDate = $data['fromDate'];
+            $toDate = $data['toDate'];
+            $status = $data['status'];
+            $presentStatus = $data['presentStatus'];
+            
+            $results = $this->repository->filterRecordBot($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $functionalTypeId, $employeeId, $fromDate, $toDate, $status, $presentStatus);
+            $result = [];
+            $result['success'] = true;
+            $result['data'] = Helper::extractDbData($results);
+            $result['error'] = "";
+            return new CustomViewModel($result);
+        } catch (Exception $e) {
+            return new CustomViewModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+        }
+    }
 }

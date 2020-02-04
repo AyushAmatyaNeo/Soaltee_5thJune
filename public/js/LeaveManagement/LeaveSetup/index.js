@@ -13,7 +13,7 @@
             {field: "CASHABLE", title: "Cashable"},
             {field: "PAID", title: "Paid"},
             {field: "LEAVE_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Leave List');
 
         app.searchTable('leaveTable', ['LEAVE_ENAME', 'ALLOW_HALFDAY', 'DEFAULT_DAYS', 'CARRY_FORWARD', 'CASHABLE', 'PAID']);
 
@@ -26,10 +26,10 @@
             'PAID': 'Paid'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, map, 'LeaveList');
+            app.excelExport($table, map, 'Leave List');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, map, 'LeaveList');
+            app.exportToPDF($table, map, 'Leave List');
         });
         app.pullDataById("", {}).then(function (response) {
             app.renderKendoGrid($table, response.data);

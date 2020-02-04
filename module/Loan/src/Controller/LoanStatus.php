@@ -2,6 +2,7 @@
 
 namespace Loan\Controller;
 
+use Application\Controller\HrisController;
 use Application\Helper\EntityHelper;
 use Application\Helper\Helper;
 use Exception;
@@ -10,36 +11,68 @@ use ManagerService\Repository\LoanApproveRepository;
 use SelfService\Form\LoanRequestForm;
 use SelfService\Model\LoanRequest;
 use Setup\Model\Loan;
+use Zend\Authentication\Storage\StorageInterface;
 use Zend\Authentication\AuthenticationService;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Form\Annotation\AnnotationBuilder;
 use Zend\Form\Element\Select;
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\JsonModel;
   
-class LoanStatus extends AbstractActionController {
+class LoanStatus extends HrisController {
 
-    private $adapter;
+    protected $adapter;
     private $loanApproveRepository;
     private $loanStatusRepository;
-    private $form;
-    private $employeeId;
+    protected $form;
+    protected $employeeId;
 
-    public function __construct(AdapterInterface $adapter) {
+    public function __construct(AdapterInterface $adapter, StorageInterface $storage) {
+        parent::__construct($adapter, $storage);
         $this->adapter = $adapter;
         $this->loanApproveRepository = new LoanApproveRepository($adapter);
         $this->loanStatusRepository = new LoanStatusRepository($adapter);
         $auth = new AuthenticationService();
-        $this->employeeId = $auth->getStorage()->read()['employee_id'];
+        //$this->employeeId = $auth->getStorage()->read()['employee_id'];
     }
 
-    public function initializeForm() {
+    public function initializeForm($class) {
         $builder = new AnnotationBuilder();
         $form = new LoanRequestForm();
         $this->form = $builder->createForm($form);
     }
 
     public function indexAction() {
+        $loanFormElement = new Select();
+        $loanFormElement->setName("loan");
+        $loans = EntityHelper::getTableKVListWithSortOption($this->adapter, Loan::TABLE_NAME, Loan::LOAN_ID, [Loan::LOAN_NAME], [Loan::STATUS => 'E'], Loan::LOAN_NAME, "ASC", NULL, FALSE, TRUE);
+        $loans1 = [-1 => "All Loans"] + $loans;
+        $loanFormElement->setValueOptions($loans1);
+        $loanFormElement->setAttributes(["id" => "loanId", "class" => "form-control reset-field"]);
+        $loanFormElement->setLabel("Loan Type");
+
+        $loanStatus = [
+            '-1' => 'All Status',
+            'RQ' => 'Pending',
+            'RC' => 'Recommended',
+            'AP' => 'Approved',
+            'R' => 'Rejected',
+            'C' => 'Cancelled'
+        ];
+        $loanStatusFormElement = new Select();
+        $loanStatusFormElement->setName("loanStatus");
+        $loanStatusFormElement->setValueOptions($loanStatus);
+        $loanStatusFormElement->setAttributes(["id" => "loanRequestStatusId", "class" => "form-control reset-field"]);
+        $loanStatusFormElement->setLabel("Status");
+
+        return Helper::addFlashMessagesToArray($this, [
+                    'loans' => $loanFormElement,
+                    'loanStatus' => $loanStatusFormElement,
+                    'searchValues' => EntityHelper::getSearchData($this->adapter),
+                    'preference' => $this->preference
+        ]);
+    }
+
+    public function closingAction() {
         $loanFormElement = new Select();
         $loanFormElement->setName("loan");
         $loans = EntityHelper::getTableKVListWithSortOption($this->adapter, Loan::TABLE_NAME, Loan::LOAN_ID, [Loan::LOAN_NAME], [Loan::STATUS => 'E'], Loan::LOAN_NAME, "ASC", NULL, FALSE, TRUE);
@@ -201,5 +234,47 @@ class LoanStatus extends AbstractActionController {
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
+    }
+
+    public function listAction(){
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $data = $request->getPost();
+            $result = $this->loanStatusRepository->getLoanDetails($data);
+            $list = Helper::extractDbData($result);
+            return new JsonModel([
+                "success" => "true",
+                "data" => $list
+            ]);
+        }
+
+        $loanFormElement = new Select();
+        $loanFormElement->setName("loan");
+        $loans = EntityHelper::getTableKVListWithSortOption($this->adapter, Loan::TABLE_NAME, Loan::LOAN_ID, [Loan::LOAN_NAME], [Loan::STATUS => 'E'], Loan::LOAN_NAME, "ASC", NULL, FALSE, TRUE);
+        //$loans1 = [-1 => "All Loans"] + $loans;
+        $loanFormElement->setValueOptions($loans);
+        $loanFormElement->setAttributes(["id" => "loanId", "multiple" => "multiple", "class" => "form-control reset-field"]);
+        $loanFormElement->setLabel("Loan Type");
+
+        $loanStatus = [
+            'B' => 'BOTH',
+            'O' => 'OPEN',
+            'C' => 'CLOSED'
+        ];
+        $loanStatusFormElement = new Select();
+        $loanStatusFormElement->setName("loanStatus");
+        $loanStatusFormElement->setValueOptions($loanStatus);
+        $loanStatusFormElement->setAttributes(["id" => "loanRequestStatusId", "class" => "form-control reset-field"]);
+        $loanStatusFormElement->setLabel("Status");
+
+        return $this->stickFlashMessagesTo([
+            'loans' => $loanFormElement,
+            'loanStatus' => $loanStatusFormElement,
+            'searchValues' => EntityHelper::getSearchData($this->adapter),
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail'],
+            'preference' => $this->preference
+        ]);
     }
 }

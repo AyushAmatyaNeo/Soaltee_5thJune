@@ -2,11 +2,11 @@ create or replace PROCEDURE hris_recalc_monthly_leaves (
     p_employee_id   hris_attendance.employee_id%TYPE := NULL,
     p_leave_id      hris_leave_master_setup.leave_id%TYPE := NULL
 ) AS
-    v_balance   NUMBER;
+    v_balance   NUMBER(3,1);
 BEGIN
     UPDATE hris_employee_leave_assign
         SET
-            balance = total_days + previous_year_bal
+            balance = total_days
     WHERE
             leave_id IN (
                 SELECT
@@ -102,7 +102,7 @@ BEGIN
     ) LOOP
         UPDATE hris_employee_leave_assign
             SET
-                balance = total_days + previous_year_bal - leave.total_no_of_days
+                balance = total_days - leave.total_no_of_days
         WHERE
                 employee_id = leave.employee_id
             AND
@@ -243,16 +243,17 @@ BEGIN
             ELSE
                 v_balance := leave_assign_dtl.balance - leave.total_no_of_days;
             END IF;
-        
+
             UPDATE hris_employee_leave_assign
                 SET
-                    balance = v_balance 
+                    balance = v_balance
             WHERE
                     employee_id = leave_assign_dtl.employee_id
                 AND
                     leave_id = leave_assign_dtl.leave_id
                 AND
                     fiscal_year_month_no = leave_assign_dtl.fiscal_year_month_no;
+
         END LOOP;
     END LOOP;
 

@@ -10,7 +10,7 @@
             {field: "ACADEMIC_DEGREE_NAME", title: "Academic Degree", width: 300},
             {field: "WEIGHT", title: "Weight", width: 100},
             {field: "ACADEMIC_DEGREE_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'Academic degree List');
 
         app.searchTable('academicDegreeTable', ['ACADEMIC_DEGREE_NAME', 'WEIGHT']);
 
@@ -18,13 +18,13 @@
             app.excelExport($table, {
                 'ACADEMIC_DEGREE_NAME': 'Academic Degree Name',
                 'WEIGHT': 'Weight',
-            }, 'Company List');
+            }, 'Academic Degree List');
         });
         $('#pdfExport').on('click', function () {
             app.exportToPDF($table, {
                 'ACADEMIC_DEGREE_NAME': 'Academic Degree Name',
                 'WEIGHT': 'Weight',
-            }, 'AcademicDegree List');
+            }, 'Academic Degree List');
         });
 
 

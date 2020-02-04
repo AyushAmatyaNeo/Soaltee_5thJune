@@ -30,7 +30,7 @@
             {field: "REQUESTED_AMOUNT", title: "Request Amount"},
             {field: "STATUS", title: "Status"},
             {field: ["LOAN_REQUEST_ID", "ALLOW_TO_EDIT"], title: "Action", template: action}
-        ]);
+        ], null, null, null, 'Loan Request');
 
 
         app.searchTable('loanTable', ['LOAN_NAME', 'REQUESTED_DATE_AD', 'REQUESTED_DATE_BS', 'LOAN_DATE_AD', 'LOAN_DATE_BS', 'REQUESTED_AMOUNT', 'STATUS']);
@@ -79,9 +79,7 @@
 
         });
         
-//        $("#reset").on("click", function () {
-//            $(".form-control").val("");
-//        });
+
 
 
     });

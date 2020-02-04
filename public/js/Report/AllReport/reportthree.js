@@ -213,17 +213,13 @@ function setAbbr(temp){
             return cols;
         }
         
-        
-        
+
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportVals, 'Employee_Wise_Attendance_Report');
+            app.excelExport($table, exportVals, 'Department Wise Daily Attendance Report');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportVals, 'Employee_Wise_Attendance_Report','A1');
+            app.exportToPDF($table, exportVals, 'Department Wise Daily Attendance Report','A1');
         });
-
-
-
 
 
     });

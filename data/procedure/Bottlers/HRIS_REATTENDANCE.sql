@@ -1,4 +1,4 @@
-CREATE OR REPLACE PROCEDURE HRIS_REATTENDANCE(
+create or replace PROCEDURE HRIS_REATTENDANCE(
     P_FROM_ATTENDANCE_DT HRIS_ATTENDANCE.ATTENDANCE_DT%TYPE,
     P_EMPLOYEE_ID HRIS_ATTENDANCE.EMPLOYEE_ID%TYPE:=NULL,
     P_TO_ATTENDANCE_DT DATE                       :=NULL)
@@ -104,7 +104,7 @@ BEGIN
       V_SHIFT_ALLOWANCE_FLAG:=employee.SHIFT_ALLOWANCE_FLAG;
       V_NIGHT_SHIFT_FLAG :=employee.NIGHT_SHIFT_FLAG;
       V_MANUAL_OVERTIME :=NULL;
-      
+
       --
       DELETE
       FROM HRIS_ATTENDANCE_DETAIL
@@ -204,9 +204,9 @@ BEGIN
         --
       END IF;
       --
-      
+
       --to update food shift allowance to zero allowance it  no attendnace start
-      
+
       UPDATE HRIS_ATTENDANCE_DETAIL
         SET 
           FOOD_ALLOWANCE    =0,
@@ -214,10 +214,10 @@ BEGIN
           NIGHT_SHIFT_ALLOWANCE    =0
         WHERE ATTENDANCE_DT = TO_DATE (employee.ATTENDANCE_DT, 'DD-MON-YY')
         AND EMPLOYEE_ID     = employee.EMPLOYEE_ID;
-      
+
       --to update food shift allowance to zero allowance it  no attendnace end
-      
-      
+
+
       IF V_IN_TIME IS NOT NULL THEN
         --
         IF V_IN_TIME  = V_OUT_TIME THEN
@@ -415,7 +415,7 @@ BEGIN
           END IF;
         END IF;
         --
-        
+
         -- TO CHECK FOOD/SHIFT/NIGHT ALLOWANCE 
         BEGIN
         SELECT OVERTIME_HOUR*60 INTO V_MANUAL_OVERTIME 
@@ -424,7 +424,7 @@ BEGIN
          WHEN NO_DATA_FOUND THEN
        V_MANUAL_OVERTIME:=NULL;
       END;
-        
+
         SELECT 
             (CASE 
              WHEN V_MANUAL_OVERTIME IS NOT NULL AND V_MANUAL_OVERTIME>= 120 AND V_MANUAL_OVERTIME < 240
@@ -437,11 +437,11 @@ BEGIN
             THEN 2
             ELSE 0
            END),
-           (CASE WHEN V_SHIFT_DIFF_IN_MIN >=465 AND V_SHIFT_DIFF_IN_MIN IS NOT NULL AND V_NIGHT_SHIFT_FLAG='Y'
+           (CASE WHEN V_DIFF_IN_MIN >=470 AND V_DIFF_IN_MIN IS NOT NULL AND V_NIGHT_SHIFT_FLAG='Y'
             THEN 1
             ELSE 0
            END),
-           (CASE WHEN V_SHIFT_DIFF_IN_MIN >=465 AND V_SHIFT_DIFF_IN_MIN IS NOT NULL AND V_SHIFT_ALLOWANCE_FLAG='Y'
+           (CASE WHEN V_DIFF_IN_MIN >=470 AND V_DIFF_IN_MIN IS NOT NULL AND V_SHIFT_ALLOWANCE_FLAG='Y'
             THEN 1
             ELSE 0
            END),
@@ -454,15 +454,15 @@ BEGIN
            INTO V_FOOD_ALLOWANCE,V_NIGHT_SHIFT_ALLOWANCE,V_SHIFT_ALLOWANCE,V_HOLIDAY_COUNT
             FROM DUAL;
         --TO CHECK FOOD/SHIFT/NIGHT ALLOWANCE
-        
-        
+
+
         UPDATE HRIS_ATTENDANCE_DETAIL
         SET IN_TIME         = V_IN_TIME,
           OUT_TIME          =V_OUT_TIME,
           OVERALL_STATUS    = V_OVERALL_STATUS,
           LATE_STATUS       = V_LATE_STATUS,
           TOTAL_HOUR        = V_DIFF_IN_MIN,
-          OT_MINUTES        = (V_DIFF_IN_MIN - V_TOTAL_WORKING_MIN),
+          OT_MINUTES        =  (V_DIFF_IN_MIN - 480),
           SHIFT_TOTAL_HOUR =V_SHIFT_DIFF_IN_MIN,
           FOOD_ALLOWANCE    =V_FOOD_ALLOWANCE,
           SHIFT_ALLOWANCE    =V_SHIFT_ALLOWANCE,
@@ -526,7 +526,7 @@ BEGIN
                      EXCEPTION
                 WHEN no_data_found THEN
                     dbms_output.put('NO training for the day ON DAYOFF FOUND');
-            
+
 
 
                      IF v_training_id IS NOT NULL

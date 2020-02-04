@@ -9,7 +9,7 @@
             {field: "ACADEMIC_COURSE_NAME", title: "Academic Course", width: 200},
             {field: "ACADEMIC_PROGRAM_NAME", title: "Academic Program", width: 200},
             {field: "ACADEMIC_COURSE_ID", title: "Action", width: 120, template: action}
-        ]);
+        ], null, null, null, 'AcademicCourseList');
 
         app.searchTable('academicCourseTable', ['ACADEMIC_COURSE_NAME', 'ACADEMIC_PROGRAM_NAME']);
 

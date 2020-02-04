@@ -54,6 +54,12 @@ $eventDate = $formFour->get('eventDate');
 $startDate = $formFour->get('startDate');
 $endDate = $formFour->get('endDate');
 
+$groupId = $formFour->get('groupId');
+$group[null] = "Dont Generate";
+$groupId->setValueOptions($group);
+
+$allowance = $formFour->get('allowance');
+
 $formFour->setAttribute('action', $this->url('employee', ['action' => 'edit', 'id' => $id, 'tab' => 4]));
 $formFour->setAttribute("name", "employeeForm");
 $formFour->prepare();
@@ -187,6 +193,18 @@ $formFour->prepare();
 
                 <div class="col-xs-12 col-sm-6 col-md-6">
                     <div class="row bottomgap">
+                        <div class="form-group  <?= empty($allowance->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-4">
+                                <?php print $this->formLabel($allowance); ?></div>
+                            <div class="col-xs-6 col-sm-6 cgap-4">
+                                <?php print $this->formElement($allowance); ?></div>
+                            <?php print $this->formElementErrors()->render($allowance, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="row bottomgap">
                         <div class="form-group  <?= empty($salaryPf->getMessages()) ? "" : "error" ?>">
                             <div class="col-xs-6 col-sm-6 col-md-6 rightalign-4">
                                 <?php print $this->formLabel($salaryPf); ?></div>
@@ -310,6 +328,19 @@ $formFour->prepare();
                             <div class="col-xs-6 col-sm-6 cgap-4">
                                 <?php print $this->formElement($payEmpType); ?></div>
                             <?php print $this->formElementErrors()->render($payEmpType, ['class' => 'help-block error']); ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-6 col-md-6">
+                    <div class="row bottomgap">
+                        <div class="form-group<?= empty($groupId->getMessages()) ? "" : "error" ?>">
+                            <div class="col-xs-6 col-sm-6 col-md-6 rightalign-4">
+                                <?php print $this->formLabel($groupId); ?></div>
+                            <div class="col-xs-6 col-sm-6 cgap-4">
+
+                                <?php print $this->formElement($groupId); ?></div>
+                            <?php print $this->formElementErrors()->render($groupId, ['class' => 'help-block error']); ?>
                         </div>
                     </div>
                 </div>

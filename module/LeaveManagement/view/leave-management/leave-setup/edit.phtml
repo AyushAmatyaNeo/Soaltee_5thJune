@@ -27,6 +27,7 @@ $dayOffAsLeave = $form->get('dayOffAsLeave');
 $holidayAsLeave = $form->get('holidayAsLeave');
 $applyLimit = $form->get('applyLimit');
 $fiscalYear->setValueOptions($fiscalYears);
+$hrOnly = $form->get('hrOnly');
 
 $submit = $form->get('submit');
 $submit->setAttribute('value', 'SUBMIT');
@@ -223,6 +224,15 @@ print $this->form()->openTag($form);
                             </div>
                         </div>
                         <?php print $this->formElementErrors()->render($holidayAsLeave, ['class' => 'help-block error']); ?>
+                    </div>
+                    <div class=" col-sm-4 ">
+                        <div class="form-group padding-0">
+                            <?php print $this->formLabel($hrOnly); ?>
+                            <div class="md-radio-inline">
+                                <?php $customRenderer($hrOnly); ?>
+                            </div>
+                        </div>
+                        <?php print $this->formElementErrors()->render($hrOnly, ['class' => 'help-block error']); ?>
                     </div>
                     <div class="col-sm-4">
                         <div class="form-group">

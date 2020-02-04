@@ -161,7 +161,7 @@
                 }
             });
             app.serverRequest(document.assignRoasterLink, {'data': data}).then(function (response) {
-                app.showMessage('Roaster assigned successfully.');
+                app.showMessage('Roster assigned successfully.');
             }, function (error) {
 
             });
@@ -211,17 +211,6 @@
                 }
             });
         });
-
-
-
-
-//        $("#grid").on("click", "table", function (e) {
-//            console.log('sdfsdf');
-//            console.log("clicked", e.ctrlKey, e.altKey, e.shiftKey);
-//        });
-//        $('#reset').on('click', function () {
-//            $('.form-control').val("");
-//        });
 
     });
 })(window.jQuery, window.app);

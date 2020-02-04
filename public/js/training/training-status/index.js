@@ -110,10 +110,10 @@
         };
         exportMap=app.prependPrefExportMap(exportMap);
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'Travel Request List.xlsx');
+            app.excelExport($table, exportMap, 'Training Request List.xlsx');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'Travel Request List.pdf');
+            app.exportToPDF($table, exportMap, 'Training Request List.pdf');
         });
 
         $bulkBtns.bind("click", function () {

@@ -1,4 +1,4 @@
-create or replace PROCEDURE HRIS_RECALCULATE_LEAVE(
+create or replace PROCEDURE          HRIS_RECALCULATE_LEAVE(
     P_EMPLOYEE_ID HRIS_ATTENDANCE.EMPLOYEE_ID%TYPE  :=NULL,
     P_LEAVE_ID HRIS_LEAVE_MASTER_SETUP.LEAVE_ID%TYPE:=NULL)
 AS
@@ -6,6 +6,8 @@ AS
   V_TOTAL_NO_OF_PENALTY_DAYS NUMBER;
   V_IS_ASSIGNED              CHAR(1 BYTE);
   V_TOTAL_NO_OF_ENCASH         NUMBER;
+  v_functional_type_id         NUMBER;
+  v_travel_increment_new          NUMBER;
 BEGIN
   FOR leave_addition IN
   (SELECT LA.EMPLOYEE_ID,
@@ -17,11 +19,6 @@ BEGIN
     LEFT JOIN HRIS_TRAINING_MASTER_SETUP tms ON (TMS.TRAINING_ID=LA.TRAINING_ID)
     LEFT JOIN (SELECT * FROM HRIS_LEAVE_YEARS
     WHERE TRUNC(SYSDATE) BETWEEN START_DATE AND END_DATE) LY ON(1=1)
-    WHERE 
-    (WD.FROM_DATE BETWEEN LY.START_DATE AND LY.END_DATE) 
-    OR
-   (WH.FROM_DATE BETWEEN LY.START_DATE AND LY.END_DATE) 
-OR (tms.START_DATE BETWEEN ly.start_date AND ly.end_date)
    GROUP BY LA.EMPLOYEE_ID,
     LA.LEAVE_ID
   )
@@ -62,6 +59,100 @@ OR (tms.START_DATE BETWEEN ly.start_date AND ly.end_date)
     END IF;
   END LOOP;
   --
+  
+      -- FOR PROJECT LEAVE START
+    
+    FOR PROJECT_LEAVE IN (select employee_id,ROUND((SUM(TO_DATE-FROM_DATE+1)/15),0) AS TOTAL_TRAVEL,
+(SELECT
+leave_id
+FROM
+hris_leave_master_setup
+WHERE
+is_project = 'Y'
+AND STATUS='E' AND 
+ROWNUM = 1) AS LEAVE_ID
+from hris_employee_travel_request
+where STATUS='AP'
+AND (employee_id =
+      CASE
+        WHEN P_EMPLOYEE_ID IS NOT NULL
+        THEN P_EMPLOYEE_ID
+      END
+    OR P_EMPLOYEE_ID IS NULL)
+    AND TO_DATE < '01-JAN-20'
+GROUP BY EMPLOYEE_ID)
+LOOP
+v_travel_increment_new:=0;
+
+ -- TO GIVE 2 DAYS FOR 15 DAY TRAVEL FROM JAN 1 2020 START
+select ROUND((SUM(TO_DATE-FROM_DATE+1)/15),0)*2 AS TOTAL_TRAVEL 
+into
+v_travel_increment_new
+from hris_employee_travel_request where employee_id=PROJECT_LEAVE.employee_id
+and STATUS='AP' AND TO_DATE >= '01-JAN-20'
+GROUP BY EMPLOYEE_ID;
+ -- TO GIVE 2 DAYS FOR 15 DAY TRAVEL FROM JAN 1 2020 END
+
+BEGIN
+
+SELECT
+FUNCTIONAL_TYPE_ID
+INTO
+v_functional_type_id
+FROM
+hris_employees
+WHERE 
+employee_id=PROJECT_LEAVE.EMPLOYEE_ID;
+END;
+
+IF(v_functional_type_id=1)
+THEN
+
+
+SELECT (
+      CASE
+        WHEN COUNT(*)>0
+        THEN 'Y'
+        ELSE 'N'
+      END)
+    INTO V_IS_ASSIGNED
+    FROM HRIS_EMPLOYEE_LEAVE_ASSIGN
+    WHERE EMPLOYEE_ID = PROJECT_LEAVE.EMPLOYEE_ID
+    AND LEAVE_ID      = PROJECT_LEAVE.LEAVE_ID;
+    IF(V_IS_ASSIGNED  ='Y')THEN
+      UPDATE HRIS_EMPLOYEE_LEAVE_ASSIGN
+      SET TOTAL_DAYS   = (PROJECT_LEAVE.TOTAL_TRAVEL+v_travel_increment_new)
+      WHERE EMPLOYEE_ID= PROJECT_LEAVE.EMPLOYEE_ID
+      AND LEAVE_ID     = PROJECT_LEAVE.LEAVE_ID;
+    ELSE
+      INSERT
+      INTO HRIS_EMPLOYEE_LEAVE_ASSIGN
+        (
+          EMPLOYEE_ID,
+          LEAVE_ID,
+          TOTAL_DAYS,
+          BALANCE,
+          CREATED_DT
+        )
+        VALUES
+        (
+          PROJECT_LEAVE.EMPLOYEE_ID,
+          PROJECT_LEAVE.LEAVE_ID,
+          (PROJECT_LEAVE.TOTAL_TRAVEL+v_travel_increment_new),
+          0,
+          TRUNC(SYSDATE)
+        );
+    END IF;
+
+
+END IF;
+
+END LOOP;
+
+    -- FOR PROJECT LEAVE END
+  
+  
+  
   FOR leave_assign IN
   (SELECT A.*
     FROM HRIS_EMPLOYEE_LEAVE_ASSIGN A
@@ -131,6 +222,7 @@ SELECT
     WHEN NO_DATA_FOUND THEN
       V_TOTAL_NO_OF_ENCASH:=0;
     END;
+    
 
 
 

@@ -12,7 +12,7 @@
             {field: "LEAVE_DEDUCTED", title: "Leave Deducted"},
             {field: "LEAVE_ADDED", title: "Leave Added"},
             {field: "BALANCE", title: "Available Days"}
-        ]);
+        ], null, null, null, 'Leave Balance List');
 
 
         app.pullDataById("", {}).then(function (response) {
@@ -34,10 +34,10 @@
             'BALANCE': 'Available Days'
         };
         $('#excelExport').on('click', function () {
-            app.excelExport($table, exportMap, 'Leave Balanace List');
+            app.excelExport($table, exportMap, 'Leave Balance List');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, exportMap, 'LeaveBalanaceList');
+            app.exportToPDF($table, exportMap, 'Leave Balance List');
         });
 
 
@@ -54,7 +54,7 @@
             {field: "TOTAL_DAYS", title: "Total Days"},
             {field: "LEAVE_TAKEN", title: "Leave taken"},
             {field: "BALANCE", title: "Available Days"}
-        ]);
+        ], null, null, null, 'Leave Balance List');
 
 
         var populateMonthlyLeave = function () {

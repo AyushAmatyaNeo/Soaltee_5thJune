@@ -13,13 +13,18 @@
         let $employeeId = $("#employeeId");
         var $companyId = $('#companyId');
         var $groupId = $('#groupId');
+        var $salaryTypeId = $('#salaryTypeId');
+        salaryTypeId
         var changedValues = [];
         var companyList = null;
         var groupList = null;
 
         app.populateSelect($payHeadId, document.payHeads, "PAY_ID", "PAY_EDESC", "Select Pay Head");
         app.populateSelect($fiscalYearId, document.fiscalYears, "FISCAL_YEAR_ID", "FISCAL_YEAR_NAME", "Select Fiscal Year");
+        $('#fiscalYearId').val($('#fiscalYearId option:last').val());
         app.populateSelect($employeeId, document.employees, "EMPLOYEE_ID", "FULL_NAME", "");
+        app.populateSelect($salaryTypeId, document.salaryTypes, "SALARY_TYPE_ID", "SALARY_TYPE_NAME");
+        document.getElementById("salaryTypeId").selectedIndex = "1";
         var selectedYearMonthList = document.months.filter(function (item) {
             return item['FISCAL_YEAR_ID'] == $fiscalYearId.val();
         });
@@ -90,13 +95,18 @@
                 $monthId.focus();
                 return;
             }
-            
+            if ($salaryTypeId.val() == -1) {
+                app.showMessage("No Salary Type Selected.", 'error');
+                $salaryTypeId.focus();
+                return;
+            }
             $table.empty();
             app.serverRequest(document.getPayValueModifiedLink, {
                 payHeadId: payHeadId,
                 //fiscalYearId: $fiscalYearId.val(),
                 monthId: $monthId.val(),
                 employeeId: $employeeId.val(),
+                salaryTypeId: $salaryTypeId.val(),
                 companyId: $companyId.val(),
                 groupId: $groupId.val()}).then(function (response) {
                 var columns = []; 
@@ -131,8 +141,8 @@
             //var data = $table.data("kendoGrid").dataItem($(e.target).closest("tr"));
             var key = this.className;
             dataItem[key] = updatedValue;
-                        
-            if(row.is(":last-child")){
+
+            if(row.is(":last-child") && (grid.dataSource.view().length == grid.dataSource.total())){
                 $("."+key).val(updatedValue);
                 var dataSource = grid.dataSource;
                 $.each(grid.items(), function(index, item) {
@@ -164,11 +174,11 @@
                 var data = currentData.filter(function(item, i) { 
                     return item.EMPLOYEE_ID == changedValues[x].employeeId;
                 });
-                console.log(data);
                 changedValues[x].value = data[0][changedValues[x].payValue];
             }
             var monthId = $monthId.val();
-            app.serverRequest(document.postPayValueModifiedLink, {data : changedValues, monthId : monthId}).then(function(){
+            var salaryTypeId = $salaryTypeId.val();
+            app.serverRequest(document.postPayValueModifiedLink, {data : changedValues, salaryTypeId: salaryTypeId, monthId : monthId}).then(function(){
                 app.showMessage('Operation successfull', 'success');
             }, function (error) {
                 console.log(error);

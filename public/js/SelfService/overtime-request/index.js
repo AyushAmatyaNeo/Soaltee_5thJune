@@ -68,7 +68,7 @@
             'APPROVED_REMARKS': 'Approved Remarks',
             'APPROVED_DATE': 'Approved Date'
         };
-        app.initializeKendoGrid($table, columns);
+        app.initializeKendoGrid($table, columns, null, null, null, 'Overtime Request');
 
         app.searchTable($table, ['OVERTIME_DATE_AD', 'OVERTIME_DATE_BS', 'REQUESTED_DATE_AD', 'REQUESTED_DATE_BS', 'STATUS']);
 
@@ -76,7 +76,7 @@
             app.excelExport($table, map, 'Overtime Request List.xlsx');
         });
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, map, 'Overtime Requeest List.pdf');
+            app.exportToPDF($table, map, 'Overtime Request List.pdf');
         });
 
         app.pullDataById("", {}).then(function (response) {
