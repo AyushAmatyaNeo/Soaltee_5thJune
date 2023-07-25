@@ -70,13 +70,13 @@ class MedicalEntry extends HrisController {
                 return $this->redirect()->toRoute("medicalEntry");
             }
         }
-
-
+        
+       
         return Helper::addFlashMessagesToArray($this, [
                     'form' => $this->form,
 //                    'CuremployeeId' => $this->employeeId,
                     'customRenderer' => Helper::renderCustomView(),
-                    'employeeList' => EntityHelper::getTableList($this->adapter, HrEmployees::TABLE_NAME, [HrEmployees::EMPLOYEE_ID, HrEmployees::FULL_NAME], [HrEmployees::STATUS => "E", HrEmployees::RETIRED_FLAG => "N"])
+                    'employeeList' => EntityHelper::getTableList($this->adapter, HrEmployees::TABLE_NAME, [HrEmployees::EMPLOYEE_ID, FULL_NAME=>"EMPLOYEE_CODE||'-'||FULL_NAME"], [HrEmployees::STATUS => "E", HrEmployees::RETIRED_FLAG => "N"])
         ]);
     }
 
@@ -182,5 +182,49 @@ class MedicalEntry extends HrisController {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
     }
+    
+    public function viewAction() {
+        $id = (int) $this->params()->fromRoute('id');
+        if ($id === 0) {
+            return $this->redirect()->toRoute("medicalVerify");
+        }
+        $request = $this->getRequest();
+        $detail = $this->repository->fetchById($id);
+        $medical = new Medical();
+
+
+        if ($request->isPost()) {
+            $getData = $request->getPost();
+            $action = $getData->submit;
+            if ($action == "Cancel") {
+                $medical->billStatus = "C";
+                $this->flashmessenger()->addMessage("Medical Bill Cancelled!!!");
+            } else if ($action == "Approve") {
+                $medical->billStatus = "AP";
+                $this->flashmessenger()->addMessage("Medical Bill Approved");
+            }
+
+            $medical->approvedAmt = $getData->approvedAmt;
+            $medical->remarks = $getData->remarks;
+            $medical->approvedBy = $this->employeeId;
+            $medical->approvedDt = Helper::getcurrentExpressionDate();
+
+            $this->repository->edit($medical, $id);
+            return $this->redirect()->toRoute("medicalEntry");
+        }
+        $medicalBillRepo = new \Medical\Repository\MedicalBillRepo($this->adapter);
+        $billDetails = Helper::extractDbData($medicalBillRepo->fetchById($id));
+        $medical->exchangeArrayFromDB($detail);
+        $this->form->bind($medical);
+
+        return Helper::addFlashMessagesToArray($this, [
+                    'form' => $this->form,
+                    'id' => $id,
+                    'detail' => $detail,
+                    'billDetail' => $billDetails,
+                    'employeeList' => EntityHelper::getTableKVListWithSortOption($this->adapter, HrEmployees::TABLE_NAME, HrEmployees::EMPLOYEE_ID, [HrEmployees::FIRST_NAME, HrEmployees::MIDDLE_NAME, HrEmployees::LAST_NAME], [HrEmployees::STATUS => "E", HrEmployees::RETIRED_FLAG => "N"], HrEmployees::FIRST_NAME, "ASC", " ", FALSE, TRUE),
+        ]);
+    }
+    
 
 }

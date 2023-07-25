@@ -44,9 +44,8 @@ $this->headScript()
                 <a href="" class="fullscreen" data-original-title="" title=""> </a>
             </div>
             <div class="actions">
-                <?php if ($acl['ALLOW_ADD'] == 'Y'): ?>
+                    <button id="printExcel" class="btn btn-primary">Export To Excel</button>
                     <button id="printPdf" class="btn btn-primary">print</button>
-                <?php endif; ?>
                 <div class="btn-group">
                     <a class="btn btn-sm blue-soft" href="javascript:;" data-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-copy"></i> Tools
@@ -126,6 +125,14 @@ $this->headScript()
                 <div class="col-sm-2">
                     <label>Employee</label>
                     <select multiple class="form-control" name="employee" id="employeeId">
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <label>Claim of</label>
+                    <select  class="form-control reset-field" name="claimOf" id="claimOf">
+                        <option value="B">Both</option>
+                        <option value="S">Self</option>
+                        <option value="D">Dependent</option>
                     </select>
                 </div>
             </div>

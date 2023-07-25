@@ -48,7 +48,9 @@
                 }
                 htmlData+='</tr>';
                 for(let i = 0; i < leaveDetails.length; i++){
-                    htmlData+='<tr><td>'+(i+1)+'</td><td>'+leaveDetails[i].FROM_DATE_AD+'</td><td>'+leaveDetails[i].LEAVE_ENAME+'</td><td>'+leaveDetails[i].NO_OF_DAYS+'</td><td>'+leaveDetails[i].FROM_DATE_AD+'</td><td>'+leaveDetails[i].TO_DATE_AD+'</td><td>'+leaveDetails[i].REMARKS+'</td><td>'+leaveDetails[i].RECOMMENDED_BY_NAME+'</td><td>'+leaveDetails[i].APPROVED_BY_NAME+'</td>';
+					if(leaveDetails[i].LEAVE_ENAME == '-'){ htmlData+='<tr><td>-</td>'; } else{ htmlData+='<tr><td>'+(i+1)+'</td>'; }
+                    
+					htmlData+='<td>'+leaveDetails[i].FROM_DATE_AD+'</td><td>'+leaveDetails[i].LEAVE_ENAME+'</td><td>'+leaveDetails[i].NO_OF_DAYS+'</td><td>'+leaveDetails[i].FROM_DATE_AD+'</td><td>'+leaveDetails[i].TO_DATE_AD+'</td><td>'+leaveDetails[i].REMARKS+'</td><td>'+leaveDetails[i].RECOMMENDED_BY_NAME+'</td><td>'+leaveDetails[i].APPROVED_BY_NAME+'</td>';
                     for(let j = 0; j < leaves.length; j++){
                         if(leaveDetails[i].LEAVE_ID == leaves[j].LEAVE_ID){
                             leaves[j].BALANCE = leaves[j].BALANCE - leaveDetails[i].NO_OF_DAYS;

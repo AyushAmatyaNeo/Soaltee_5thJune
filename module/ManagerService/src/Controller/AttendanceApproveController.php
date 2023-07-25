@@ -17,13 +17,19 @@ use Zend\Authentication\Storage\StorageInterface;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\Form\Element\Select;
 use Zend\View\Model\JsonModel;
+use AttendanceManagement\Repository\RoasterRepo;
+use AttendanceManagement\Model\ShiftSetup;
+use Report\Repository\ReportRepository;
 
 class AttendanceApproveController extends HrisController {
+
+    protected $roasterRepo;
 
     public function __construct(AdapterInterface $adapter, StorageInterface $storage) {
         parent::__construct($adapter, $storage);
         $this->initializeRepository(AttendanceApproveRepository::class);
         $this->initializeForm(AttendanceRequestForm::class);
+        $this->roasterRepo =  new RoasterRepo($this->adapter);
     }
 
     public function indexAction() {
@@ -188,4 +194,196 @@ class AttendanceApproveController extends HrisController {
         }
     }
 
+    public function roasterAction() {
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            try {
+                $data = $request->getPost();
+                foreach ($data['data'] as $item) {
+                    $this->roasterRepo->merge($item['EMPLOYEE_ID'], $item['FOR_DATE'], $item['SHIFT_ID']);
+                }
+                return new JsonModel(['success' => true, 'data' => null, 'error' => '']);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => null, 'error' => $e->getMessage()]);
+            }
+        }
+
+        $searchValues = EntityHelper::getSearchData($this->adapter);
+        $employees = EntityHelper::getRAWiseEmployeeList($this->adapter, $this->employeeId, 1);
+        $searchValues['employee'] = $employees;
+
+        return $this->stickFlashMessagesTo([
+                    'searchValues' => $searchValues,
+                    'shifts' => EntityHelper::getTableList($this->adapter, ShiftSetup::TABLE_NAME, [ShiftSetup::SHIFT_ID, ShiftSetup::SHIFT_ENAME], [ShiftSetup::STATUS => EntityHelper::STATUS_ENABLED]),
+                    'acl' => $this->acl,
+                    'employeeDetail' => $this->storageData['employee_detail']
+        ]);
+    }
+
+    public function getRoasterListAction() {
+        try {           
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            if(empty($data['q']['employeeId'])){
+                $temp = EntityHelper::getRAWiseEmployeeList($this->adapter, $this->employeeId, 2);
+                $fromDate = $data['q']['fromDate'];
+                $toDate = $data['q']['toDate'];
+                $data['q'] = ['employeeId' => $temp, 'fromDate' => $fromDate, 'toDate' => $toDate];
+            }
+            $result = $this->roasterRepo->getRosterDetailList($data['q']);
+            return new JsonModel(['success' => true, 'data' => $result, 'error' => '']);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function getShiftDetailsAction() {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $result = $this->roasterRepo->getshiftDetail($data);
+            return new JsonModel(['success' => true, 'data' => $result, 'error' => '']);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function weeklyRosterAction() {
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            try {
+                $request = $this->getRequest();
+                $data = $request->getPost();
+                if(empty($data['q']['employeeId'])){
+                    $temp = EntityHelper::getRAWiseEmployeeList($this->adapter, $this->employeeId, 2);
+                    $data['q'] = ['employeeId' => $temp];
+                }
+                $result = $this->roasterRepo->getWeeklyRosterDetailList($data['q']);
+                return new JsonModel($result);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+            }
+        }
+        
+        $data['pvmReadLink'] = $this->url()->fromRoute('attedanceapprove', ['action' => 'weeklyRoster']);
+        $data['pvmUpdateLink'] = $this->url()->fromRoute('attedanceapprove', ['action' => 'assignWeeklyRoster']);
+        
+        $shfitList=EntityHelper::getTableList($this->adapter, ShiftSetup::TABLE_NAME, [ShiftSetup::SHIFT_ID, ShiftSetup::SHIFT_ENAME], [ShiftSetup::STATUS => EntityHelper::STATUS_ENABLED]);
+        asort($shfitList);
+        array_unshift($shfitList,array('SHIFT_ID' => -1,'SHIFT_ENAME' => 'select shift'));
+
+        $searchValues = EntityHelper::getSearchData($this->adapter);
+        $employees = EntityHelper::getRAWiseEmployeeList($this->adapter, $this->employeeId, 1);
+        $searchValues['employee'] = $employees;
+        
+        return $this->stickFlashMessagesTo([
+                    'searchValues' => $searchValues,
+                    'shifts' => $shfitList,
+                    'acl' => $this->acl,
+                    'employeeDetail' => $this->storageData['employee_detail'],
+                    'data' => json_encode($data)
+        ]);
+    }
+
+    public function getWeeklyShiftDetailsAction() {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $result = $this->repository->getWeeklyShiftDetail($data);
+            return new JsonModel(['success' => true, 'data' => $result, 'error' => '']);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'error' => $e->getMessage()]);
+        }
+    }
+
+    public function assignWeeklyRosterAction() {
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            try {
+                $data = $request->getPost();
+                $modelData=json_decode($data['models']);
+                $arryData=$modelData[0];
+                
+                $selectedEmp=$arryData->EMPLOYEE_ID;
+                $sun=($arryData->SUNARR->SHIFT_ID==$arryData->SUN)?$arryData->SUN:$arryData->SUNARR->SHIFT_ID;
+                $mon=($arryData->MONARR->SHIFT_ID==$arryData->MON)?$arryData->MON:$arryData->MONARR->SHIFT_ID;
+                $tue=($arryData->TUEARR->SHIFT_ID==$arryData->TUE)?$arryData->TUE:$arryData->TUEARR->SHIFT_ID;
+                $wed=($arryData->WEDARR->SHIFT_ID==$arryData->WED)?$arryData->WED:$arryData->WEDARR->SHIFT_ID;
+                $thu=($arryData->THUARR->SHIFT_ID==$arryData->THU)?$arryData->THU:$arryData->THUARR->SHIFT_ID;
+                $fri=($arryData->FRIARR->SHIFT_ID==$arryData->FRI)?$arryData->FRI:$arryData->FRIARR->SHIFT_ID;
+                $sat=($arryData->SATARR->SHIFT_ID==$arryData->SAT)?$arryData->SAT:$arryData->SATARR->SHIFT_ID;
+                $sql="
+                    BEGIN
+                    hris_weekly_ros_assign(
+                    {$selectedEmp},
+                    {$sun},
+                    {$mon},
+                    {$tue},
+                    {$wed},
+                    {$thu},
+                    {$fri},
+                    {$sat}
+                    );
+                    END;
+                    ";
+                EntityHelper::rawQueryResult($this->adapter, $sql);
+                return new JsonModel($modelData);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => null, 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    public function rosterReportAction() {
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            try {
+                $postedData = $request->getPost();
+                $from_date = date("d-M-y", strtotime($postedData['fromDate']));
+                $to_date = date("d-M-y", strtotime($postedData['toDate']));
+
+                $begin = new \DateTime($from_date);
+                $end = new \DateTime($to_date);
+                $end->modify('+1 day');
+
+                $interval = \DateInterval::createFromDateString('1 day');
+                $period = new \DatePeriod($begin, $interval, $end);
+
+                $dates = array();
+
+                foreach ($period as $dt) {
+                    array_push($dates, $dt->format("d-M-y"));
+                }
+                $reportRepo = new ReportRepository($this->adapter);
+                if(empty($postedData['employeeId'])){
+                    $temp = EntityHelper::getRAWiseEmployeeList($this->adapter, $this->employeeId, 2);
+                    $fromDate = $postedData['fromDate'];
+                    $toDate = $postedData['toDate'];
+                    $postedData = ['employeeId' => $temp, 'fromDate' => $fromDate, 'toDate' => $toDate];
+                }
+                $data = $reportRepo->fetchRosterReport($postedData, $dates);
+                $rawData = $reportRepo->getDefaultShift();
+                $defShift = $rawData[0]['SHIFT_ENAME'];
+    
+                for($i = 0; $i < count($data); $i++){
+                    foreach($data[$i] as $key => $value){
+                        if($value == null || $value == ''){
+                            $data[$i][$key] = $defShift;
+                        }
+                    }
+                }
+                return new JsonModel(['success' => true, 'data' => $data, 'dates' => $dates, 'error' => '']);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => [], 'dates' => $dates, 'error' => $e->getMessage()]);
+            }
+        }
+        $searchValues = EntityHelper::getSearchData($this->adapter);
+        $employees = EntityHelper::getRAWiseEmployeeList($this->adapter, $this->employeeId, 1);
+        $searchValues['employee'] = $employees;
+        return [
+            'searchValues' => $searchValues,
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail']
+        ];
+    }
 }

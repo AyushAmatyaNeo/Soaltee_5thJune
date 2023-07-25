@@ -26,9 +26,11 @@ class MedicalReport extends HrisController {
     }
 
     public function indexAction() {
+		$modifiedAcl=$this->acl;
+		$modifiedAcl['CONTROL']='F';
         return Helper::addFlashMessagesToArray($this, [
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
-                    'acl' => $this->acl,
+                    'acl' => $modifiedAcl,
                     'employeeDetail' => $this->storageData['employee_detail'],
                     'employeeId' => $this->employeeId,
         ]);
@@ -99,6 +101,8 @@ class MedicalReport extends HrisController {
     }
 
     public function transactionRepAction() {
+		$modifiedAcl=$this->acl;
+		$modifiedAcl['CONTROL']='F';
         $request = $this->getRequest();
         if ($request->isPost()) {
             try {
@@ -117,9 +121,11 @@ class MedicalReport extends HrisController {
                 $employeeId = isset($data['employeeId']) ? $data['employeeId'] : -1;
                 $fromDate = $data['fromDate'];
                 $toDate = $data['toDate'];
+				$reportType = $data['reportType'];
+                $claimOf = $data['claimOf'];
 
-                $result = $this->repository->fetchTransactionList($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $functionalTypeId, $employeeId, $fromDate, $toDate);
-                $total = $this->repository->fetchTransactionTotal($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $functionalTypeId, $employeeId, $fromDate, $toDate);
+                $result = $this->repository->fetchTransactionList($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $functionalTypeId, $employeeId, $fromDate, $toDate,$reportType, $claimOf);
+                $total = $this->repository->fetchTransactionTotal($companyId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $genderId, $functionalTypeId, $employeeId, $fromDate, $toDate,$claimOf);
 
                 $list = Helper::extractDbData($result);
                 return new JsonModel(['success' => true, 'data' => $list, 'total' => $total, 'error' => '']);
@@ -130,7 +136,7 @@ class MedicalReport extends HrisController {
 
         return Helper::addFlashMessagesToArray($this, [
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
-                    'acl' => $this->acl,
+                    'acl' => $modifiedAcl,
                     'employeeDetail' => $this->storageData['employee_detail'],
                     'employeeId' => $this->employeeId,
         ]);
@@ -165,10 +171,12 @@ class MedicalReport extends HrisController {
                 return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
             }
         }
+		$modifiedAcl=$this->acl;
+		$modifiedAcl['CONTROL']='F';
 
         return Helper::addFlashMessagesToArray($this, [
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
-                    'acl' => $this->acl,
+                    'acl' => $modifiedAcl,
                     'employeeDetail' => $this->storageData['employee_detail'],
                     'employeeId' => $this->employeeId,
         ]);

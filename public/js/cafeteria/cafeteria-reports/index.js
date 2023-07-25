@@ -11,6 +11,9 @@
         var map = {};
         
         function generateEmployeeWiseReport(reportData) {
+            var date = new Date('LOG_DATE')
+var userTimezoneOffset = date.getTimezoneOffset() * 60000;
+new Date(date.getTime() - userTimezoneOffset);
             $employeeTable.kendoGrid({
                 toolbar: ["excel"],
                 excel: {
@@ -32,6 +35,7 @@
                     schema:{
                         model: {
                             fields: {
+                               date,
                                 QUANTITY: { type: "number" },
                                 TOTAL_AMOUNT: { type: "number" }
                             }
@@ -49,7 +53,7 @@
                     numeric: false
                 },
                 columns: [
-                    //{field: "LOG_DATE", title: "Log Date", width: "50px"},
+                    {field: "LOG_DATE", title: "Log Date", width: "50px"},
                     {field: "MENU_NAME", title: "Menu Name", width: "50px", groupFooterTemplate: "Total"},
                     {field: "QUANTITY", title: "Quantity", width: "50px", aggregates: ["sum"], groupFooterTemplate: "#=sum#"},
                     {field: "TOTAL_AMOUNT", title: "Total Amount", width: "50px", aggregates: ["sum"], groupFooterTemplate: "#=sum#"}
@@ -158,14 +162,52 @@
         } 
         
         function generateEmployeeWiseSummary(reportData){
-            var data="";
-            data+='<table class="table">';
-            data+='<tr><th>Employee Code</th><th>Employee Name</th><th>Amount</th><th>Remarks</th></tr>';
-            for(let i = 0; i < reportData.length; i++){
-                data+='<tr><td>'+reportData[i].EMPLOYEE_CODE+'</td><td>'+reportData[i].FULL_NAME+'</td><td>'+reportData[i].TOTAL+'</td></tr>';
-            }
-            data+='</table>';
-            $employeeTable.append(data);
+            // var data="";
+            // data+='<table class="table">';
+            // data+='<tr><th>Employee Code</th><th>Employee Name</th><th>Amount</th><th>Remarks</th></tr>';
+            // for(let i = 0; i < reportData.length; i++){
+            //     data+='<tr><td>'+reportData[i].EMPLOYEE_CODE+'</td><td>'+reportData[i].FULL_NAME+'</td><td>'+reportData[i].TOTAL+'</td></tr>';
+            // }
+            // data+='</table>';
+            // $employeeTable.append(data);
+
+            $employeeTable.kendoGrid({
+                toolbar: ["excel"],
+                excel: {
+                    fileName: "Employee Wise Summary.xlsx",
+                    filterable: true,
+                    allPages: true
+                },
+                dataSource: {
+                    data: reportData,
+                    //pageSize: 20,
+                    aggregate: [ 
+                        { field: "TOTAL", aggregate: "sum" }
+                    ],
+                    schema:{
+                        model: {
+                            fields: {
+                                TOTAL: { type: "number" }
+                            }
+                        }
+                    },
+                },
+                height: 550,
+                scrollable: true,
+                sortable: true,
+                groupable: true,
+                filterable: true,
+                pageable: {
+                    input: true,
+                    numeric: false
+                },
+                columns: [
+                    //{field: "LOG_DATE", title: "Log Date", width: "50px"},
+                    {field: "EMPLOYEE_CODE", title: "ID", width: "50px", footerTemplate: "Total"},
+                    {field: "FULL_NAME", title: "Employee", width: "50px"},
+                    {field: "TOTAL", title: "Amount", width: "50px", aggregates: ["sum"], footerTemplate: "#=sum#"}
+                ]
+            });
         }
         
         function generateEmployeeCalendar(reportData, columns){
@@ -234,11 +276,11 @@
                     }
                  else if(data['reportType'] == 2){
                     generateEmployeeWiseSummary(response.data);
+                    $("#employeeTable").prepend('<div style="color: blue;">Pax: '+response.pax+'</div>');
                     map = {
                         "EMPLOYEE_CODE" : "EMPLOYEE_CODE",
                         "FULL_NAME" : "FULL_NAME",
-                        "AMOUNT" : "AMOUNT",
-                        "REMARKS" : "REMARKS"
+                        "AMOUNT" : "AMOUNT"
                     };
                 }
                  else if(data['reportType'] == 3){

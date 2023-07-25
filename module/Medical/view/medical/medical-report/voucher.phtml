@@ -43,9 +43,8 @@ $this->headScript()
                 <a href="" class="fullscreen" data-original-title="" title=""> </a>
             </div>
             <div class="actions">
-                <?php if ($acl['ALLOW_ADD'] == 'Y'): ?>
+                    <button id="printExcel" class="btn btn-primary">Export To Excel</button>
                     <button id="printPdf" class="btn btn-primary">print</button>
-                <?php endif; ?>
                 <div class="btn-group">
                     <a class="btn btn-sm blue-soft" href="javascript:;" data-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-copy"></i> Tools

@@ -26,16 +26,16 @@
             'ID_ACCOUNT_NO': 'Account No',
             'APPROVED_AMT': 'Amt'
         }
-        app.initializeKendoGrid($table, columns, "MedicalList.xlsx");
+        app.initializeKendoGrid($table, columns, "Advance List.xlsx");
 
         app.searchTable($table, ['EMPLOYEE_CODE', 'FULL_NAME', 'DEPARTMENT_NAME', 'FUNCTIONAL_TYPE_EDESC', 'SELF', 'DEPENDENT', 'OPERATION']);
 
         $('#excelExport').on('click', function () {
-            app.excelExport($table, map, 'MedicalList.xlsx',exportType);
+            app.excelExport($table, map, 'MedicalBalance.xlsx',exportType);
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, map, 'MedicalList.pdf');
+            app.exportToPDF($table, map, 'MedicalBalance.pdf');
         });
 
 
@@ -43,6 +43,8 @@
             var q = document.searchManager.getSearchValues();
             q['fromDate'] = $fromDate.val();
             q['toDate'] = $toDate.val();
+			q['reportType']=$('#reportType').val();
+            q['claimOf']=$('#claimOf').val();
             app.serverRequest("", q).then(function (response) {
                 if (response.success) {
                     app.renderKendoGrid($table, response.data);
@@ -74,7 +76,7 @@
             <td>` + value.DEPARTMENT_NAME + `</td>
             <td>` + value.FUNCTIONAL_TYPE_EDESC + `</td>
             <td>` + value.CLAIM_OF_NAME + `</td>
-            <td>` + value.ID_ACCOUNT_NO + `</td>
+            <td style='mso-number-format:"\@"' >` + value.ID_ACCOUNT_NO + `</td>
             <td>` + value.APPROVED_AMT + `</td>
                 </tr>
             `;
@@ -88,7 +90,7 @@
             <td></td>
             <td></td>
             <td><b>Total</b></td>
-            <td><b>` + total.TOTAL_AMT + `</b></td>
+            <td style='mso-number-format:"\@"' ><b>` + total.TOTAL_AMT + `</b></td>
                 </tr>
             `;
             $('#printTable tbody').append(totalData);
@@ -129,6 +131,10 @@
 //        $("#reset").on("click", function () {
 //            $(".form-control").val("");
 //        });
+
+        $('#printExcel').on('click', function () {
+            app.exportTableToExcel('printDiv', 'MedicalTransaction', 'MedicalTransaction.xls');
+        });
 
 
 

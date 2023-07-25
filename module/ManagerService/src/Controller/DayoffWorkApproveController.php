@@ -12,6 +12,7 @@ use Notification\Controller\HeadNotification;
 use Notification\Model\NotificationEvents;
 use SelfService\Form\WorkOnDayoffForm;
 use SelfService\Model\WorkOnDayoff;
+use SelfService\Repository\WorkOnDayoffRepository;
 use WorkOnDayoff\Repository\WorkOnDayoffStatusRepository;
 use Zend\Authentication\Storage\StorageInterface;
 use Zend\Db\Adapter\AdapterInterface;
@@ -240,4 +241,50 @@ class DayoffWorkApproveController extends HrisController {
         }
     }
 
+    public function addAction() {
+        $this->initializeForm(WorkOnDayoffForm::class);
+        $request = $this->getRequest();
+
+        $model = new WorkOnDayoff();
+        if ($request->isPost()) {
+            $postData = $request->getPost();
+            $this->form->setData($request->getPost());
+            if ($this->form->isValid()) {
+                $model->exchangeArrayFromForm($this->form->getData());
+                $model->id = ((int) Helper::getMaxId($this->adapter, WorkOnDayoff::TABLE_NAME, WorkOnDayoff::ID)) + 1;
+                $model->requestedDate = Helper::getcurrentExpressionDate();
+//                $model->status = 'RQ';
+                $model->status = ($postData['applyStatus'] == 'AP') ? 'AP' : 'RQ';
+                $workOnDayoffRepository = new WorkOnDayoffRepository($this->adapter);
+                $workOnDayoffRepository->add($model);
+
+                if($model->status == 'RQ'){
+                    $this->flashmessenger()->addMessage("Work on Day-off Request Successfully added!!!");
+                    try {
+                        HeadNotification::pushNotification(NotificationEvents::WORKONDAYOFF_APPLIED, $model, $this->adapter, $this);
+                    } catch (Exception $e) {
+                        $this->flashmessenger()->addMessage($e->getMessage());
+                    }
+                }else{
+                    $this->repository->wodReward($model->id);
+                    $this->flashmessenger()->addMessage("Work on Day-off Approval Successfully added!!!");
+                }
+                return $this->redirect()->toRoute("dayoffWorkApprove");
+            }
+        }
+        
+        $applyOptionValues = [
+            'RQ' => 'Pending',
+            'AP' => 'Approved'
+        ];
+        $applyOption = $this->getSelectElement(['name' => 'applyStatus', 'id' => 'applyStatus', 'class' => 'form-control', 'label' => 'Type'], $applyOptionValues);
+        $employees = EntityHelper::getRAWiseEmployeeList($this->adapter, $this->employeeId);
+
+        return Helper::addFlashMessagesToArray($this, [
+            'form' => $this->form,
+            'applyOption' => $applyOption,
+            'employees' => $employees['data'],
+            'approvers' => $employees['approver']
+        ]);
+    }
 }

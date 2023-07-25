@@ -16,15 +16,15 @@ class HrisRepository {
         }
     }
 
-    protected function rawQuery($sql): array {
+    protected function rawQuery($sql,$paramenter = []): array {
         $statement = $this->adapter->query($sql);
-        $iterator = $statement->execute();
+        $iterator = $statement->execute($paramenter);
         return iterator_to_array($iterator, false);
     }
 
-    protected function executeStatement($sql) {
+    protected function executeStatement($sql, $parameter = []) {
         $statement = $this->adapter->query($sql);
-        $statement->execute();
+        $statement->execute($parameter);
     }
 
     protected function checkIfTableExists($tableName): bool {
@@ -126,4 +126,145 @@ class HrisRepository {
                 ON (E.BRANCH_ID = B.BRANCH_ID)";
         return $finalSql;
     }
+    
+    public function getBoundedForArray($arrayValues, $stringName) {
+        $returnData=[];
+        $boundedParameter = [];
+        $boundedString = "";
+        if (gettype($arrayValues) === "array") {
+            $lengthValue = sizeof($arrayValues);
+            for ($i = 0; $i < $lengthValue; $i++) {
+                $boundedName = $stringName . $i;
+                $boundedParameter [$boundedName] = $arrayValues[$i];
+                if ($i + 1 == $lengthValue) {
+                    $boundedString .= ":{$boundedName}";
+                } else {
+                    $boundedString .= ":{$boundedName},";
+                }
+            }
+        }else{
+            $boundedParameter[$stringName] = $arrayValues;
+            $boundedString .= ":{$stringName}";
+        }
+        $returnData['sql']=$boundedString;
+        $returnData['parameter']=$boundedParameter;
+        return $returnData;
+    }
+    
+    
+    public static function getSearchConditonBoundedPayroll($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId = null, $locationId = null, $functionalTypeId = null) {
+        $conditon = "";
+        $allParameters=[];
+        if ($companyId != null && $companyId != -1) {
+            $employeeConditon = self::conditionBuilderBounded($companyId, "SSED.COMPANY_ID", "AND");
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        }
+        if ($branchId != null && $branchId != -1) {
+            $employeeConditon = self::conditionBuilderBounded($branchId, "SSED.BRANCH_ID", "AND");
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        }
+        if ($departmentId != null && $departmentId != -1) {
+            $parentQuery = "(SELECT DEPARTMENT_ID FROM
+                         HRIS_DEPARTMENTS 
+                        START WITH PARENT_DEPARTMENT in (INVALUES)
+                        CONNECT BY PARENT_DEPARTMENT= PRIOR DEPARTMENT_ID
+                        UNION 
+                        SELECT DEPARTMENT_ID FROM HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN (INVALUES)
+                        UNION
+                        SELECT  TO_NUMBER(TRIM(REGEXP_SUBSTR(EXCEPTIONAL,'[^,]+', 1, LEVEL) )) DEPARTMENT_ID
+  FROM (SELECT EXCEPTIONAL  FROM  HRIS_DEPARTMENTS WHERE DEPARTMENT_ID IN  (INVALUES))
+   CONNECT BY  REGEXP_SUBSTR(EXCEPTIONAL, '[^,]+', 1, LEVEL) IS NOT NULL
+                        )";
+            $employeeConditon = self::conditionBuilderBounded($departmentId, "SSED.DEPARTMENT_ID", "AND", false, $parentQuery);
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        }
+        if ($positionId != null && $positionId != -1) {
+            $employeeConditon = self::conditionBuilderBounded($positionId, "SSED.POSITION_ID", "AND");
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        }
+        if ($designationId != null && $designationId != -1) {
+            $employeeConditon = self::conditionBuilderBounded($designationId, "SSED.DESIGNATION_ID", "AND");
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        }
+        if ($serviceTypeId != null && $serviceTypeId != -1) {
+            $employeeConditon = self::conditionBuilderBounded($serviceTypeId, "SSED.SERVICE_TYPE_ID", "AND");
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        } 
+//        if ($serviceEventTypeId != null && $serviceEventTypeId != -1) {
+//            $employeeConditon = self::conditionBuilderBounded($serviceEventTypeId, "E.SERVICE_EVENT_TYPE_ID", "AND");
+//            $conditon .=$employeeConditon['sql'];
+//            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+//        }
+//        if ($employeeTypeId != null && $employeeTypeId != -1) {
+//            $employeeConditon = self::conditionBuilderBounded($employeeTypeId, "E.EMPLOYEE_TYPE", "AND", true);
+//            $conditon .=$employeeConditon['sql'];
+//            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+//        }
+        
+        if ($employeeId != null && $employeeId != -1) {
+            $employeeConditon = self::conditionBuilderBounded($employeeId, "SSED.EMPLOYEE_ID", "AND");
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        }
+        if ($genderId != null && $genderId != -1) {
+            $employeeConditon = self::conditionBuilderBounded($genderId, "SSED.GENDER_ID", "AND");
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        }
+        if ($functionalTypeId != null && $functionalTypeId != -1) {
+            $employeeConditon = self::conditionBuilderBounded($functionalTypeId, "SSED.FUNCTIONAL_TYPE_ID", "AND");
+            $conditon .=$employeeConditon['sql'];
+            $allParameters=array_merge($allParameters,$employeeConditon['parameter']);
+        }
+        $boundedconditon['sql']=$conditon;
+        $boundedconditon['parameter']=$allParameters;
+        return $boundedconditon;
+    }
+    
+    public static function conditionBuilderBounded($colValue, $colName, $conditonType, $isString = false, $parentQuery = false) {
+        $returnData=[];
+       $parameterData=[];
+        if (gettype($colValue) === "array") {
+             $valuesinCSV = "";
+            for ($i = 0; $i < sizeof($colValue); $i++) {
+                $tempname=$colName.$i;
+                $tempname=str_replace('.', '', $tempname);
+                $value = $isString ? "'{$colValue[$i]}'" : $colValue[$i];
+                if ($i + 1 == sizeof($colValue)) {
+                    $valuesinCSV .= ":{$tempname}";
+                } else {
+                    $valuesinCSV .= ":{$tempname},";
+                }
+                $parameterData[$tempname]=$colValue[$i];
+            }
+            if ($parentQuery) {
+                $valuesinCSV = str_replace('INVALUES', $valuesinCSV, $parentQuery);
+            }
+            
+            $sql="{$conditonType} {$colName} in ({$valuesinCSV})";
+            $returnData['sql']=$sql;
+            $returnData['parameter']=$parameterData;
+            return $returnData;
+        } else {
+            $value = $isString ? "'{$colValue}'" : $colValue;
+            $tempname=str_replace('.', '', $colName);
+            $parameterData[$tempname]=$colValue;
+            if ($parentQuery) {
+                $value = str_replace('INVALUES', $value, $parentQuery);
+                return " {$conditonType} {$colName} IN (:{$tempname})";
+            } else {
+                $sql = "{$conditonType} {$colName} = :{$tempname} ";
+            }
+            $returnData['sql']=$sql;
+            $returnData['parameter']=[$tempname=>$colValue];
+            return $returnData;
+        }
+    }
+    
 }

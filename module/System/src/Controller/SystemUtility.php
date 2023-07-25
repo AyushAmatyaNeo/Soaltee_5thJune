@@ -24,7 +24,7 @@ class SystemUtility extends HrisController {
 
     public function reAttendanceAction() {
         return $this->stickFlashMessagesTo([
-                    'employeeList' => EntityHelper::getTableList($this->adapter, HrEmployees::TABLE_NAME, [HrEmployees::EMPLOYEE_ID, HrEmployees::FULL_NAME], [HrEmployees::STATUS => "E", HrEmployees::RETIRED_FLAG => "N"]),
+                    'employeeList' => EntityHelper::getTableList($this->adapter, HrEmployees::TABLE_NAME, [HrEmployees::EMPLOYEE_ID, FULL_NAME=>"EMPLOYEE_CODE||'-'||FULL_NAME"], [HrEmployees::STATUS => "E", HrEmployees::RETIRED_FLAG => "N"]),
                     'searchValues' => EntityHelper::getSearchData($this->adapter)
         ]);
     }

@@ -162,6 +162,7 @@ FROM
         $serviceTypeId = $data['serviceTypeId'];
         $serviceEventTypeId = $data['serviceEventTypeId'];
         $employeeTypeId = $data['employeeTypeId'];
+		$functionalTypeId = $data['functionalTypeId'];
         $fromDate = $data['fromDate'];
         $toDate = $data['toDate'];
         
@@ -188,7 +189,7 @@ TO_CHAR(TO_DATE('{$fromDate}','DD-MON-YYYY') + ROWNUM -1,'DD-MON-YYYY')  AS DATE
         }
         
         
-        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId,null,null,$functionalTypeId);
 
 
 
@@ -226,8 +227,9 @@ PIVOT(
         $serviceTypeId = $data['serviceTypeId'];
         $serviceEventTypeId = $data['serviceEventTypeId'];
         $employeeTypeId = $data['employeeTypeId'];
-        
-        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId);
+        $functionalTypeId = $data['functionalTypeId'];
+		
+        $searchCondition = $this->getSearchConditon($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId,null,null,$functionalTypeId);
 
         $sql = "
             SELECT *
@@ -260,7 +262,7 @@ FROM
             left join hris_shifts s6 on (s6.shift_id=er.fri)
             left join hris_shifts s7 on (s7.shift_id=er.sat)
   ON(E.EMPLOYEE_ID = ER.EMPLOYEE_ID)
-  WHERE 1=1 AND E.STATUS='E' {$searchCondition}
+  WHERE 1=1 AND E.STATUS='E' {$searchCondition} order by to_number(e.employee_code) asc
   )
   ";
   

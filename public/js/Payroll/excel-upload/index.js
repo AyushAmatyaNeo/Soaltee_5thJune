@@ -26,6 +26,11 @@
     		$(".months").show();
     		typeFlag = 2;
     	});
+        $("#payValue").click(function(){
+            app.populateSelect($payHeads, document.payHeads, "PAY_ID", "PAY_EDESC", "Select One");
+            $(".months").show();
+            typeFlag = 3;
+        });
 
         $("#employeeIdBased").click(function(){ basedOnFlag = 1; });
         $("#employeeCodeBased").click(function(){ basedOnFlag = 2; });
@@ -68,6 +73,17 @@
 	            }, function (error) {
 	                console.log(error);
 	            });
+            }
+            if(typeFlag == 3){
+                if($monthId.val() == -1){
+                    app.showMessage('Month not selected', 'warning');
+                    return;
+                }
+                app.serverRequest(document.updatePVMLink, {data : excelData, fiscalYearId: $fiscalYearId.val(), monthId: $monthId.val(), payId: valueType, basedOn: basedOnFlag}).then(function(){
+                    app.showMessage('Operation successfull', 'success');
+                }, function (error) {
+                    console.log(error);
+                });
             }
     	});
 

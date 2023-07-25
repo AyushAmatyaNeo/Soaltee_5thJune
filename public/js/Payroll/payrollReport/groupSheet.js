@@ -48,14 +48,20 @@
                 'FULL_NAME': 'Employee',
                 'POSITION_NAME': 'Position',
                 'SERVICE_TYPE_NAME': 'Service',
+                'SERIAL_NUMBER': 'S.N'
             }
 
             var columns = [
+                {field: "SERIAL_NUMBER", title: "S.N", width: 80, locked: true},
                 {field: "EMPLOYEE_CODE", title: "Code", width: 80, locked: true},
                 {field: "FULL_NAME", title: "Employee", width: 120, locked: true},
                 {field: "POSITION_NAME", title: "Position", width: 120, locked: true},
                 {field: "SERVICE_TYPE_NAME", title: "Service", width: 120, locked: true}
             ];
+
+            for (var i = 0; i < data.length; i++) {
+                data[i].SERIAL_NUMBER = i + 1;
+            }
 
             $.each(extraVariable, function (index, value) {
                 for (var i in extraFieldsList) {

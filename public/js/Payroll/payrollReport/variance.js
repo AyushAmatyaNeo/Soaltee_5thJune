@@ -38,12 +38,17 @@
                 data[index]['P_TOTAL']=tempPreTot;
                 data[index]['C_TOTAL']=tempCurTot;
                 data[index]['D_TOTAL']=tempPreTot-tempCurTot;
+				
+				
+				varianceData.push(value);
                 
-                if ((tempPreTot - tempCurTot) != 0 ||
-                value['ADDRESS_REMARKS'] != "Not Changed" || value['ACCOUNT_REMARKS'] != "Not Changed")
-                {
-                    varianceData.push(value);
-                }
+                //if ((tempPreTot - tempCurTot) != 0 ||
+                //value['ADDRESS_REMARKS'] != "Not Changed" || value['ACCOUNT_REMARKS'] != "Not Changed")
+                //{
+                  //  varianceData.push(value);
+                //}
+				
+				varianceData.push(value);
 
             });
             
@@ -92,7 +97,7 @@
 //                    aggregates: ["sum"],
 //                    footerTemplate: "#=sum||''#"
                 });
-//                map[value['VARIANCE']] = 'Current_' + value['VARIANCE_NAME'];
+                map[value['VARIANCE']] = 'Current_' + value['VARIANCE_NAME'];
 //                dataSchemaCols[value['VARIANCE']] = {type: "number"};
 //                aggredCols.push({field: value['VARIANCE'], aggregate: "sum"});
             });
@@ -104,7 +109,7 @@
                     aggregates: ["sum"],
                     footerTemplate: "#=sum||''#"
                 });
-                map["C_TOTAL"] = 'Previous_' + 'Total';
+                map["C_TOTAL"] = 'CURRENT_' + 'Total';
                 dataSchemaCols["C_TOTAL"] = {type: "number"};
                 aggredCols.push({field: "C_TOTAL", aggregate: "sum"});
     

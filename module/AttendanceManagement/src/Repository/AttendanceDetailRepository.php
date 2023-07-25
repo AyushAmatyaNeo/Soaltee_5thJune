@@ -1194,4 +1194,57 @@ FROM (SELECT
                 ";
         return EntityHelper::rawQueryResult($this->adapter, $sql);
     }
+
+    public function getInOutReport($searchQuery){
+      $fromDate = $searchQuery['fromDate'];
+      $toDate = $searchQuery['toDate'];
+      $searchConditon = EntityHelper::getSearchConditon($searchQuery['companyId'], $searchQuery['branchId'], $searchQuery['departmentId'], $searchQuery['positionId'], $searchQuery['designationId'], $searchQuery['serviceTypeId'], $searchQuery['serviceEventTypeId'], $searchQuery['employeeTypeId'], $searchQuery['employeeId'], null, null, $searchQuery['functionalTypeId']);
+      $sql = "SELECT
+            employee_code,
+            full_name,
+            attendance_dt,
+            to_char(in_time, 'HH24:MI') in_time,
+            to_char(out_time, 'HH24:MI') out_time,
+            (
+                CASE
+                    WHEN
+                        in_time IS NOT NULL
+                    AND
+                        out_time IS NOT NULL
+                    THEN EXTRACT(HOUR FROM(out_time - in_time) )
+                     || ':'
+                     || EXTRACT(MINUTE FROM(out_time - in_time) )
+                     else ''
+                END
+            ) AS total_worked_hour
+        FROM
+            (
+                SELECT DISTINCT
+                    e.employee_code,
+                    e.full_name,
+                    ha.attendance_dt,
+                    hris_in_time(
+                        e.employee_id,
+                        ha.attendance_dt
+                    ) AS in_time,
+                    hris_out_time(
+                        e.employee_id,
+                        ha.attendance_dt
+                    ) AS out_time
+                FROM
+                    hris_employees e
+                    JOIN Hris_Attendance_detail ha ON (
+                        e.employee_id = ha.employee_id
+                    )
+                WHERE
+                    (
+                        ha.attendance_dt BETWEEN '{$fromDate}' AND '{$toDate}'
+                    ) {$searchConditon}
+                ORDER BY
+                    e.employee_code,
+                    ha.attendance_dt
+            )";
+            //echo $sql; die;
+            return EntityHelper::rawQueryResult($this->adapter, $sql);
+    }
 }

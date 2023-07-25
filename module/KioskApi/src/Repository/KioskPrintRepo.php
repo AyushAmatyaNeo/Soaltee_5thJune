@@ -17,7 +17,7 @@ class KioskPrintRepo {
     public function fetchCount($data, $employeeId) {
         $loanCondition = '';
         if($data['LoanId'] != null){
-            $loanCondition = " AND LOAN_ID = {$data['LoanId']}";
+            $loanCondition = " AFND LOAN_ID = {$data['LoanId']}";
         }
 
         $salaryTypeCondition = '';
@@ -31,7 +31,7 @@ class KioskPrintRepo {
             FROM HRIS_KIOSK_PRINT_STAT
             WHERE EMPLOYEE_ID = {$employeeId}
             AND PRINT_TYPE    = '{$data['PrintType']}'
-            AND MONTH_ID      = 19
+            AND MONTH_ID      = 63
             {$salaryTypeCondition}
             {$loanCondition}
             ";
@@ -61,7 +61,7 @@ class KioskPrintRepo {
             $salaryTypeInsert = ", 1";
         }
 
-        $sql = "INSERT INTO HRIS_KIOSK_PRINT_STAT(PRINT_ID,MONTH_ID,EMPLOYEE_ID,PRINT_TYPE {$loanKey} {$salaryTypeKey}) VALUES ((SELECT NVL(MAX(PRINT_ID),0)+1 FROM HRIS_KIOSK_PRINT_STAT),19,{$employeeId},'{$data['PrintType']}'{$loanInsert}{$salaryTypeInsert})";
+        $sql = "INSERT INTO HRIS_KIOSK_PRINT_STAT(PRINT_ID,MONTH_ID,EMPLOYEE_ID,PRINT_TYPE {$loanKey} {$salaryTypeKey}) VALUES ((SELECT NVL(MAX(PRINT_ID),0)+1 FROM HRIS_KIOSK_PRINT_STAT),63,{$employeeId},'{$data['PrintType']}'{$loanInsert}{$salaryTypeInsert})";
 
         $statement = $this->adapter->query($sql);
         $statement->execute();

@@ -11,6 +11,7 @@ use ManagerService\Repository\HolidayWorkApproveRepository;
 use Notification\Controller\HeadNotification;
 use Notification\Model\NotificationEvents;
 use SelfService\Form\WorkOnHolidayForm;
+use SelfService\Repository\WorkOnHolidayRepository;
 use SelfService\Model\WorkOnHoliday;
 use WorkOnHoliday\Repository\WorkOnHolidayStatusRepository;
 use Zend\Authentication\Storage\StorageInterface;
@@ -148,4 +149,68 @@ class HolidayWorkApproveController extends HrisController {
         }
     }
 
+    public function addAction() {
+        $this->initializeForm(WorkOnHolidayForm::class);
+        $request = $this->getRequest();
+
+        $model = new WorkOnHoliday();
+        if ($request->isPost()) {
+            $postData = $request->getPost();
+            $this->form->setData($request->getPost());
+            if ($this->form->isValid()) {
+                $workOnHolidayRepository = new WorkOnHolidayRepository($this->adapter);
+                $model->exchangeArrayFromForm($this->form->getData());
+                $model->id = ((int) Helper::getMaxId($this->adapter, WorkOnHoliday::TABLE_NAME, WorkOnHoliday::ID)) + 1;
+                $model->requestedDate = Helper::getcurrentExpressionDate();
+//                $model->status = 'RQ';
+                $model->status = ($postData['applyStatus'] == 'AP') ? 'AP' : 'RQ';
+                $workOnHolidayRepository->add($model);
+                if($model->status == 'RQ'){
+                    $this->flashmessenger()->addMessage("Work on Holiday Request Successfully added!!!");
+                    try {
+                        HeadNotification::pushNotification(NotificationEvents::WORKONHOLIDAY_APPLIED, $model, $this->adapter, $this);
+                    } catch (Exception $e) {
+                        $this->flashmessenger()->addMessage($e->getMessage());
+                    }
+                }else{
+                    $this->repository->wohReward($model->id);
+                    $this->flashmessenger()->addMessage("Work on Holiday Approval Successfully added!!!");
+                }
+                return $this->redirect()->toRoute("holidayWorkApprove", [
+                    'Controller' => 'HolidayWorkApproveController',
+                    'action' => 'index'
+                ]);
+            }
+        }
+        
+        $applyOptionValues = [
+            'RQ' => 'Pending',
+            'AP' => 'Approved'
+        ];
+        $applyOption = $this->getSelectElement(['name' => 'applyStatus', 'id' => 'applyStatus', 'class' => 'form-control', 'label' => 'Type'], $applyOptionValues);
+        $employees = EntityHelper::getRAWiseEmployeeList($this->adapter, $this->employeeId);
+
+        return Helper::addFlashMessagesToArray($this, [
+                    'form' => $this->form,
+                    'applyOption' => $applyOption,
+                    'employees' => $employees['data'],
+                    'approvers' => $employees['approver'],
+                    'holidays' => EntityHelper::getTableKVListWithSortOption($this->adapter, Holiday::TABLE_NAME, Holiday::HOLIDAY_ID, [Holiday::HOLIDAY_ENAME], ["STATUS" => 'E'], "HOLIDAY_ENAME", "ASC", null, false, true)
+        ]);
+    }
+    
+    public function pullHolidaysForEmployeeAction() {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+
+            $employeeId = $data['employeeId'];
+            $holidayRepo = new WorkOnHolidayStatusRepository($this->adapter);
+            $holidayResult = Helper::extractDbData($holidayRepo->getAttendedHolidayList($employeeId));
+
+            return new JsonModel(['success' => true, 'data' => $holidayResult, 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
 }

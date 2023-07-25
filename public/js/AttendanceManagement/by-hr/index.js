@@ -158,6 +158,7 @@
                 ]},
             {field: "IN_TIME", title: "Check In", template: "<span>#: (IN_TIME == null) ? '-' : IN_TIME # </span>"},
             {field: "OUT_TIME", title: "Check Out", template: "<span>#: (OUT_TIME == null) ? '-' : OUT_TIME # </span>"},
+            {field: "TOTAL_HOUR", title: "Total Hour"},
             {field: "IN_REMARKS", title: "In Remarks"},
             {field: "OUT_REMARKS", title: "Out Remarks"},
 //            {field: "SYSTEM_OVERTIME", title: "OT", template: "<span>#: (SYSTEM_OVERTIME == null) ? '-' : SYSTEM_OVERTIME # </span>"},

@@ -20,6 +20,9 @@ $this->headScript()
         ->appendFile($this->basePath('telerik_kendoui/js/kendo.all.min.js'));
 $this->headScript()->appendFile($this->basePath('js/search.js'));
 $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reportthree.js'));
+$this->headScript()
+        ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
+        ->appendFile($this->basePath('js/nepali-datepicker-ext.js'));
 ?>
 <?php if ($this->messages) { ?>
     <script>
@@ -150,6 +153,26 @@ $this->headScript()->appendFile($this->basePath('js/Report/AllReport/reportthree
             <div class="col-sm-2">
                 <select class="form-control reset-field" id="monthId" >
                 </select>
+            </div>
+                <div class="col-sm-2">
+                <div class="form-group">
+                    <input type="text" id="fromDate" name="fromDate"  class="form-control" placeholder="From Date"/>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <input type="text" id="nepaliFromDate" name="nepaliFromDate" class="form-control" placeholder="From Date Nepali"/>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <input type="text" id="toDate" name="toDate"  class="form-control" placeholder="To Date"/>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <input type="text" id="nepaliToDate" name="nepaliToDate" class="form-control" placeholder="To Date Nepali"/>
+                </div>
             </div>
                 
 <!--                <div class="col-sm-2">

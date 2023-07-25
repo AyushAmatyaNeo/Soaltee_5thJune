@@ -8,6 +8,7 @@ use Payroll\Model\FlatValue as FlatValueModel;
 use Application\Model\FiscalYear;
 use Payroll\Model\MonthlyValue as MonthlyValueModel;
 use Application\Model\Months;
+use Payroll\Model\Rules;
 use Zend\Db\Adapter\AdapterInterface;
 use Payroll\Repository\FlatValueDetailRepo;
 use Payroll\Repository\MonthlyValueDetailRepo;
@@ -27,6 +28,7 @@ class ExcelUploadController extends HrisController {
 
     public function indexAction() {
         $flatValues = EntityHelper::getTableList($this->adapter, FlatValueModel::TABLE_NAME, [FlatValueModel::FLAT_ID, FlatValueModel::FLAT_EDESC], [FlatValueModel::STATUS => EntityHelper::STATUS_ENABLED, FlatValueModel::ASSIGN_TYPE => 'E']);
+        $payHeads = EntityHelper::getTableList($this->adapter, Rules::TABLE_NAME, [Rules::PAY_ID, Rules::PAY_EDESC], [Rules::STATUS => EntityHelper::STATUS_ENABLED]);
         $fiscalYears = EntityHelper::getTableList($this->adapter, FiscalYear::TABLE_NAME, [FiscalYear::FISCAL_YEAR_ID, FiscalYear::FISCAL_YEAR_NAME]);
         $monthlyValues = EntityHelper::getTableList($this->adapter, MonthlyValueModel::TABLE_NAME, [MonthlyValueModel::MTH_ID, MonthlyValueModel::MTH_EDESC]);
         $months = EntityHelper::getTableList($this->adapter, Months::TABLE_NAME, [Months::MONTH_ID, Months::MONTH_EDESC, Months::FISCAL_YEAR_ID],null,'','FISCAL_YEAR_MONTH_NO');
@@ -35,6 +37,7 @@ class ExcelUploadController extends HrisController {
                     'flatValues' => $flatValues,
                     'fiscalYears' => $fiscalYears,
                     'monthlyValues' => $monthlyValues,
+                    'payHeads' => $payHeads,
                     'months' => $months,
                     'acl' => $this->acl,
         ]);
@@ -97,5 +100,26 @@ class ExcelUploadController extends HrisController {
             'searchValues' => EntityHelper::getSearchData($this->adapter),
             'acl' => $this->acl
         ]);
+    }
+
+    public function updatePVMAction(){
+        $excelData = $_POST['data'];
+        $monthId = $_POST['monthId'];
+        $fiscalYearId = $_POST['fiscalYearId'];
+        $payId = $_POST['payId'];
+        $basedOn = $_POST['basedOn'];
+        //$monthId = $this->repository->getMonthId($fiscalYearId, $monthId);
+        foreach($payId as $mid){
+            foreach ($excelData as $data) {
+                if($basedOn == 2){ $data['A'] = EntityHelper::getEmployeeIdFromCode($this->adapter, $data['A']); }
+                if($data['A'] == null || $data['A'] == ''){ continue; }
+                $item['employeeId'] = $data['A'];
+                $item['val'] = $data['C'];
+                $item['payId'] = $mid;
+                $item['monthId'] = $monthId;
+                $this->repository->postPVMDetail($item);
+            }
+        }
+        return new JsonModel(['success' => true, 'error' => '']);
     }
 }

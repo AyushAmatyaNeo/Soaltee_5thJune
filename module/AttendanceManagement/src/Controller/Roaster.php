@@ -28,7 +28,7 @@ class Roaster extends HrisController {
     }
 
     public function getRoasterListAction() {
-        try {
+        try {			
             $request = $this->getRequest();
             $data = $request->getPost();
             $result = $this->repository->getRosterDetailList($data['q']);
@@ -42,7 +42,7 @@ class Roaster extends HrisController {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
-
+	
 //            print_r($data['data']);
 //            die();
 
@@ -84,7 +84,7 @@ class Roaster extends HrisController {
         $data['pvmUpdateLink'] = $this->url()->fromRoute('roaster', ['action' => 'assignWeeklyRoster']);
         
         $shfitList=EntityHelper::getTableList($this->adapter, ShiftSetup::TABLE_NAME, [ShiftSetup::SHIFT_ID, ShiftSetup::SHIFT_ENAME], [ShiftSetup::STATUS => EntityHelper::STATUS_ENABLED]);
-        
+        asort($shfitList);
         array_unshift($shfitList,array('SHIFT_ID' => -1,'SHIFT_ENAME' => 'select shift'));
         
         return $this->stickFlashMessagesTo([

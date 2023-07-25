@@ -28,7 +28,7 @@ class LeaveBalanceRepository {
             ON LA.EMPLOYEE_ID = E.EMPLOYEE_ID 
             WHERE LA.EMPLOYEE_ID = {$employeeId}
 			  AND LMS.STATUS='E'
-             AND LA.LEAVE_ID IN (21,22,23)
+             AND LA.LEAVE_ID IN (36,37,38)
             ORDER BY LA.LEAVE_ID
             ";
 

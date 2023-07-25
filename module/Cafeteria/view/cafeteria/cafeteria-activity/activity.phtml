@@ -56,6 +56,7 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
 <?php } ?>
 
 <script>
+	document.functionalTypeId = <?=json_encode($functionalTypeId)?>;
     document.menuList = <?=json_encode($menuList)?>;
     document.timeList = <?=json_encode($timeList)?>;
     document.mapList = <?=json_encode($mapList)?>;

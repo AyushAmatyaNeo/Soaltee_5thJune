@@ -159,11 +159,12 @@ class RecommendApproveController extends HrisController {
             $recommenderId = (!isset($data['recommenderId']) || $data['recommenderId'] == null) ? -1 : $data['recommenderId'];
             $approverId = (!isset($data['approverId']) || $data['approverId'] == null) ? -1 : $data['approverId'];
             $employeeTypeId = $data['employeeTypeId'];
+			$functionalTypeId = $data['functionalTypeId'];
 
             $recommApproverRepo = new RecommendApproveRepository($this->adapter);
 
             $employeeRepo = new EmployeeRepository($this->adapter);
-            $employeeResult = $employeeRepo->filterRecordsWithAR($employeeId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, 1, $companyId, $employeeTypeId);
+            $employeeResult = $employeeRepo->filterRecordsWithAR($employeeId, $branchId, $departmentId, $designationId, $positionId, $serviceTypeId, $serviceEventTypeId, 1, $companyId, $employeeTypeId, $functionalTypeId);
 
             $employeeList = [];
             foreach ($employeeResult as $employeeRow) {

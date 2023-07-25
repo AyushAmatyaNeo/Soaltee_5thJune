@@ -45,6 +45,9 @@ class CafeteriaActivityController extends HrisController{
         
         $result = $this->cafeteriaMapRepo->fetchMenu();
         $menuList = Helper::extractDbData($result);
+		
+		$result = $this->cafeteriaMapRepo->fetchEmployeeFunctionalTypeId($this->employeeId);
+        $functionalTypeId = Helper::extractDbData($result)[0]['FUNCTIONAL_TYPE_ID'];
         
         $mapList = []; 
         for($i = 0; $i < count($timeList); $i++){
@@ -60,7 +63,8 @@ class CafeteriaActivityController extends HrisController{
             'menuList' => $menuList,
             'mapList' => $mapList,
             'employeeDetails' => $details,
-            'acl' => $this->acl
+            'acl' => $this->acl,
+			'functionalTypeId' => $functionalTypeId
         ]);
     }
 

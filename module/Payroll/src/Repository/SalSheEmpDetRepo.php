@@ -17,14 +17,16 @@ class SalSheEmpDetRepo extends HrisRepository {
     
     public function fetchOneByWithEmpDetails($monthId,$employeeId){
         $sql="SELECT 
-        SSD.*
-        ,E.ID_PROVIDENT_FUND_NO
-        ,E.ID_PAN_NO
-        ,E.ID_RETIREMENT_NO
+        SSD.*, SSD.PRESENT, SSD.DAYOFF, (SSD.PRESENT + SSD.DAYOFF) AS PRESENT_DAYS,
+        E.ID_PROVIDENT_FUND_NO, E.EMPLOYEE_CODE, E.ID_PAN_NO,
+        E.DEARNESS_ALLOWANCE, E.ID_CITIZENSHIP_NO, E.ID_PASSPORT_NO, E.ID_LBRF, E.ID_RETIREMENT_NO
         FROM HRIS_SALARY_SHEET_EMP_DETAIL SSD
-        LEFT JOIN HRIS_EMPLOYEES E ON SSD.EMPLOYEE_ID=E.EMPLOYEE_ID
+        LEFT JOIN HRIS_EMPLOYEES E ON SSD.EMPLOYEE_ID = E.EMPLOYEE_ID
         WHERE
-        SSD.MONTH_ID={$monthId} AND SSD.EMPLOYEE_ID={$employeeId}";
+        SSD.MONTH_ID = {$monthId} AND SSD.EMPLOYEE_ID = {$employeeId}";
+
+        //print_r($sql);
+        //exit;
         
         $statement = $this->adapter->query($sql);
         $result=$statement->execute();

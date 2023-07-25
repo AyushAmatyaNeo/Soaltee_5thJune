@@ -1,12 +1,15 @@
 <?php
+//$this->headLink()
+//        ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.common.min.css'))
+//        ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.default.min.css'));
 $this->headLink()
         ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.common.min.css'))
-        ->appendStylesheet($this->basePath('telerik_kendoui/styles/kendo.default.min.css'));
+        ->appendStylesheet($this->basePath('telerik_kendoui/styles/ForWeekly/kendo.default-v2.min.css'));
 $this->headLink()
         ->appendStylesheet($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.css'));
 $this->headScript()
         ->appendFile($this->basePath('jszip/dist/jszip.min.js'))
-        ->appendFile($this->basePath('telerik_kendoui/js/kendo.all.min.js'))
+        ->appendFile($this->basePath('telerik_kendoui/js/ForWeekly/kendo.all.min.js'))
         ->appendFile($this->basePath('assets/global/plugins/nepalidate/nepali.datepicker.v2.1.min.js'))
         ->appendFile($this->basePath('js/nepali-datepicker-ext.js'))
         ->appendFile($this->basePath('js/search.js'))
@@ -103,9 +106,14 @@ $this->headScript()
                 </select>
             </div>
             <div class="col-sm-2">
-                <label>Service Event Type</label>
+                <label>Employee Type</label>
                 <select multiple class="form-control" name="employeeType" id="employeeTypeId">
                 </select>
+            </div>
+			<div class="col-sm-2">
+                            <label>Functional Type</label>
+                            <select multiple class="form-control" name="functionalType" id="functionalTypeId">
+                            </select>
             </div>
             <div class="col-sm-2">
                 <label>Employee</label>

@@ -58,7 +58,7 @@ $this->headScript()->appendFile($this->basePath('js/SelfService/payroll/payslip.
                 <tr><td colspan="4"><h3><b><span id="yearMonthDetails"></span></b></h3>  </td> </tr>
                 <tr>
                     <td>Employee Id</td>
-                    <td key="EMPLOYEE_ID"></td>
+                    <td key="EMPLOYEE_CODE"></td>
                     <td>Employee Name</td>
                     <td key="FULL_NAME"></td>
                 </tr>
@@ -68,17 +68,20 @@ $this->headScript()->appendFile($this->basePath('js/SelfService/payroll/payslip.
                     <td>Department</td>
                     <td key="DEPARTMENT_NAME"></td>
                 </tr>
+
                 <tr>
-                    <td>Present Days</td>
-                    <td key="PRESENT"></td>
-                    <td>Absent Days</td>
-                    <td key="ABSENT"></td>
+                    <td>Position Name</td>
+                    <td key="POSITION_NAME"></td>
+                    <td>Designation Name</td>
+                    <td key="DESIGNATION_TITLE"></td>
                 </tr>
+              
                 <tr>
                     <td>Salary</td>
                     <td key="SALARY"></td>
-                    <td>A/c No</td>
-                    <td key="ACCOUNT_NO"></td>
+                    <td>Allowance</td>
+                    <td key="DEARNESS_ALLOWANCE"></td>
+                   
                 </tr>
                 
                 <tr>
@@ -95,19 +98,35 @@ $this->headScript()->appendFile($this->basePath('js/SelfService/payroll/payslip.
                     <td key="ID_PAN_NO"></td>
                     
                 </tr>
-                <tr>
+             
+
+                    <tr>
+                    <td>SSF No</td>
+                    <td key="ID_LBRF"></td>
+                    <td>A/c No</td>
+                    <td key="ACCOUNT_NO"></td>
+                    
+                </tr>
+
+                </tr>
+             
+
+             <tr>
+             <td>Citizenship No</td>
+             <td key="ID_CITIZENSHIP_NO"></td>
+             <td>Passport/Other ID</td>
+             <td key="ID_PASSPORT_NO"></td>
+             
+         </tr>
+                
+              <!--  <tr>
                     <td>Paid Leave</td>
                     <td key="PAID_LEAVE"></td>
                     <td>Unpaid Leave</td>
                     <td key="UNPAID_LEAVE"></td>
                     
-                </tr>
-                <tr>
-                    <td>Position Name</td>
-                    <td key="POSITION_NAME"></td>
-                    <td>Designation Name</td>
-                    <td key="DESIGNATION_TITLE"></td>
-                </tr>
+                </tr>-->
+               
             </table>
             <table class="table table-bordered">
                 <thead>
@@ -117,6 +136,16 @@ $this->headScript()->appendFile($this->basePath('js/SelfService/payroll/payslip.
                 <tbody id="paySlipBody">
                 </tbody>
             </table>
+            <table class="table table-bordered">
+            <tr>
+                     <td>Total Days</td>
+                    <td key="TOTAL_DAYS"></td>
+                    <td>Present Days</td>
+                    <td key="PRESENT_DAYS"></td>
+                    <td>Absent Days</td>
+                    <td key="ABSENT"></td>
+                </tr> 
+                </table>
         </div>
     </div>
 </div>

@@ -26,7 +26,8 @@
             {ID: "JOIN_DATE", VALUE: "Join Date"},
              {ID: "ID_PAN_NO", VALUE: "Pan No"},
              {ID: "BRANCH_NAME", VALUE: "Branch Name"},
-             {ID: "ID_ACCOUNT_NO", VALUE: "Account No"}
+             {ID: "ID_ACCOUNT_NO", VALUE: "Account No"},
+             {ID: "GENDER_NAME", VALUE: "Gender"},
         ];
 
         app.setFiscalMonth($fiscalYear, $month, function (years, months, currentMonth) {
@@ -46,18 +47,34 @@
             let aggredCols = [];
             $table.empty();
             map = {
+                
                 'EMPLOYEE_CODE': 'Employee Code',
                 'FULL_NAME': 'Employee',
                 'POSITION_NAME': 'Position',
+                'BRANCH_NAME': 'Branch Name',
+                'GENDER_NAME': 'Gender',
                 'SERVICE_TYPE_NAME': 'Service',
+                'ACCOUNT_NO': 'Account No',
+                'ID_PAN_NO': 'PAN',
+                'SERIAL_NUMBER': 'S.N'
             }
 
             var columns = [
+                {field: "SERIAL_NUMBER", title: "S.N", width: 80, locked: true},
                 {field: "EMPLOYEE_CODE", title: "Code", width: 80, locked: true},
                 {field: "FULL_NAME", title: "Employee", width: 120, locked: true},
-                {field: "POSITION_NAME", title: "Position", width: 120, locked: true},
-                {field: "SERVICE_TYPE_NAME", title: "Service", width: 120, locked: true},
+                {field: "POSITION_NAME", title: "Position", width: 60, locked: true},
+                {field: "BRANCH_NAME", title: "Branch", width: 100, locked: true},
+                {field: "GENDER_NAME", title: "Gender", width: 100, locked: true},
+                {field: "SERVICE_TYPE_NAME", title: "Service", width: 100, locked: true},
+                {field: "ACCOUNT_NO", title: "Account No", width: 100, locked: true},
+                {field: "ID_PAN_NO", title: "PAN", width: 100, locked: true},
+                {field: "SERVICE_TYPE_NAME", title: "Service", width: 120, locked: true}
             ];
+
+            for (var i = 0; i < data.length; i++) {
+                data[i].SERIAL_NUMBER = i + 1;
+            }
 
             $.each(extraVariable, function (index, value) {
                 for (var i in extraFieldsList) {
@@ -65,7 +82,8 @@
                         columns.push({
                             field: value,
                             title: extraFieldsList[i]['VALUE'],
-                            width: 100
+                            width: 100,
+                            footerTemplate: "#=sum||0#"
                         });
                         map[value] = extraFieldsList[i]['VALUE'];
                     }

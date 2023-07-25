@@ -101,4 +101,10 @@ class CafeteriaActivity implements RepositoryInterface {
         $statement = $this->adapter->query($sql);
         return $statement->execute();
     }
+	
+	public function fetchEmployeeFunctionalTypeId($eid){
+        $sql = "SELECT FUNCTIONAL_TYPE_ID FROM HRIS_EMPLOYEES WHERE EMPLOYEE_ID = $eid";
+        $statement = $this->adapter->query($sql);
+        return $statement->execute();
+    }
 }

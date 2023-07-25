@@ -41,8 +41,7 @@ class LeaveStatus extends HrisController {
                     'preference' => $this->preference
         ]);
     }
-
-    public function viewAction() {
+public function viewAction() {
         $id = (int) $this->params()->fromRoute('id');
 
         if ($id === 0) {
@@ -137,6 +136,7 @@ class LeaveStatus extends HrisController {
 
             return $this->redirect()->toRoute("leavestatus");
         }
+		//$detail = [];
         $leaveApply->exchangeArrayFromDB($detail);
         $this->form->bind($leaveApply);
         return Helper::addFlashMessagesToArray($this, [
@@ -167,7 +167,7 @@ class LeaveStatus extends HrisController {
                     'subLeaveName' => $detail['LEAVE_ENAME']
         ]);
     }
-
+   
     public function pullLeaveRequestStatusListAction() {
         try {
             $request = $this->getRequest();

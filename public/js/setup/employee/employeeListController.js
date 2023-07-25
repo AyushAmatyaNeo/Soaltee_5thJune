@@ -63,7 +63,7 @@
         app.searchTable('employeeTable', ['EMPLOYEE_CODE', 'FULL_NAME', 'MOBILE_NO', 'BIRTH_DATE', 'COMPANY_NAME', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'DESIGNATION_TITLE'], false);
   
         var map = {
-            'EMPLOYEE_ID': 'Employee Id',
+            //'EMPLOYEE_ID': 'Employee Id',
             'EMPLOYEE_CODE': 'Employee Code',
             'TITLE': 'Title',
             'FULL_NAME': 'Employee',
@@ -116,7 +116,12 @@
             'BANK_ACCOUNT': 'BANK',
             'ID_THUMB_ID': 'THUMB ID',
             'ID_PROVIDENT_FUND_NO':'Provident Fund',
-            'ID_PAN_NO':'Pan'
+            'ID_PAN_NO':'Pan',
+			'SALARY' : 'Salary',
+			'ALLOWANCE' : 'Allowance',
+			'FOOD_ALLOWANCE' : 'Food Allowance',
+			'ID_CITIZENSHIP_NO':'Citizenship Number',
+            'ID_CITIZENSHIP_ISSUE_DATE':'Citizenship Issue Date'
         }; 
 
         var exportColumnParameters = [];
@@ -137,9 +142,12 @@
         });
 
         $('#excelExportWithImage').on('click', function () {
+            let searchData = document.searchManager.getSearchValues();
+            console.log(searchData);
             var data = {
-                exportData : exportData,
-                map : map
+                searchData : searchData,
+//                exportData : exportData,
+                map : map,
             };
             app.serverRequest(document.excelExportWithImageLink, data).then(function(response){
                 window.open(document.excelExportWithImageDownload);

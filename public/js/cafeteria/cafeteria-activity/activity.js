@@ -22,7 +22,7 @@
         }
     );
 
-    $("#scp").prop("checked", true);
+    if(document.functionalTypeId == 107){ $("#lsg").prop("checked", true); } else { $("#scp").prop("checked", true); } 
 
     function saveRecord(){
         if(confirm("Are you sure to save this record?")){
@@ -137,7 +137,7 @@
             $canfocus.eq(index).focus();
             if(this.id == 'empCode'){ 
                 empId = 0;
-                var index = 0;
+                var index = -1;
                 var empPresentStatus = '';
                 var empCode = this.value;
                 for(let i = 0; i <  document.employeeProfiles.length; i++){
@@ -147,7 +147,7 @@
                         break;
                     }
                 }
-                if(index != 0){
+                if(index >= 0){
                     $(".image").empty();
                     $("#empName").val(document.employeeProfiles[index].FULL_NAME);
                     $("#dept").val(document.employeeProfiles[index].DEPARTMENT_NAME);
@@ -205,13 +205,13 @@
             var tableRow = $('#menuTable tr').length;
             let grandTotal = 0;
             var thisTd = $(this).closest('td').parent()[0].sectionRowIndex;
-            parseInt(thisTd);
+            parseFloat(thisTd);
             var qty = $("tr:nth-of-type(" + (thisTd + 1) + ") .qty input").val();
             qty = qty == '' ? 0 : qty;
             qty = qty || 0;
             var rate = $("tr:nth-of-type(" + (thisTd + 1) + ") .rate input").val();
             rate = rate || 0;
-            var total = parseInt(qty) * parseFloat(rate);
+            var total = parseFloat(qty) * parseFloat(rate);
             $("tr:nth-of-type(" + (thisTd + 1) + ") .totalAmount input").val(total);
             for (let i = 2; i < tableRow; i++) {
                 let a = parseFloat($("tr:nth-of-type(" + i + ") .totalAmount input").val());

@@ -15,6 +15,7 @@ $this->headScript()
     document.url = '<?= $this->url("restful", ["action" => "index"]) ?>';
     document.searchValues =<?php echo json_encode($searchValues); ?>;
     document.viewLink = '<?= $this->url("employee", ["action" => "view"]) ?>';
+    document.deleteLink = '<?= $this->url("employee", ["action" => "deleteResigned"]) ?>';
     document.pullResignedOrRetiredListLink = '<?= $this->url("employee", ["action" => "pullResignedOrResigned"]) ?>';
     document.acl =<?php echo json_encode($acl); ?>;
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;

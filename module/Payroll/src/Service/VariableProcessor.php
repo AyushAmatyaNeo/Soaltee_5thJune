@@ -48,7 +48,7 @@ class VariableProcessor {
              * ABSENT_DAYS
              */
             case PayrollGenerator::VARIABLES[3]:
-                $processedValue = $this->payrollRepo->getAbsentDays($this->employeeId, $this->sheetNo);
+                $processedValue = $this->payrollRepo->getAbsentDays($this->employeeId, $this->monthId);
                 break;
             /*
              * PAID_LEAVES
@@ -147,7 +147,7 @@ class VariableProcessor {
                 $processedValue = $this->payrollRepo->getMonthNo($this->monthId);
                 break;
             
-                 break;
+                
             /*
              * BRANCH_ID
              */
@@ -178,6 +178,283 @@ class VariableProcessor {
             case PayrollGenerator::VARIABLES[24]:
                 $processedValue = $this->payrollRepo->getEmployeeServiceId($this->employeeId,$this->sheetNo);
                 break;
+
+            /*
+             * DEARNESS_ALLOWANCE
+             */
+            case PayrollGenerator::VARIABLES[25]:
+                $processedValue = $this->payrollRepo->getDearnessAllowanceAmt($this->employeeId,$this->sheetNo);
+                break;
+
+            /*
+             * CLOTH_TRANS_ALLOWANCE
+             */
+            case PayrollGenerator::VARIABLES[26]:
+                $processedValue = $this->payrollRepo->geTClothtransAllowanceAmt($this->employeeId,$this->sheetNo);
+                break;
+
+            /*
+             * FOOD_ALLOWANCE
+             */
+            case PayrollGenerator::VARIABLES[27]:
+                $processedValue = $this->payrollRepo->getFoodAllowanceAmt($this->employeeId,$this->sheetNo);
+                break;
+
+            /*
+             * HB_LOAN_AMT
+             */
+            case PayrollGenerator::VARIABLES[28]:
+                $processedValue = $this->payrollRepo->getHbLoanAmt($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * HB_INTEREST_AMT
+             */
+            case PayrollGenerator::VARIABLES[29]:
+                $processedValue = $this->payrollRepo->getHbIntAmt($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * WL_LOAN_AMT
+             */
+            case PayrollGenerator::VARIABLES[30]:
+                $processedValue = $this->payrollRepo->getWLLoanAmt($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * WL_INTEREST_AMT
+             */
+            case PayrollGenerator::VARIABLES[31]:
+                $processedValue = $this->payrollRepo->getWLIntAmt($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * SHL_LOAN_AMT
+             */
+            case PayrollGenerator::VARIABLES[32]:
+                $processedValue = $this->payrollRepo->getSHLLoanAmt($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * SHL_INTEREST_AMT
+             */
+            case PayrollGenerator::VARIABLES[33]:
+                $processedValue = $this->payrollRepo->getSHLIntAmt($this->employeeId,$this->monthId);
+                break;
+
+
+            /*
+             * EMPLOYEE_TYPE
+             */
+            case PayrollGenerator::VARIABLES[34]:
+                $processedValue = $this->payrollRepo->getEFlag($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * SC
+             */
+            case PayrollGenerator::VARIABLES[35]:
+                $processedValue = $this->payrollRepo->getSc($this->employeeId,$this->monthId);
+                break;
+
+             /*
+             * OT
+             */
+            case PayrollGenerator::VARIABLES[36]:
+                $processedValue = $this->payrollRepo->getOt($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * NIGHT_ALLOWANCE
+             */
+            case PayrollGenerator::VARIABLES[37]:
+                $processedValue = $this->payrollRepo->getNa($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * LTC
+             */
+            case PayrollGenerator::VARIABLES[38]:
+                $processedValue = $this->payrollRepo->getLtc($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * LSA
+             */
+            case PayrollGenerator::VARIABLES[39]:
+                $processedValue = $this->payrollRepo->getLsa($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * BSA
+             */
+            case PayrollGenerator::VARIABLES[40]:
+                $processedValue = $this->payrollRepo->getBsa($this->employeeId,$this->monthId);
+                break;
+
+            
+            /*
+             * AA
+             */
+            case PayrollGenerator::VARIABLES[41]:
+                $processedValue = $this->payrollRepo->getAa($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * MOBILE_ALLOWANCE_ARREAR
+             */
+            case PayrollGenerator::VARIABLES[42]:
+                $processedValue = $this->payrollRepo->getMobieAllowanceArrear($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * INCENTIVES
+             */
+            case PayrollGenerator::VARIABLES[43]:
+                $processedValue = $this->payrollRepo->getIncentive($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * MC_LOAN_AMT
+             */
+            case PayrollGenerator::VARIABLES[44]:
+                $processedValue = $this->payrollRepo->getMCLoanAmt($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * MC_INTEREST_AMT
+             */
+            case PayrollGenerator::VARIABLES[45]:
+                $processedValue = $this->payrollRepo->getMCIntAmt($this->employeeId,$this->monthId);
+                break;
+
+             /*
+             * S_L_AMT
+             */
+            case PayrollGenerator::VARIABLES[46]:
+                $processedValue = $this->payrollRepo->getSLoanAmt($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * S_INTEREST_AMT
+             */
+            case PayrollGenerator::VARIABLES[47]:
+                $processedValue = $this->payrollRepo->getSIntAmt($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * E_LOAN_AMT
+             */
+            case PayrollGenerator::VARIABLES[48]:
+                $processedValue = $this->payrollRepo->getELoanAmt($this->employeeId,$this->monthId);
+                break;
+            
+            /*
+             * E_INTEREST_AMT
+             */
+            case PayrollGenerator::VARIABLES[49]:
+                $processedValue = $this->payrollRepo->getEIntAmt($this->employeeId,$this->monthId);
+                break;
+
+            /*
+             * S_ADVANCE_AMT
+             */
+            case PayrollGenerator::VARIABLES[50]:
+                $processedValue = $this->payrollRepo->getSAdvanceAmt($this->employeeId,$this->monthId);
+                break;
+
+			 /*
+             * SERVICE_CHARGE_EMPLOYEE
+             */
+            case PayrollGenerator::VARIABLES[51]:
+                $processedValue = $this->payrollRepo->getServiceChargerE($this->employeeId,$this->monthId);
+                break;
+				
+			/*
+             * PREV_TAX
+             */
+            case PayrollGenerator::VARIABLES[52]:
+                $processedValue = $this->payrollRepo->getPrevioudMthTax($this->employeeId,$this->monthId);
+                break;
+				
+			/*
+             * PREV_MEDICALS
+             */
+            case PayrollGenerator::VARIABLES[53]:
+                $processedValue = $this->payrollRepo->getPrevioudMedical($this->employeeId);
+                break;
+
+
+                 /*
+             * EMPLOYEE_BRANCH_ID
+             */
+            case PayrollGenerator::VARIABLES[54]:
+                $processedValue = $this->payrollRepo->getEmployeeBranchId($this->employeeId,$this->sheetNo);
+                break;
+
+
+                      /*
+             * UNMARRIED FEMALE
+             */
+            case PayrollGenerator::VARIABLES[55]:
+                $processedValue = $this->payrollRepo->isSingleAndUnmarried($this->employeeId,$this->sheetNo);
+                break;
+
+                   /*
+             * MONTH NO
+             */
+            case PayrollGenerator::VARIABLES[56]:
+                $processedValue = $this->payrollRepo->getFiscalYearMonthNo($this->monthId);
+                break;
+
+                  /*
+             * FAMILY PLANNING
+             */
+            case PayrollGenerator::VARIABLES[57]:
+                $processedValue = $this->payrollRepo->getFamilyPlanning($this->employeeId,$this->monthId);
+                break;
+   /*
+             * Mourning Expense
+             */
+            case PayrollGenerator::VARIABLES[58]:
+                $processedValue = $this->payrollRepo->getMourningExpense($this->employeeId,$this->monthId);
+                break;
+
+              /*
+             * ALLOWANCE_ARREAR
+             */
+            case PayrollGenerator::VARIABLES[59]:
+                $processedValue = $this->payrollRepo->getAllowanceArrear($this->employeeId,$this->monthId);
+                break;
+
+                 /*
+             * SERVICE_CHARGE_EMPLOYEE
+             */
+            case PayrollGenerator::VARIABLES[60]:
+                $processedValue = $this->payrollRepo->getServiceChargerfortax($this->employeeId,$this->monthId);
+                break;
+
+
+                   /*
+             * FNL_SICK_LEAVE
+             */
+            case PayrollGenerator::VARIABLES[61]:
+                $processedValue = $this->payrollRepo->fnlSickLeave($this->employeeId,$this->monthId);
+                break;
+
+
+
+                   /*
+             * FNL_ANNUAL_LEAVE
+             */
+            case PayrollGenerator::VARIABLES[62]:
+                $processedValue = $this->payrollRepo->fnlAnnualLeave($this->employeeId,$this->monthId);
+                break;
+
+
+
+
+          
             default:
 
 

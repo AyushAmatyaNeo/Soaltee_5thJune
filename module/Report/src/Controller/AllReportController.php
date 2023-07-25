@@ -29,6 +29,8 @@ class AllReportController extends HrisController {
     public function branchWiseDailyAction() {
         $monthId = (int) $this->params()->fromRoute('id1');
         $branchId = (int) $this->params()->fromRoute('id2');
+		
+		
 
         return Helper::addFlashMessagesToArray($this, [
                     'comBraList' => [
@@ -48,13 +50,13 @@ class AllReportController extends HrisController {
     public function branchWiseDailyInOutAction() {
         $monthId = (int) $this->params()->fromRoute('id1');
         $branchId = (int) $this->params()->fromRoute('id2');
-
+//echo '<pre>';print_r($this->storageData['employee_detail']['EMPLOYEE_CODE'].'-'.$this->storageData['employee_detail']['FULL_NAME']);die;
         return Helper::addFlashMessagesToArray($this, [
-//                    'comBraList' => [
-//                        'BRANCH_LIST' => EntityHelper::getTableList($this->adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME, Branch::COMPANY_ID], [Branch::STATUS => "E"])
-//                    ],
+                    //'comBraList' => [
+    //'BRANCH_LIST' => EntityHelper::getTableList($this->adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME, Branch::COMPANY_ID], [Branch::STATUS => "E"]) ],
+                 
                     'monthId' => $monthId,
-//                    'branchId' => $branchId,
+                  //  'branchId' => $branchId,
                     'preference' => $this->preference,
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
                     'acl' => $this->acl,
@@ -656,6 +658,18 @@ class AllReportController extends HrisController {
                     array_push($dates, $dt->format("d-M-y"));
                 }
                 $data = $this->repository->fetchRosterReport($postedData, $dates);
+				$rawData = $this->repository->getDefaultShift();
+				$defShift = $rawData[0]['SHIFT_ENAME'];
+	
+				for($i = 0; $i < count($data); $i++){
+					foreach($data[$i] as $key => $value){
+						if($value == null || $value == ''){
+							$data[$i][$key] = $defShift;
+						}
+					}
+				}
+	
+				//echo '<pre>'; print_r($default_shift); die;
 
                 return new JsonModel(['success' => true, 'data' => $data, 'dates' => $dates, 'error' => '']);
             } catch (Exception $e) {
@@ -854,6 +868,39 @@ left join HRIS_EMPLOYEE_FILE ef on (ef.file_code=e.PROFILE_PICTURE_ID)");
             'acl' => $this->acl,
             'employeeDetail' => $this->storageData['employee_detail']
         ]);
+    }
+	
+	public function dailyExpenseReportAction() {
+        try {
+            $request = $this->getRequest();
+            if ($request->isPost()) {
+                $postedData = $request->getPost();
+
+                $date1 = $postedData['date1'];
+                if (!isset($date1)) {
+                    throw new Exception("parameter from_date is required");
+                }
+                $date2 = $postedData['date2'];
+                if (!isset($date2)) {
+                    throw new Exception("parameter to_date is required");
+                }
+                if ($date2 == '' || $date2 == null) {
+                    $date2 = $date1;
+                }
+
+                $reportData = $this->repository->fetchDailyExpense($date1);
+                return new JsonModel(['success' => true, 'data' => $reportData, 'error' => '']);
+            } else {
+                return $this->stickFlashMessagesTo([
+                            'searchValues' => EntityHelper::getSearchData($this->adapter),
+                            'acl' => $this->acl,
+                            'employeeDetail' => $this->storageData['employee_detail'],
+                            'preference' => $this->preference
+                ]);
+            }
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+        }
     }
 
 }

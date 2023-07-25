@@ -99,22 +99,26 @@ class SalarySheetDetailRepo extends HrisRepository {
         return $this->rawQuery($sql);
     }
 
-    public function fetchEmployeePaySlip($monthId, $employeeId,$salaryTypeId=1) {
+    public function fetchEmployeePaySlip($monthId, $employeeId, $salaryTypeId = 1) {
         $sql = "SELECT TS.*,
-                  P.PAY_TYPE_FLAG,
-                  P.PAY_EDESC
-                FROM HRIS_SALARY_SHEET_DETAIL TS
-                LEFT JOIN HRIS_PAY_SETUP P
-                ON (TS.PAY_ID         =P.PAY_ID)
-                WHERE P.INCLUDE_IN_SALARY='Y' AND TS.VAL !=0
-                AND TS.SHEET_NO       IN
-                  (SELECT SHEET_NO FROM HRIS_SALARY_SHEET WHERE MONTH_ID ={$monthId} 
-                      AND SALARY_TYPE_ID={$salaryTypeId}
-                  )
-                AND EMPLOYEE_ID ={$employeeId} ORDER BY P.PRIORITY_INDEX";
+        P.PAY_TYPE_FLAG,
+        P.PAY_EDESC
+      FROM HRIS_SALARY_SHEET_DETAIL TS
+      LEFT JOIN HRIS_PAY_SETUP P
+      ON (TS.PAY_ID = P.PAY_ID)
+      WHERE P.INCLUDE_IN_SALARY = 'Y' AND TS.VAL != 0
+      AND TS.SHEET_NO IN (
+        SELECT SHEET_NO FROM HRIS_SALARY_SHEET WHERE MONTH_ID = {$monthId} 
+        AND SALARY_TYPE_ID = {$salaryTypeId}
+      )
+      AND EMPLOYEE_ID = {$employeeId}
+      AND NOT (P.PAY_ID IN (28, 165) AND ({$salaryTypeId} = 1))
+      ORDER BY P.PRIORITY_INDEX";
         return $this->rawQuery($sql);
     }
-
+    
+   
+    
     public function fetchEmployeeLoanAmt($monthId,$employeeId,$ruleId) {
         $sql="select 
         case when
@@ -227,22 +231,28 @@ class SalarySheetDetailRepo extends HrisRepository {
     }
     
     public function fetchEmployeePreviousMonthAmount($monthId,$employeeId,$ruleId) {
-                $sql="select 
-        nvl(sum(val),0) as value
-        from 
-        (
-        select 
-        case when cm.Fiscal_Year_Month_no=1 then 0 else Ssd.val end as val,
-        Mc.Fiscal_Year_Id,ssed.* 
-        from 
-        Hris_Salary_Sheet_Emp_Detail  ssed
-        join Hris_Month_Code mc on (mc.month_id=ssed.month_id AND EMPLOYEE_ID={$employeeId})
-        join Hris_Salary_Sheet_Detail ssd on (ssed.sheet_no=ssd.sheet_no and ssed.employee_id=ssd.employee_id and pay_id={$ruleId})
-         join (select * from Hris_Month_Code where Month_Id={$monthId}) cm on (1=1) 
-        where 
-        ssed.month_id=({$monthId} -1 )  
-        and Mc.Fiscal_Year_Id = (select fiscal_year_id from Hris_Month_Code where Month_Id={$monthId})
-        )";
+        //         $sql="select 
+        // nvl(sum(val),0) as value
+        // from 
+        // (
+        // select 
+        // case when cm.Fiscal_Year_Month_no=1 then 0 else Ssd.val end as val,
+        // Mc.Fiscal_Year_Id,ssed.* 
+        // from 
+        // Hris_Salary_Sheet_Emp_Detail  ssed
+        // join Hris_Month_Code mc on (mc.month_id=ssed.month_id AND EMPLOYEE_ID={$employeeId})
+        // join Hris_Salary_Sheet_Detail ssd on (ssed.sheet_no=ssd.sheet_no and ssed.employee_id=ssd.employee_id and pay_id={$ruleId})
+        //  join (select * from Hris_Month_Code where Month_Id={$monthId}) cm on (1=1) 
+        // where 
+        // ssed.month_id=({$monthId} -1 )  
+        // and Mc.Fiscal_Year_Id = (select fiscal_year_id from Hris_Month_Code where Month_Id={$monthId})
+        // )";
+
+        $sql = "
+        select ROUND(nvl(sum(val),0), 2) as value from hris_salary_sheet_detail where employee_id = {$employeeId} and sheet_no in (
+            select sheet_no from hris_salary_sheet where salary_type_id = 1 and month_id < {$monthId} and month_id in 
+            (select month_id from hris_month_code where fiscal_year_id = (select fiscal_year_id from hris_month_code where month_id = {$monthId})))
+            and pay_id = {$ruleId}";
         $resultList = $this->rawQuery($sql);
         return $resultList[0]['VALUE'];
     }

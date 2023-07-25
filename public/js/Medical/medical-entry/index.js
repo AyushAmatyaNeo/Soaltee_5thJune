@@ -25,27 +25,35 @@
             {field: "EMPLOYEE_CODE", title: "Code", width: 80},
             {field: "FULL_NAME", title: "Employee", width: 120},
             {field: "DEPARTMENT_NAME", title: "Department", width: 100},
-            {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 130},
+            {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 100},
             {field: "CLAIM_OF_NAME", title: "Claim Of", width: 90},
             {field: "BILL_STATUS_NAME", title: "Status", width: 80},
             {field: "REQUESTED_AMT", title: "Request Amt", width: 80},
-            {field: "APPROVED_AMT", title: "Approved Amt", width: 80}
+            {field: "APPROVED_AMT", title: "Approved Amt", width: 80},
+			{field: "TRANSACTION_DT", title: "Transaction Date", width: 80},
+            {field: "MEDICAL_ID", title: "Action", width: 80, template: `
+                #if(BILL_STATUS == 'RQ'){#
+            <span>                                  
+                <a class="btn  btn-icon-only btn-success" href="${document.viewLink}/#: MEDICAL_ID #" style="height:17px;" title="view">
+                <i class="fa fa-search-plus"></i>
+                </a>
+            </span>#}#`}
 //            {field: ["ADVANCE_ID"], title: "Action", width: 120, template: app.genKendoActionTemplate(actiontemplateConfig)}
         ];
         var map = {
             'ADVANCE_CODE': 'AdvanceCode',
             'ADVANCE_ENAME': 'Name'
         }
-        app.initializeKendoGrid($table, columns, "MedicalList.xlsx");
+        app.initializeKendoGrid($table, columns, "Advance List.xlsx");
 
         app.searchTable($table, ['ADVANCE_ENAME']);
 
         $('#excelExport').on('click', function () {
-            app.excelExport($table, map, 'MedicalList.xlsx');
+            app.excelExport($table, map, 'Advance List.xlsx');
         });
 
         $('#pdfExport').on('click', function () {
-            app.exportToPDF($table, map, 'MedicalList.pdf');
+            app.exportToPDF($table, map, 'Advance List.pdf');
         });
 
 

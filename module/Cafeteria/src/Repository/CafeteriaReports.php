@@ -47,6 +47,7 @@ class CafeteriaReports implements RepositoryInterface {
         $sql='';
         if($by['reportType'] == 1){
             $sql = "SELECT hcms.menu_name AS menu_name,
+            HELD.LOG_DATE as LOG_DATE, 
                     e.employee_id as employee_id,
                     e.full_name as full_name,
                     SUM(held.quantity) AS quantity,
@@ -59,7 +60,7 @@ class CafeteriaReports implements RepositoryInterface {
                 $sql.= $time!='' && $time!=null ? " AND HELD.TIME_CODE IN ($time)" : '' ;
                 $sql.= $payType!='' && $payType!=null ? " AND HELD.PAY_TYPE IN ($payType)" : '' ;
                 $sql.=' GROUP BY
-            hcms.menu_name, E.EMPLOYEE_ID, e.full_name
+            hcms.menu_name, held.log_date, E.EMPLOYEE_ID, e.full_name
             order by e.employee_id';
         }
         
@@ -180,6 +181,16 @@ class CafeteriaReports implements RepositoryInterface {
                     PIVOT(SUM(TOTAL_AMOUNT) FOR(LOG_DATE) IN ($datesIn))";
         }
         //echo $sql; die;
+        $statement = $this->adapter->query($sql);
+        return $statement->execute();
+    }
+
+    public function getPAXCount($by){
+        $fromDate = $by['fromDate']=='' ? 'TRUNC(SYSDATE)' : $by['fromDate'] ;
+        $toDate = $by['toDate'];
+
+        $sql = "select count(*) as pax from Hris_Cafeteria_Log where (Log_Date between '01-FEB-20' and  '29-FEB-20') and Total_Amount > 0";
+
         $statement = $this->adapter->query($sql);
         return $statement->execute();
     }

@@ -60,7 +60,7 @@ function setAbbr(temp){
     $(document).ready(function () {
         $("select").select2();
         var $table = $("#report");
-        
+        app.startEndDatePickerWithNepali('nepaliFromDate', 'fromDate', 'nepaliToDate', 'toDate', null, false);
         var exportVals;
 //        var exportVals={
 //            'FULL_NAME': 'Employee Name',
@@ -70,18 +70,50 @@ function setAbbr(temp){
         var months = null;
         var $year = $('#fiscalYearId');
         var $month = $('#monthId');
+        let selectedMonthId;
         app.setFiscalMonth($year, $month, function (yearList, monthList, currentMonth) {
             months = monthList;
+        });
+        
+        var $fromDate = $('#fromDate');
+        var $toDate = $('#toDate');
+        var $nepaliFromDate = $('#nepaliFromDate');
+        var $nepaliToDate = $('#nepaliToDate');
+        
+        var monthChange = function ($this) {
+            var value = $this.val();
+            if (value == null) {
+                return;
+            }
+            var selectedMonthList = months.filter(function (item) {
+                return item['MONTH_ID'] === value;
+            });
+            if (selectedMonthList.length <= 0) {
+                return;
+            }
+            $fromDate.val(selectedMonthList[0]['FROM_DATE']);
+            $toDate.val(selectedMonthList[0]['TO_DATE']);
+            $nepaliFromDate.val(nepaliDatePickerExt.fromEnglishToNepali(selectedMonthList[0]['FROM_DATE']));
+            $nepaliToDate.val(nepaliDatePickerExt.fromEnglishToNepali(selectedMonthList[0]['TO_DATE']));
+            selectedMonthId = selectedMonthList[0]['MONTH_ID'];
+        };
+        $month.on('change', function () {
+            monthChange($(this));
         });
 
         var $search = $('#search');
         $search.on('click', function () {
             var data = document.searchManager.getSearchValues();
             data['monthCodeId'] = $month.val();
+            data['fromDate'] = $fromDate.val();
+            data['toDate'] = $toDate.val();
             app.serverRequest('', data).then(function (response) {
-                var monthDays=response.data.monthDetail.DAYS;
+//                var monthDays=response.data.monthDetail.DAYS;
                 var leaveDetails=response.data.leaveDetails;
-                var columns=generateColsForKendo(monthDays,leaveDetails);
+                var kendoDetails=response.data.kendoDetails;
+                
+                console.log(kendoDetails);
+                var columns=generateColsForKendo(kendoDetails,leaveDetails);
                 
                 
                 $table.empty();
@@ -96,6 +128,9 @@ function setAbbr(temp){
                     height: 450,
                     scrollable: true,
                     columns: columns,
+                    sortable: true,
+                    filterable: true,
+                    groupable: true,
                 dataBound: function (e) {
                     var grid = e.sender;
                     if (grid.dataSource.total() === 0) {
@@ -120,7 +155,7 @@ function setAbbr(temp){
         });
         
         
-        function generateColsForKendo(dayCount,leaveDetails) {
+        function generateColsForKendo(daycount,leaveDetails) {
               exportVals={
             'FULL_NAME': 'Employee Name',
             'PRESENT': 'Present',
@@ -145,17 +180,17 @@ function setAbbr(temp){
                 template: '<span>#:FULL_NAME#</span>',
                 width: 130
             });
-            for (var i = 1; i <= dayCount; i++) {
-                var temp = 'D' + i;
-                exportVals[temp]=i;
+                $.each(daycount, function( index, value ) {
+                var temp = value.KENDO_NAME;
+                exportVals[temp]=value.COLUMN_NAME;
                 cols.push({
                     field: temp,
-                    title: "" + i,
+                    title: value.COLUMN_NAME,
                      width: 70,
                      template: '<abbr title="#:setAbbr('+temp+')#"><button type="button" style="padding: 8px 0px 7px;" class="btn btn-block #:setTemplate('+temp+')#">#:(' + temp + ' == null) ? " " :'+temp+'#</button></abbr>',
-//                     template: '<span  class="#: setTemplate(' + temp + ') #">#:(' + temp + ' == null) ? " " :'+temp+'#</span>',
+////                     template: '<span  class="#: setTemplate(' + temp + ') #">#:(' + temp + ' == null) ? " " :'+temp+'#</span>',
                 });
-            }
+            });
             
             
             cols.push({

@@ -199,7 +199,10 @@ class CafeteriaSetupController extends HrisController{
         
         $result = $this->cafeteriaMapRepo->fetchMenu();
         $menuList = Helper::extractDbData($result);  
-        
+		
+		$result = $this->cafeteriaMapRepo->fetchEmployeeFunctionalTypeId($this->employeeId);
+        $functionalTypeId = Helper::extractDbData($result)[0]['FUNCTIONAL_TYPE_ID'];
+		
         $mapList = []; 
         for($i = 0; $i < count($timeList); $i++){
             $result = $this->cafeteriaMapRepo->fetchMappingDetailsByTime($timeList[$i]['TIME_ID']);
@@ -208,7 +211,8 @@ class CafeteriaSetupController extends HrisController{
         return Helper::addFlashMessagesToArray($this, [
             'menuList' => $menuList,
             'timeList' => $timeList,
-            'mapList' => $mapList
+            'mapList' => $mapList,
+			'functionalTypeId' => $functionalTypeId
         ]);
     }
 }

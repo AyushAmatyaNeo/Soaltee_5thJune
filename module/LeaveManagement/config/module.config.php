@@ -92,6 +92,16 @@ return [
                     ]
                 ]
             ],
+            'leavededuction' => [
+                'type' => Segment::class,
+                'options' => [
+                    'route' => '/leave-deduction[/:action]',
+                    'defaults' => [
+                        'controller' => Controller\LeaveDeduction::class,
+                        'action' => 'index'
+                    ]
+                ]
+            ],
         ]
     ],
     'navigation' => [
@@ -208,6 +218,33 @@ return [
                 ]
             ]
         ],
+        'leavededuction' => [
+            [
+                'label' => 'Leave Deduction Status',
+                'route' => 'leavededuction',
+            ],
+            [
+                'label' => 'Leave Deduction Status',
+                'route' => 'leavededuction',
+                'pages' => [
+                    [
+                        'label' => 'List',
+                        'route' => 'leavededuction',
+                        'action' => 'index',
+                    ],
+                    [
+                        'label' => 'Add',
+                        'route' => 'leavededuction',
+                        'action' => 'add',
+                    ],
+//                    [
+//                        'label' => 'Detail',
+//                        'route' => 'leavededuction',
+//                        'action' => 'view',
+//                    ],
+                ]
+            ]
+        ],
         'leavebalance' => [
             [
                 'label' => 'Leave Balance',
@@ -250,7 +287,8 @@ return [
             Controller\LeaveStatus::class => ControllerFactory::class,
             Controller\LeaveBalance::class => ControllerFactory::class,
             Controller\LeaveSubBypass::class => ControllerFactory::class,
-            Controller\LeaveReportCard::class => ControllerFactory::class
+            Controller\LeaveReportCard::class => ControllerFactory::class,
+            Controller\LeaveDeduction::class => ControllerFactory::class
         ],
     ],
     'view_manager' => [

@@ -371,6 +371,11 @@ return [
                         'route' => 'employee',
                         'action' => 'view',
                     ],
+                    [
+                        'label' => 'Salary',
+                        'route' => 'employee',
+                        'action' => 'salary',
+                    ],
                 ]
             ]
         ],

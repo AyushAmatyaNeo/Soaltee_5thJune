@@ -38,7 +38,7 @@ class Paysheet extends AbstractActionController
 //            die();
           
 
-            if ($count < 2) {
+            if ($count < 5) {
                 $requestType = $request->getMethod();
 
                 switch ($requestType) {

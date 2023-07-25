@@ -20,6 +20,7 @@ $this->headScript()
     document.acl =<?php echo json_encode($acl); ?>;
     document.employeeDetail =<?php echo json_encode($employeeDetail); ?>;
     document.preference =<?php echo json_encode($preference) ?>;
+    document.allLeaveForReport =<?php echo json_encode($allLeaveForReport) ?>;
 </script>
 <div class="page-bar">
     <?= $this->navigation('Zend\Navigation\leavebalance')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>
@@ -58,14 +59,14 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <ul class="dropdown-menu pull-right">
                     <li>
                         <a href="javascript:;" id="excelExport">
-                            <i class="fa fa-file-excel-o" ></i> 
-                            Export to Excel 
+                            <i class="fa fa-file-excel-o" ></i>
+                            Export to Excel
                         </a>
                     </li>
                     <li>
                         <a href="javascript:;" id="pdfExport">
-                            <i class="fa fa-file-pdf-o" ></i> 
-                            Export to PDF 
+                            <i class="fa fa-file-pdf-o" ></i>
+                            Export to PDF
                         </a>
                     </li>
                 </ul>
@@ -136,8 +137,14 @@ if ($this->messages && (sizeof($this->messages) > 1)) {
                 <select multiple class="form-control reset-field" name="options" id="options">
                 </select>
             </div>
-            <div class="col-sm-4 ">
-                <button id="reset" class="btn default btn-sm  hris-reset-btn">
+        </div>
+        <div class="row margin-top-10">
+            <div class="col-sm-2 ">
+                <label>Leave Year</label>
+                <?php print $this->formElement($leaveYearSelect); ?>
+            </div>
+            <div class=" col-sm-offset-6 col-sm-4 ">
+                <button id="reset" class="btn default btn-sm pull-right hris-reset-btn">
                     Reset
                     <i class="fa fa-refresh"></i>
                 </button>

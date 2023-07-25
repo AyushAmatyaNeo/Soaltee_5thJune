@@ -26,9 +26,11 @@ class MedicalSettlement extends HrisController {
     }
 
     public function indexAction() {
+		$modifiedAcl=$this->acl;
+		$modifiedAcl['CONTROL']='F';
         return Helper::addFlashMessagesToArray($this, [
                     'searchValues' => EntityHelper::getSearchData($this->adapter),
-                    'acl' => $this->acl,
+                    'acl' => $modifiedAcl,
                     'employeeDetail' => $this->storageData['employee_detail'],
                     'employeeId' => $this->employeeId,
                     'status' => $this->getMedicalStatusSelect()

@@ -180,6 +180,7 @@ class DashboardRepository {
                   WHERE TO_CHAR(EMP.BIRTH_DATE, 'MMDD') = TO_CHAR(SYSDATE,'MMDD')
                   AND EMP.RETIRED_FLAG                  = 'N'
                   AND EMP.STATUS                        = 'E'
+                  AND (EMP.BRANCH_ID <> 8 OR EMP.BRANCH_ID IS NULL)
                   UNION ALL
                   SELECT EMP.EMPLOYEE_ID,
                     EMP. FULL_NAME,
@@ -194,6 +195,7 @@ class DashboardRepository {
                   WHERE TO_CHAR(EMP.BIRTH_DATE, 'MMDD') > TO_CHAR(SYSDATE,'MMDD')
                   AND EMP.RETIRED_FLAG                  = 'N'
                   AND EMP.STATUS                        = 'E'
+                  AND (EMP.BRANCH_ID <> 8 OR EMP.BRANCH_ID IS NULL)
                   ) EMP,
                   HRIS_DESIGNATIONS DSG,
                   HRIS_EMPLOYEE_FILE EFL,

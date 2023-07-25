@@ -7,10 +7,11 @@ use Application\Helper\Helper;
 use Application\Model\Model;
 use Application\Repository\RepositoryInterface;
 use Zend\Db\Adapter\AdapterInterface;
+use Application\Repository\HrisRepository;
 
-class PayrollReportRepo implements RepositoryInterface {
+class PayrollReportRepo extends HrisRepository implements RepositoryInterface {
 
-    private $adapter;
+    protected $adapter;
 
     public function __construct(AdapterInterface $adapter) {
         $this->adapter = $adapter;
@@ -538,7 +539,7 @@ and Show_Default='Y'  AND VARIABLE_TYPE='O'";
         return EntityHelper::rawQueryResult($this->adapter, $sql);
     }
 
-    public function getSpecialMonthly($data) {
+    public function getSpecialMonthly($data) {  
         $companyId = isset($data['companyId']) ? $data['companyId'] : -1;
         $branchId = isset($data['branchId']) ? $data['branchId'] : -1;
         $departmentId = isset($data['departmentId']) ? $data['departmentId'] : -1;
@@ -627,6 +628,7 @@ and Show_Default='Y'  AND VARIABLE_TYPE='O'";
             ,D.DEPARTMENT_NAME
             ,FUNT.FUNCTIONAL_TYPE_EDESC
             ,GB.*
+            ,G.GENDER_NAME
             ,SSED.SERVICE_TYPE_NAME
             ,SSED.DESIGNATION_TITlE
             ,SSED.POSITION_NAME
@@ -644,13 +646,14 @@ and Show_Default='Y'  AND VARIABLE_TYPE='O'";
             LEFT JOIN (select * from HRIS_SALARY_SHEET {$strSalaryType}) SS ON (1=1)
             LEFT JOIN HRIS_SALARY_SHEET_DETAIL SD ON (SS.SHEET_NO=SD.SHEET_NO AND SD.Pay_Id=VP.Pay_Id)
             WHERE  V.STATUS='E' AND V.VARIABLE_TYPE='{$variableType}' 
-            and SS.MONTH_ID={$monthId}
+            and SS.MONTH_ID={$monthId} 
             GROUP BY SD.EMPLOYEE_ID,V.VARIANCE_NAME,Vp.Variance_Id,SS.Month_ID,SS.SHEET_NO)
             PIVOT ( MAX( TOTAL )
                 FOR Variance_Id 
                 IN ($variable)
                 ))GB
                 LEFT JOIN HRIS_EMPLOYEES E ON (E.EMPLOYEE_ID=GB.EMPLOYEE_ID)
+                LEFT JOIN HRIS_GENDERS G ON (E.GENDER_ID=G.GENDER_ID)
                 LEFT JOIN Hris_Salary_Sheet_Emp_Detail SSED ON 
     (SSED.SHEET_NO=GB.SHEET_NO AND SSED.EMPLOYEE_ID=GB.EMPLOYEE_ID AND SSED.MONTH_ID=GB.MONTH_ID)
                 LEFT JOIN HRIS_DEPARTMENTS D  ON (D.DEPARTMENT_ID=E.DEPARTMENT_ID)
@@ -660,8 +663,7 @@ and Show_Default='Y'  AND VARIABLE_TYPE='O'";
              {$searchConditon}
              ";
 
-      //echo $sql;
-       // die();
+
 
 
 
@@ -721,6 +723,8 @@ and Show_Default='Y'  AND VARIABLE_TYPE='O'";
             E.EMPLOYEE_CODE
             ,E.ID_PAN_NO
             ,E.BIRTH_DATE
+            ,E.GENDER_ID
+            ,G.GENDER_NAME
             ,E.JOIN_DATE
             ,D.DEPARTMENT_NAME
             ,FUNT.FUNCTIONAL_TYPE_EDESC
@@ -753,6 +757,8 @@ and Show_Default='Y'  AND VARIABLE_TYPE='O'";
                 )
             )GB
                 LEFT JOIN HRIS_EMPLOYEES E ON (E.EMPLOYEE_ID=GB.EMPLOYEE_ID)
+                
+            LEFT JOIN HRIS_GENDERS G ON (E.GENDER_ID = G.GENDER_ID)
                 LEFT JOIN Hris_Salary_Sheet_Emp_Detail SSED ON 
     (SSED.SHEET_NO=GB.SHEET_NO AND SSED.EMPLOYEE_ID=GB.EMPLOYEE_ID AND SSED.MONTH_ID=GB.MONTH_ID)
                 LEFT JOIN HRIS_DEPARTMENTS D  ON (D.DEPARTMENT_ID=E.DEPARTMENT_ID)
@@ -764,6 +770,134 @@ and Show_Default='Y'  AND VARIABLE_TYPE='O'";
 
              
         return EntityHelper::rawQueryResult($this->adapter, $sql);
+    }
+
+    public function getAllSheetNo() {
+        $sql = "select 
+                SHEET_NO,
+                MONTH_ID, 
+                SALARY_TYPE_ID
+                from HRIS_SALARY_SHEET  
+                where  status='CR'  order by sheet_no asc  ";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+
+        $allSheetNo = [];
+        foreach ($result as $allSheet) {
+            $monthId = $allSheet['MONTH_ID'];
+            $typeId = $allSheet['SALARY_TYPE_ID'];
+            (!array_key_exists($monthId, $allSheetNo)) ?
+                $allSheetNo[$monthId][$typeId] = $allSheet :
+                array_push($allSheetNo[$monthId], $allSheet);
+        }
+
+        return $allSheetNo;
+    }
+	
+	public function getEmployeeWiseGroupReport($variableType, $data) {
+        $variable = $this->fetchSalaryGroupVariable($variableType);
+        $variableSelector = $this->fetchSalaryGroupVariableSelector($variableType,'GB');
+
+        $companyId = isset($data['companyId']) ? $data['companyId'] : -1;
+        $branchId = isset($data['branchId']) ? $data['branchId'] : -1;
+        $departmentId = isset($data['departmentId']) ? $data['departmentId'] : -1;
+        $designationId = isset($data['designationId']) ? $data['designationId'] : -1;
+        $positionId = isset($data['positionId']) ? $data['positionId'] : -1;
+        $serviceTypeId = isset($data['serviceTypeId']) ? $data['serviceTypeId'] : -1;
+        $serviceEventTypeId = isset($data['serviceEventTypeId']) ? $data['serviceEventTypeId'] : -1;
+        $employeeTypeId = isset($data['employeeTypeId']) ? $data['employeeTypeId'] : -1;
+        $genderId = isset($data['genderId']) ? $data['genderId'] : -1;
+        $functionalTypeId = isset($data['functionalTypeId']) ? $data['functionalTypeId'] : -1;
+        $employeeId = isset($data['employeeId']) ? $data['employeeId'] : -1;
+        $groupId = isset($data['groupId']) ? $data['groupId'] : -1;
+        $fiscalId = $data['fiscalId'];
+        $boundedParameter = [];
+
+        $groupIdSql="";
+        if($groupId != null && $groupId != -1) {
+            $groupIdSql=" and SS.GROUP_ID =:groupId";
+            $boundedParameter['groupId'] = $groupId;
+        }
+        $boundedParameter['fiscalId'] = $fiscalId;
+
+        $searchCondition = EntityHelper::getSearchConditonBoundedPayroll($companyId, $branchId, $departmentId, $positionId, $designationId, $serviceTypeId, $serviceEventTypeId, $employeeTypeId, $employeeId, $genderId, null, $functionalTypeId);
+        $boundedParameter=array_merge($boundedParameter, $searchCondition['parameter']);
+
+        $sql = "SELECT 
+            E.FULL_NAME,
+            E.EMPLOYEE_CODE
+            ,E.ID_PAN_NO
+            ,E.ID_ACCOUNT_NO
+            ,BR.BRANCH_NAME
+            ,E.BIRTH_DATE
+            ,E.JOIN_DATE
+            ,D.DEPARTMENT_NAME
+            ,FUNT.FUNCTIONAL_TYPE_EDESC
+            ,$variableSelector
+            ,GB.EMPLOYEE_ID
+            ,GB.Month_ID
+            ,GB.SHEET_NO
+            ,GB.MONTH_NO
+            ,GB.MONTH_EDESC
+            ,GB.SALARY_TYPE_NAME
+            ,SSED.SERVICE_TYPE_NAME
+            ,SSED.DESIGNATION_TITlE
+            ,SSED.POSITION_NAME
+            ,SSED.ACCOUNT_NO
+           
+            FROM
+            (
+            SELECT * FROM (SELECT 
+            SD.EMPLOYEE_ID
+            ,Vp.Variance_Id
+            ,SS.Month_ID
+            ,SS.SHEET_NO
+            ,MC.MONTH_NO
+            ,MC.MONTH_EDESC
+            ,MC.FISCAL_YEAR_ID
+            ,ST.SALARY_TYPE_NAME
+            ,SUM(VAL) AS TOTAL
+            FROM HRIS_VARIANCE V
+            LEFT JOIN HRIS_VARIANCE_PAYHEAD VP ON (V.VARIANCE_ID=VP.VARIANCE_ID)
+            LEFT JOIN HRIS_SALARY_SHEET SS ON (SS.GROUP_ID = :groupId)
+            LEFT JOIN HRIS_SALARY_SHEET_DETAIL SD ON (SS.SHEET_NO=SD.SHEET_NO AND SD.Pay_Id=VP.Pay_Id)
+            LEFT JOIN HRIS_MONTH_CODE MC ON (MC.month_id = SS.month_id)
+            LEFT JOIN HRIS_SALARY_TYPE ST ON (SS.SALARY_TYPE_ID = ST.SALARY_TYPE_ID)            
+            WHERE  V.STATUS='E' AND V.VARIABLE_TYPE='{$variableType}' 
+            GROUP BY SD.EMPLOYEE_ID,V.VARIANCE_NAME,Vp.Variance_Id,SS.Month_ID,SS.SHEET_NO, MC.MONTH_NO, MC.MONTH_EDESC, MC.FISCAL_YEAR_ID, ST.SALARY_TYPE_NAME)
+            PIVOT ( MAX( TOTAL )
+                FOR Variance_Id 
+                IN ($variable)
+                ))GB
+                 JOIN HRIS_EMPLOYEES E ON (E.EMPLOYEE_ID=GB.EMPLOYEE_ID)
+                LEFT JOIN Hris_Salary_Sheet_Emp_Detail SSED ON 
+                (SSED.SHEET_NO=GB.SHEET_NO AND SSED.EMPLOYEE_ID=GB.EMPLOYEE_ID )
+                LEFT JOIN HRIS_DEPARTMENTS D  ON (D.DEPARTMENT_ID=E.DEPARTMENT_ID)
+                LEFT JOIN HRIS_FUNCTIONAL_TYPES FUNT ON (E.FUNCTIONAL_TYPE_ID=FUNT.FUNCTIONAL_TYPE_ID)
+                LEFT JOIN HRIS_BRANCHES BR ON ( E.BRANCH_ID=BR.BRANCH_ID)
+               
+                WHERE 1=1 AND GB.FISCAL_YEAR_ID = :fiscalId AND GB.SALARY_TYPE_NAME = 'NORMAL'
+                {$searchCondition['sql']} 
+                 ORDER BY GB.MONTH_ID ASC
+             ";
+
+        return $this->rawQuery($sql, $boundedParameter);
+    }
+
+    private function fetchSalaryGroupVariableSelector($variableType,$prefix) {
+        $boundedParameter = [];
+        $boundedParameter['variableType'] = $variableType;
+        $rawList = EntityHelper::rawQueryResult($this->adapter, "select  * from Hris_Variance where   STATUS='E' AND VARIABLE_TYPE=:variableType order by order_no",$boundedParameter);
+        $dbArray = "";
+        foreach ($rawList as $key => $row) {
+            $tempPrefix=$prefix.".V".$row['VARIANCE_ID'];
+            if ($key == sizeof($rawList)) {
+                $dbArray .= "NVL({$tempPrefix},0) AS V{$row['VARIANCE_ID']}";
+            } else {
+                $dbArray .= "NVL({$tempPrefix},0) AS V{$row['VARIANCE_ID']},";
+            }
+        }
+        return $dbArray;
     }
 
     public function getVarianceDetailColumns($varianceId) {
@@ -954,6 +1088,7 @@ and Show_Default='Y'  AND VARIABLE_TYPE='O'";
             pay_id,
             department_name, pay_type_flag";
         }
+     
 
         //echo $sql; die;
         $data = EntityHelper::rawQueryResult($this->adapter, $sql);

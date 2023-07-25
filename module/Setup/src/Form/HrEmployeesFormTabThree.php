@@ -20,7 +20,7 @@ class HrEmployeesFormTabThree extends Model {
      * @Annotation\Required(false)
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
-     * @Annotation\Options({"label":"Retirement Fund ID"})
+     * @Annotation\Options({"label":"SSF Number"})
      * @Annotation\Attributes({ "id":"idLbrf", "class":"form-control" })
      */
     public $idLbrf;

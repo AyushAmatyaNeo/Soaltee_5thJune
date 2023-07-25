@@ -34,8 +34,10 @@ class CafeteriaReportsController extends HrisController{
             $data = $request->getPost();
             $result = $this->repository->fetchEmployeeWiseDetails($data);
             $reportData = Helper::extractDbData($result);
-            return new JsonModel(['success' => true, 'data' => $reportData, 'message' => ""]);
-        }
+            $result = $this->repository->getPAXCount($data);
+            $pax = Helper::extractDbData($result)[0]['PAX'];
+            return new JsonModel(['success' => true, 'data' => $reportData, 'pax' => $pax, 'message' => ""]);
+        } 
         
         $result = $this->cafeteriaMapRepo->fetchSchedules();
         $timeList = Helper::extractDbData($result);

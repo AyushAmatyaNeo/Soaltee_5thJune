@@ -496,4 +496,20 @@ class AttendanceByHr extends HrisController {
             return new CustomViewModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
         }
     }
+
+    public function inOutAction() {
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            $data = $request->getPost();
+            $results = Helper::extractDbData($this->repository->getInOutReport($data));
+            return new JsonModel(['success' => true, 'data' => $results, 'error' => '']);
+        }
+        return Helper::addFlashMessagesToArray($this, [
+                'status' => $this->getStatusSelect(),
+                'presentStatus' => $this->getPresentStatusSelect(),
+                'searchValues' => EntityHelper::getSearchData($this->adapter),
+                'acl' => $this->acl, 
+                'employeeDetail' => $this->storageData['employee_detail']
+        ]);
+    }
 }

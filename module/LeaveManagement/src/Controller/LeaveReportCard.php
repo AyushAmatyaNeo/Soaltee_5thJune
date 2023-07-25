@@ -43,8 +43,31 @@ class LeaveReportCard extends HrisController {
                 $employee = $data['data']['employeeId'];
                 $rawList = $this->repository->fetchLeaveReportCard($data);
                 $list = Helper::extractDbData($rawList);
+				
+				//echo '<pre>'; print_r($list); die;
+				
+				if($list == null || count($list) == 0){
+					$rawList = $this->repository->fetchIfEmpty($data);
+					$list = Helper::extractDbData($rawList);
+					$list[0]['FROM_DATE_AD'] = '-';
+					$list[0]['FROM_DATE_BS'] = '-';
+					$list[0]['TO_DATE_AD'] = '-';
+					$list[0]['TO_DATE_BS'] = '-';
+					$list[0]['HALF_DAY_DETAIL'] = '-';
+					$list[0]['NO_OF_DAYS'] = '-';
+					$list[0]['REMARKS'] = '-';
+					$list[0]['STATUS'] = '-';
+					$list[0]['RECOMMENDED_BY'] = '-';
+					$list[0]['RECOMMENDED_DT'] = '-';
+					$list[0]['LEAVE_ENAME'] = '-';
+					$list[0]['LEAVE_CODE'] = '-';
+					$list[0]['RECOMMENDED_BY_NAME'] = '-';
+					$list[0]['APPROVED_BY_NAME'] = '-';
+				}
+				
                 $rawLeaves = $this->repository->fetchLeaves($employee, $data['data']['leaveId']);
                 $leaves = Helper::extractDbData($rawLeaves);
+				
                 return new JsonModel([
                     "success" => true,
                     "data" => $list,

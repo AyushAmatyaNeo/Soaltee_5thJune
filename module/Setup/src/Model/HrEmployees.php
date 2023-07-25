@@ -1,9 +1,11 @@
 <?php
+
 namespace Setup\Model;
 
 use Application\Model\Model;
 
-class HrEmployees extends Model {
+class HrEmployees extends Model
+{
 
     public $employeeId;
     public $companyId;
@@ -66,6 +68,7 @@ class HrEmployees extends Model {
     public $idPassportNo;
     public $idPassportExpiry;
     public $joinDate;
+    public $leftDate;
     public $salary;
     public $salaryPf;
     public $remarks;
@@ -105,14 +108,17 @@ class HrEmployees extends Model {
     public $empowerCompanyCode;
     public $empowerBranchCode;
     public $abroadAddress;
+    public $descriptionDetail;
     public $addrPermProvinceId;
     public $addrTempProvinceId;
     public $payEmpType;
     public $wohFlag;
     public $overtimeEligible;
     public $allowance;
+    public $dearnessAllowance;
+    public $clothTransAllowance;
+    public $foodAllowance;
 
-    
     const TABLE_NAME = "HRIS_EMPLOYEES";
     const EMPLOYEE_ID = "EMPLOYEE_ID";
     const COMPANY_ID = "COMPANY_ID";
@@ -173,6 +179,7 @@ class HrEmployees extends Model {
     const ID_PASSPORT_NO = "ID_PASSPORT_NO";
     const ID_PASSPORT_EXPIRY = "ID_PASSPORT_EXPIRY";
     const JOIN_DATE = "JOIN_DATE";
+    const LEFT_DATE = "LEFT_DATE";
     const SALARY = "SALARY";
     const SALARY_PF = "SALARY_PF";
     const REMARKS = "REMARKS";
@@ -214,14 +221,18 @@ class HrEmployees extends Model {
     const EMPOWER_COMPANY_CODE = "EMPOWER_COMPANY_CODE";
     const EMPOWER_BRANCH_CODE = "EMPOWER_BRANCH_CODE";
     const ABROAD_ADDRESS = "ABROAD_ADDRESS";
+    const DESCRIPTION_DETAIL = "DESCRIPTION_DETAIL";
     const ADDR_PERM_PROVINCE_ID = "ADDR_PERM_PROVINCE_ID";
     const ADDR_TEMP_PROVINCE_ID = "ADDR_TEMP_PROVINCE_ID";
     const PAY_EMP_TYPE = "PAY_EMP_TYPE";
     const WOH_FLAG = "WOH_FLAG";
     const OVERTIME_ELIGIBLE = "OVERTIME_ELIGIBLE";
     const ALLOWANCE = "ALLOWANCE";
+    const DEARNESS_ALLOWANCE = "DEARNESS_ALLOWANCE";
+    const CLOTH_TRANS_ALLOWANCE = "CLOTH_TRANS_ALLOWANCE";
+    const FOOD_ALLOWANCE = "FOOD_ALLOWANCE";
 
-    
+
     public $mappings = [
         'employeeId' => self::EMPLOYEE_ID,
         'companyId' => self::COMPANY_ID,
@@ -282,6 +293,7 @@ class HrEmployees extends Model {
         'idPassportNo' => self::ID_PASSPORT_NO,
         'idPassportExpiry' => self::ID_PASSPORT_EXPIRY,
         'joinDate' => self::JOIN_DATE,
+        'leftDate' => self::LEFT_DATE,
         'salary' => self::SALARY,
         'salaryPf' => self::SALARY_PF,
         'remarks' => self::REMARKS,
@@ -323,12 +335,15 @@ class HrEmployees extends Model {
         'empowerCompanyCode' => self::EMPOWER_COMPANY_CODE,
         'empowerBranchCode' => self::EMPOWER_BRANCH_CODE,
         'abroadAddress' => self::ABROAD_ADDRESS,
-        'addrPermProvinceId' =>self::ADDR_PERM_PROVINCE_ID,
-        'addrTempProvinceId' =>self::ADDR_TEMP_PROVINCE_ID,
-        'payEmpType' =>self::PAY_EMP_TYPE,
-        'wohFlag' =>self::WOH_FLAG,
-        'overtimeEligible' =>self::OVERTIME_ELIGIBLE,
+        'descriptionDetail' => self::DESCRIPTION_DETAIL,
+        'addrPermProvinceId' => self::ADDR_PERM_PROVINCE_ID,
+        'addrTempProvinceId' => self::ADDR_TEMP_PROVINCE_ID,
+        'payEmpType' => self::PAY_EMP_TYPE,
+        'wohFlag' => self::WOH_FLAG,
+        'overtimeEligible' => self::OVERTIME_ELIGIBLE,
         'allowance' => self::ALLOWANCE,
+        'dearnessAllowance' => self::DEARNESS_ALLOWANCE,
+        'clothTransAllowance' => self::CLOTH_TRANS_ALLOWANCE,
+        'foodAllowance' => self::FOOD_ALLOWANCE,
     ];
-
 }

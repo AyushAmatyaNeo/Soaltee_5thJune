@@ -9,7 +9,7 @@ $this->headScript()
         ->appendFile($this->basePath('telerik_kendoui/js/kendo.all.min.js'))
         ->appendFile($this->basePath('js/angular.min.js'))
         ->appendFile($this->basePath('js/search.js')) 
-        ->appendFile($this->basePath('js/setup/employee/employeeListController.js'));
+        ->appendFile($this->basePath('js/setup/employee/employeeListController.js?1'));
 ?> 
 <script> 
     document.url = '<?= $this->url("restful", ["action" => "index"]) ?>';

@@ -160,6 +160,8 @@ class PayrollReportController extends HrisController {
     }
 
     public function pullGroupSheetAction() {
+
+      
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -184,6 +186,65 @@ class PayrollReportController extends HrisController {
             return new CustomViewModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
         }
     }
+
+    public function employeeWiseGroupSheetAction() {
+		$ruleRepo = new RulesRepository($this->adapter);
+        $nonDefaultList = $this->repository->getSalaryGroupColumns('S', 'N');
+        $groupVariables = $this->repository->getSalaryGroupColumns('S');
+
+        $salarySheetRepo = new SalarySheetRepo($this->adapter);
+        $salaryType = iterator_to_array($salarySheetRepo->fetchAllSalaryType(), false);
+
+        $data['salarySheetList'] = iterator_to_array($salarySheetRepo->fetchAll(), false);
+        $links['getGroupListLink'] = $this->url()->fromRoute('payrollReport', ['action' => 'getGroupList']);
+        $data['links'] = $links;
+
+        $fiscalYears = EntityHelper::getTableKVListWithSortOption($this->adapter, FiscalYear::TABLE_NAME,FiscalYear::FISCAL_YEAR_ID, [FiscalYear::FISCAL_YEAR_NAME], [FiscalYear::STATUS => 'E'], FiscalYear::FISCAL_YEAR_ID,  "DESC");
+		
+		$companyWiseGroup = null;
+        if($this->acl['CONTROL_VALUES']){
+        if($this->acl['CONTROL_VALUES'][0]['CONTROL']=='C'){
+            $companyWiseGroup = $ruleRepo->getCompanyWise($this->acl['CONTROL_VALUES'][0]['VAL']);
+        }else{
+            $companyWiseGroup = null;
+        }}
+		
+        return Helper::addFlashMessagesToArray($this, [
+            'searchValues' => EntityHelper::getSearchData($this->adapter),
+            'salaryType' => $salaryType,
+            'fiscalYears' => $fiscalYears,
+            'nonDefaultList' => $nonDefaultList,
+            'groupVariables' => $groupVariables,
+            'preference' => $this->preference,
+            'data' => json_encode($data),
+			'acl' => $this->acl,
+			'employeeDetail' => $this->storageData['employee_detail'],
+			'companyWiseGroup' => $companyWiseGroup,
+        ]);
+    }
+
+    public function pullemployeeWiseGroupSheetAction() {
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $resultData = [];
+            $groupVariable = $data['groupVariable'];
+
+            $defaultColumnsList = $this->repository->getDefaultColumns('S');
+            $resultData = $this->repository->getEmployeeWiseGroupReport('S', $data);
+           
+            $result = [];
+            $result['success'] = true;
+            $result['data'] = Helper::extractDbData($resultData);
+            $result['columns'] = $defaultColumnsList;
+            $result['error'] = "";
+            return new CustomViewModel($result);
+        } catch (Exception $e) {
+            return new CustomViewModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+        }
+    }
+
+    
 
     public function groupTaxReportAction() {
         $nonDefaultList = $this->repository->getSalaryGroupColumns('T', 'N');
@@ -348,6 +409,8 @@ class PayrollReportController extends HrisController {
         ]);
     }
 
+    
+
     public function pulltaxYearlyAction() {
         try {
             $request = $this->getRequest();
@@ -366,5 +429,49 @@ class PayrollReportController extends HrisController {
             return new CustomViewModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
         }
     }
+
+
+    public function getGroupListAction() {
+        $request = $this->getRequest();
+        if ($request->isPost()) {
+            try {
+                $data = EntityHelper::getTableList($this->adapter, "HRIS_SALARY_SHEET_GROUP", ["GROUP_ID", "GROUP_NAME"]);
+                return new JsonModel(['success' => true, 'data' => $data, 'error' => '']);
+            } catch (Exception $e) {
+                return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    public function pullGroupAction() {
+        $salarySheetRepo = new SalarySheetRepo($this->adapter);
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+            $group=$data['group'];
+            $monthId=$data['monthId'];
+            $salaryTypeId=$data['salaryTypeId'];
+
+            $valuesinCSV = "";
+            for ($i = 0; $i < sizeof($group); $i++) {
+                $value= $group[$i];
+//                $value = isString ? "'{$group[$i]}'" : $group[$i];
+                if ($i + 1 == sizeof($group)) {
+                    $valuesinCSV .= "{$value}";
+                } else {
+                    $valuesinCSV .= "{$value},";
+                }
+            }
+			
+            $sheetList= $salarySheetRepo->fetchGeneratedSheetByGroup($monthId,$valuesinCSV,$salaryTypeId);
+
+            return new JsonModel(['success' => true, 'data' => $employeeList, 'sheetData' => $sheetList, 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
+
+
+
 
 }

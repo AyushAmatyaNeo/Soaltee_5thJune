@@ -5,7 +5,8 @@ namespace Setup\Form;
 use Application\Model\Model;
 use Zend\Form\Annotation;
 
-class HrEmployeesFormTabFour extends Model {
+class HrEmployeesFormTabFour extends Model
+{
 
     /**
      * @Annotation\Required(true)
@@ -15,6 +16,15 @@ class HrEmployeesFormTabFour extends Model {
      * @Annotation\Attributes({"class":"form-control","id":"joinDate" })
      */
     public $joinDate;
+
+    /**
+     * @Annotation\Required(true)
+     * @Annotation\Type("Zend\Form\Element\Text")
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"label":"Last Working Date"})
+     * @Annotation\Attributes({"class":"form-control","id":"leftDate" })
+     */
+    public $leftDate;
 
     /**
      * @Annotation\Required(false)
@@ -127,7 +137,7 @@ class HrEmployeesFormTabFour extends Model {
     public $functionalLevelId;
     public $modifiedBy;
     public $modifiedDt;
-    
+
     /**
      * @Annotation\Type("Zend\Form\Element\Select")
      * @Annotation\Required(False)
@@ -202,13 +212,39 @@ class HrEmployeesFormTabFour extends Model {
 
     /**
      * @Annotation\Required(false)
-     * @Annotation\Type("Zend\Form\Element\Number")
      * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
      * @Annotation\Options({"label":"Allowance"})
      * @Annotation\Validator({"name":"StringLength", "options":{"max":"9"}})
      * @Annotation\Attributes({ "id":"allowance", "class":"form-control","step":"1","min":"0"})
      */
-    public $allowance ;
+    public $allowance;
+
+    /**
+     * @Annotation\Required(false)
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"label":"Dearness Allowance"})
+     * @Annotation\Validator({"name":"StringLength", "options":{"max":"9"}})
+     * @Annotation\Attributes({ "id":"dearnessAllowance", "class":"form-control","step":"1","min":"0"})
+     */
+    public $dearnessAllowance;
+
+    /**
+     * @Annotation\Required(false)
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"label":"Cloth/Trans Allowance"})
+     * @Annotation\Validator({"name":"StringLength", "options":{"max":"9"}})
+     * @Annotation\Attributes({ "id":"clothTransAllowance", "class":"form-control","step":"1","min":"0"})
+     */
+    public $clothTransAllowance;
+
+    /**
+     * @Annotation\Required(false)
+     * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
+     * @Annotation\Options({"label":"Food Allowance"})
+     * @Annotation\Validator({"name":"StringLength", "options":{"max":"9"}})
+     * @Annotation\Attributes({ "id":"foodAllowance", "class":"form-control","step":"1","min":"0"})
+     */
+    public $foodAllowance;
 
     public $mappings = [
         'joinDate' => 'JOIN_DATE',
@@ -231,6 +267,9 @@ class HrEmployeesFormTabFour extends Model {
         'overtimeEligible' => 'OVERTIME_ELIGIBLE',
         'groupId' => 'GROUP_ID',
         'allowance' => 'ALLOWANCE',
+        'dearnessAllowance' => 'DEARNESS_ALLOWANCE',
+        'clothTransAllowance' => 'CLOTH_TRANS_ALLOWANCE',
+        'foodAllowance' => 'FOOD_ALLOWANCE',
+        'leftDate' => 'LEFT_DATE',
     ];
-
 }

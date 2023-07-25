@@ -60,7 +60,7 @@
             console.log('sdf');
             app.exportDomToPdf2('printDiv');
         });
-
+        
 
 
 
@@ -71,7 +71,7 @@
                 var appendData = `
                  <tr>
             <td>` + value.ROWNUM + `</td>
-            <td>` + value.ID_ACCOUNT_NO + `</td>
+            <td style='mso-number-format:"\@"'>` + value.ID_ACCOUNT_NO + `</td>
             <td>` + value.FULL_NAME + `</td>
             <td>` + value.DR_AMT + `</td>
             <td>` + value.CR_AMT + `</td>
@@ -86,9 +86,9 @@
                 var appendDebit = `
                  <tr>
             <td>` + tempCnt + `</td>
-            <td>0101011126901</td>
+            <td style='mso-number-format:"\@"' >0101011126901</td>
             <td>SOALTEE CROWNE PLAZA</td>
-            <td>` + total.TOTAL_AMT + `</td>
+            <td style='mso-number-format:"\@"' >` + total.TOTAL_AMT + `</td>
             <td></td>
             <td>Medical Reimbursement</td>
                 </tr>
@@ -101,8 +101,8 @@
             <td></td>
             <td>Total</td>
             <td></td>
-            <td>` + total.TOTAL_AMT + `</td>
-            <td>` + total.TOTAL_AMT + `</td>
+            <td style='mso-number-format:"\@"' >` + total.TOTAL_AMT + `</td>
+            <td style='mso-number-format:"\@"' >` + total.TOTAL_AMT + `</td>
             <td></td>
                 </tr>
             `;
@@ -121,6 +121,9 @@
 //            $(".form-control").val("");
 //        });
 
+        $('#printExcel').on('click', function () {
+            app.exportTableToExcel('printDiv', 'MedicalVoucher', 'MedicalVoucher.xls');
+        });
 
 
 

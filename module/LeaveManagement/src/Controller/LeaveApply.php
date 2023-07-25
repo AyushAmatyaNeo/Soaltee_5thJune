@@ -75,6 +75,7 @@ class LeaveApply extends HrisController {
             if ($this->form->isValid()) {
                 $leaveRequest = new LeaveApplyModel();
                 $leaveRequest->exchangeArrayFromForm($this->form->getData());
+				
                 $leaveRequest->id = (int) Helper::getMaxId($this->adapter, LeaveApplyModel::TABLE_NAME, LeaveApplyModel::ID) + 1;
                 $leaveRequest->startDate = Helper::getExpressionDate($leaveRequest->startDate);
                 $leaveRequest->endDate = Helper::getExpressionDate($leaveRequest->endDate);
@@ -88,8 +89,12 @@ class LeaveApply extends HrisController {
 
                 if($leaveRequest->status == 'AP'){
                     $leaveRequest->hardcopySignedFlag = 'Y';
+					$leaveRequest->recommendedBy = $this->employeeId;
+					$leaveRequest->recommendedDt = Helper::getcurrentExpressionDate();
+					$leaveRequest->approvedBy = $this->employeeId;
+					$leaveRequest->approvedDt = Helper::getcurrentExpressionDate();
                 }
-
+				//echo '<pre>'; print_r($leaveRequest); die;
                 $this->repository->add($leaveRequest);
                 $this->flashmessenger()->addMessage("Leave Request Successfully added!!!");
                 if ($leaveRequest->status == 'RQ') {
@@ -126,7 +131,7 @@ class LeaveApply extends HrisController {
                 //return $this->redirect()->toRoute("leavestatus");
             }
         }
-		if($this->acl['HR_APPROVE']==Y){
+		if($this->acl['HR_APPROVE']=='Y'){
 		$applyOptionValues = [
             'RQ' => 'Pending',
             'AP' => 'Approved'

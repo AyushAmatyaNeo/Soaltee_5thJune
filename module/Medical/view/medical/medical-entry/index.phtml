@@ -29,6 +29,7 @@ $this->headScript()
     document.pullMedicalListLink = '<?= $this->url("medicalEntry", ["action" => "pullMedicalList"]) ?>';
     document.editLink = '<?= $this->url("medicalEntry", ["action" => "edit"]); ?>';
     document.deleteLink = '<?= $this->url("medicalEntry", ["action" => "delete"]); ?>';
+    document.viewLink = '<?= $this->url("medicalEntry", ["action" => "view"]); ?>';
 </script>
 <div class="page-bar">
 <?= $this->navigation('Zend\Navigation\medicalEntry')->breadcrumbs()->setMinDepth(0)->setPartial('partial/breadcrumb') ?>

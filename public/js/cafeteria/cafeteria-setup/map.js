@@ -14,7 +14,7 @@
     });
     
     $(document).ready(function () {
-        $("#scp").prop("checked", true);
+		if(document.functionalTypeId == 107){ $("#lsg").prop("checked", true); } else { $("#scp").prop("checked", true); }       
         $('input[name="type"], #time').on('click', function(){
             var type = $('input[name="type"]:checked').val();
             let time = $("#time option:selected").text();

@@ -44,6 +44,7 @@ angular.module('hris', ['ui.bootstrap'])
                 var serviceTypeId = angular.element(document.getElementById('serviceTypeId')).val();
                 var employeeTypeId = angular.element(document.getElementById('employeeTypeId')).val();
                 var employeeId = angular.element(document.getElementById('employeeId')).val();
+				var functionalTypeId = angular.element(document.getElementById('functionalTypeId')).val();
                 App.blockUI({target: "#hris-page-content"});
                 window.app.pullDataById(document.searchLink, {
                     companyId: companyId,
@@ -53,13 +54,13 @@ angular.module('hris', ['ui.bootstrap'])
                     positionId: positionId,
                     serviceTypeId: serviceTypeId,
                     employeeTypeId: employeeTypeId,
-                    employeeId: employeeId
+                    employeeId: employeeId,
+					functionalTypeId: functionalTypeId
                 }).then(function (success) {
                     App.unblockUI("#hris-page-content");
                     console.log("Employee list for assign", success);
                     $scope.$apply(function () {
                         $scope.employeeList = success.data;
-                        console.log(success.data);
                         for (var i = 0; i < $scope.employeeList.length; i++) {
                             $scope.employeeList[i].checked = false;
                         }

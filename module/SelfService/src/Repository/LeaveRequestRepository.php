@@ -13,18 +13,21 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Sql;
 use Zend\Db\TableGateway\TableGateway;
 
-class LeaveRequestRepository implements RepositoryInterface {
+class LeaveRequestRepository implements RepositoryInterface
+{
 
     private $tableGateway;
     private $adapter;
 
-    public function __construct(AdapterInterface $adapter) {
+    public function __construct(AdapterInterface $adapter)
+    {
         $this->tableGateway = new TableGateway(LeaveApply::TABLE_NAME, $adapter);
         $this->tableGatewayLeaveAssign = new TableGateway(LeaveAssign::TABLE_NAME, $adapter);
         $this->adapter = $adapter;
     }
 
-    public function pushFileLink($data) {
+    public function pushFileLink($data)
+    {
         $fileName = $data['fileName'];
         $fileInDir = $data['filePath'];
         $sql = "INSERT INTO HRIS_LEAVE_FILES(FILE_ID, FILE_NAME, FILE_IN_DIR_NAME, LEAVE_ID) VALUES((SELECT MAX(FILE_ID)+1 FROM HRIS_LEAVE_FILES), '$fileName', '$fileInDir', null)";
@@ -35,7 +38,8 @@ class LeaveRequestRepository implements RepositoryInterface {
         return Helper::extractDbData($statement->execute());
     }
 
-    public function linkLeaveWithFiles() {
+    public function linkLeaveWithFiles()
+    {
         if (!empty($_POST['fileUploadList'])) {
             $filesList = $_POST['fileUploadList'];
             $filesList = implode(',', $filesList);
@@ -47,21 +51,25 @@ class LeaveRequestRepository implements RepositoryInterface {
         }
     }
 
-    public function add(Model $model) {
+    public function add(Model $model)
+    {
         $this->tableGateway->insert($model->getArrayCopyForDB());
         $this->linkLeaveWithFiles();
     }
 
-    public function edit(Model $model, $id) {
+    public function edit(Model $model, $id)
+    {
         // TODO: Implement edit() method.
     }
 
-    public function fetchAll() {
+    public function fetchAll()
+    {
         // TODO: Implement fetchAll() method.
     }
 
     //to get the all applied leave request list
-    public function selectAll($employeeId) {
+    public function selectAll($employeeId)
+    {
 
         $sql = new Sql($this->adapter);
         $select = $sql->select();
@@ -72,11 +80,11 @@ class LeaveRequestRepository implements RepositoryInterface {
             new Expression("INITCAP(TO_CHAR(LA.REQUESTED_DT, 'DD-MON-YYYY')) AS REQUESTED_DT"),
             new Expression("LA.NO_OF_DAYS AS NO_OF_DAYS"),
             new Expression("LA.ID AS ID"),
-                ], true);
+        ], true);
 
         $select->from(['LA' => LeaveApply::TABLE_NAME])
-                ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=LA.EMPLOYEE_ID", ["FIRST_NAME" => new Expression("INITCAP(E.FIRST_NAME)"), "MIDDLE_NAME" => new Expression("INITCAP(E.MIDDLE_NAME)"), "LAST_NAME" => new Expression("INITCAP(E.LAST_NAME)")])
-                ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")]);
+            ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=LA.EMPLOYEE_ID", ["FIRST_NAME" => new Expression("INITCAP(E.FIRST_NAME)"), "MIDDLE_NAME" => new Expression("INITCAP(E.MIDDLE_NAME)"), "LAST_NAME" => new Expression("INITCAP(E.LAST_NAME)")])
+            ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")]);
 
         $select->where([
             "L.STATUS='E'",
@@ -89,7 +97,8 @@ class LeaveRequestRepository implements RepositoryInterface {
     }
 
     //to get the leave detail based on assigned employee id
-    public function getLeaveDetail($employeeId, $leaveId, $startDate = null) {
+    public function getLeaveDetail($employeeId, $leaveId, $startDate = null)
+    {
         $date = "TRUNC(SYSDATE)";
         if ($startDate != null) {
             $date = "TO_DATE('{$startDate}','DD-MON-YYYY')";
@@ -145,15 +154,16 @@ class LeaveRequestRepository implements RepositoryInterface {
     }
 
     //to get the leave list based on assigned employee id for select option
-    public function getLeaveList($employeeId, $selfRequest='N') {
+    public function getLeaveList($employeeId, $selfRequest = 'N')
+    {
         $selfRequestCondition = "1=1";
-        if($selfRequest == 'Y'){
+        if ($selfRequest == 'Y') {
             $selfRequestCondition = "L.HR_ONLY = 'N'";
         }
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from(['LA' => LeaveAssign::TABLE_NAME])
-                ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")]);
+            ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")]);
         $select->where([
             "L.STATUS='E'",
             "LA.EMPLOYEE_ID=" . $employeeId,
@@ -171,7 +181,8 @@ class LeaveRequestRepository implements RepositoryInterface {
         return $entitiesArray;
     }
 
-    public function fetchById($id) {
+    public function fetchById($id)
+    {
 
         // TODO: Implement fetchById() method.
 
@@ -186,7 +197,8 @@ class LeaveRequestRepository implements RepositoryInterface {
         return $resultset->current();
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $leaveStatus = $this->getLeaveFrontOrBack($id);
         $currentDate = Helper::getcurrentExpressionDate();
         if ($leaveStatus['DATE_STATUS'] != 'BD' && $leaveStatus['LEAVE_STATUS'] != 'AP') {
@@ -221,7 +233,8 @@ class LeaveRequestRepository implements RepositoryInterface {
         }
     }
 
-    public function checkEmployeeLeave($employeeId, $date) {
+    public function checkEmployeeLeave($employeeId, $date)
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from(['L' => LeaveApply::TABLE_NAME]);
@@ -233,7 +246,8 @@ class LeaveRequestRepository implements RepositoryInterface {
         return $result->current();
     }
 
-    public function getfilterRecords($data) {
+    public function getfilterRecords($data)
+    {
         $employeeId = $data['employeeId'];
         $leaveId = $data['leaveId'];
         $leaveRequestStatusId = $data['leaveRequestStatusId'];
@@ -269,21 +283,21 @@ class LeaveRequestRepository implements RepositoryInterface {
             new Expression("LA.APPROVED_REMARKS AS APPROVED_REMARKS"),
             new Expression("(CASE WHEN LA.STATUS = 'XX' THEN 'Y' ELSE 'N' END) AS ALLOW_EDIT"),
             new Expression("(CASE WHEN LA.STATUS IN ('RQ','RC','AP') THEN 'Y' ELSE 'N' END) AS ALLOW_DELETE"),
-                ], true);
+        ], true);
 
         $select->from(['LA' => LeaveApply::TABLE_NAME])
-                ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("CASE WHEN SUB_REF_ID IS NULL THEN 
+            ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("CASE WHEN SUB_REF_ID IS NULL THEN 
 INITCAP(L.LEAVE_ENAME)
 ELSE
 INITCAP(L.LEAVE_ENAME)||'('||SLR.SUB_NAME||')'
 END")])
-                ->join(['E' => 'HRIS_EMPLOYEES'], 'LA.EMPLOYEE_ID=E.EMPLOYEE_ID', ["FULL_NAME" => new Expression("INITCAP(E.FULL_NAME)")], "left")
-                ->join(['E2' => "HRIS_EMPLOYEES"], "E2.EMPLOYEE_ID=LA.RECOMMENDED_BY", ['RECOMMENDED_BY_NAME' => new Expression("INITCAP(E2.FULL_NAME)")], "left")
-                ->join(['E3' => "HRIS_EMPLOYEES"], "E3.EMPLOYEE_ID=LA.APPROVED_BY", ['APPROVED_BY_NAME' => new Expression("INITCAP(E3.FULL_NAME)")], "left")
-                ->join(['RA' => "HRIS_RECOMMENDER_APPROVER"], "RA.EMPLOYEE_ID=LA.EMPLOYEE_ID", ['RECOMMENDER_ID' => 'RECOMMEND_BY', 'APPROVER_ID' => 'APPROVED_BY'], "left")
-                ->join(['RECM' => "HRIS_EMPLOYEES"], "RECM.EMPLOYEE_ID=RA.RECOMMEND_BY", ['RECOMMENDER_NAME' => new Expression("INITCAP(RECM.FULL_NAME)")], "left")
-                ->join(['APRV' => "HRIS_EMPLOYEES"], "APRV.EMPLOYEE_ID=RA.APPROVED_BY", ['APPROVER_NAME' => new Expression("INITCAP(APRV.FULL_NAME)")], "left")
-                ->join(['SLR' => "(SELECT 
+            ->join(['E' => 'HRIS_EMPLOYEES'], 'LA.EMPLOYEE_ID=E.EMPLOYEE_ID', ["FULL_NAME" => new Expression("INITCAP(E.FULL_NAME)")], "left")
+            ->join(['E2' => "HRIS_EMPLOYEES"], "E2.EMPLOYEE_ID=LA.RECOMMENDED_BY", ['RECOMMENDED_BY_NAME' => new Expression("INITCAP(E2.FULL_NAME)")], "left")
+            ->join(['E3' => "HRIS_EMPLOYEES"], "E3.EMPLOYEE_ID=LA.APPROVED_BY", ['APPROVED_BY_NAME' => new Expression("INITCAP(E3.FULL_NAME)")], "left")
+            ->join(['RA' => "HRIS_RECOMMENDER_APPROVER"], "RA.EMPLOYEE_ID=LA.EMPLOYEE_ID", ['RECOMMENDER_ID' => 'RECOMMEND_BY', 'APPROVER_ID' => 'APPROVED_BY'], "left")
+            ->join(['RECM' => "HRIS_EMPLOYEES"], "RECM.EMPLOYEE_ID=RA.RECOMMEND_BY", ['RECOMMENDER_NAME' => new Expression("INITCAP(RECM.FULL_NAME)")], "left")
+            ->join(['APRV' => "HRIS_EMPLOYEES"], "APRV.EMPLOYEE_ID=RA.APPROVED_BY", ['APPROVER_NAME' => new Expression("INITCAP(APRV.FULL_NAME)")], "left")
+            ->join(['SLR' => "(SELECT 
 WOD_ID AS ID
 ,LA.EMPLOYEE_ID
 ,NO_OF_DAYS
@@ -301,7 +315,7 @@ from
 HRIS_EMPLOYEE_LEAVE_ADDITION LA
 JOIN Hris_Employee_Work_Holiday WH ON (LA.WOH_ID=WH.ID)
 LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID))"], "SLR.ID=LA.SUB_REF_ID AND SLR.EMPLOYEE_ID=LA.EMPLOYEE_ID", [], "left");
-        
+
         $select->where([
             "L.STATUS='E'",
             "E.EMPLOYEE_ID=" . $employeeId
@@ -336,17 +350,20 @@ LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID))"], "SLR.I
         return $result;
     }
 
-    public function fetchAvailableDays($fromDate, $toDate, $employeeId, $halfDay, $leaveId) {
+    public function fetchAvailableDays($fromDate, $toDate, $employeeId, $halfDay, $leaveId)
+    {
         $rawResult = EntityHelper::rawQueryResult($this->adapter, "SELECT HRIS_AVAILABLE_LEAVE_DAYS({$fromDate},{$toDate},{$employeeId},'{$leaveId}','{$halfDay}') AS AVAILABLE_DAYS FROM DUAL");
         return $rawResult->current();
     }
 
-    public function validateLeaveRequest($fromDate, $toDate, $employeeId) {
+    public function validateLeaveRequest($fromDate, $toDate, $employeeId)
+    {
         $rawResult = EntityHelper::rawQueryResult($this->adapter, "SELECT HRIS_VALIDATE_LEAVE_REQUEST({$fromDate},{$toDate},{$employeeId}) AS ERROR FROM DUAL");
         return $rawResult->current();
     }
 
-    public function fetchByEmpId($employeeId) {
+    public function fetchByEmpId($employeeId)
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from(['L' => LeaveApply::TABLE_NAME]);
@@ -355,7 +372,8 @@ LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID))"], "SLR.I
         $result = $statement->execute();
         return $result;
     }
-    public function getLeaveFrontOrBack($id) {
+    public function getLeaveFrontOrBack($id)
+    {
         $sql = "SELECT START_DATE,TRUNC(SYSDATE) AS CURDATE,
             CASE WHEN
             STATUS IN ('RQ','RC') THEN 'NA'
@@ -375,7 +393,8 @@ LEFT JOIN Hris_Holiday_Master_Setup H ON (WH.HOLIDAY_ID=H.HOLIDAY_ID))"], "SLR.I
         return $statement->execute()->current();
     }
 
-    public function getSubstituteList($leaveId, $employeeId,$maxSubDays=500) {
+    public function getSubstituteList($leaveId, $employeeId, $maxSubDays = 500)
+    {
         $sql = " 
         SELECT 
 sl.*
@@ -433,9 +452,7 @@ and Sub_Ref_Id is not null
             
             ";
         $statement = $this->adapter->query($sql);
-        $result=$statement->execute();
+        $result = $statement->execute();
         return Helper::extractDbData($result);
     }
-    
-
 }

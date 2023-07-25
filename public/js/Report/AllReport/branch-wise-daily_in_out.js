@@ -237,6 +237,7 @@
             app.pullDataById(document.wsBranchWiseDailyReport, q).then(function (response) {
                 console.log('branchWiseEmployeeMonthlyR', response);
                 var extractedDetailData = extractDetailData(response.data, response.days);
+				//console.log(extractedDetailData);
                 if(response.branchName != -1){
                     branchName = response.branchName[0].BRANCH_NAME;
                     console.log(branchName);

@@ -48,15 +48,15 @@
                                         field: 'L' + val + '_' + 'TAKEN',
                                         width: 100
                                     },
-//                            {
-//                                title: 'BALANCE',
-//                                field: 'L' + val + '_' + 'BALANCE',
-//                                width: 100
-//                            },
+                            {
+                                title: 'BALANCE',
+                                field: 'L' + val + '_' + 'BALANCE',
+                                width: 100
+                            },
                                 ]
                             };
                             map['L' + val + '_TAKEN'] = leaveList[ii]['LEAVE_ENAME'] + 'TAKEN';
-//                    map['L' + val + '_BALANCE'] = leaveList[i]['LEAVE_ENAME'] + 'BALANCE';
+                   map['L' + val + '_BALANCE'] = leaveList[i]['LEAVE_ENAME'] + 'BALANCE';
                             columns.push(columnsList);
 
                         }
@@ -77,15 +77,15 @@
                                 field: 'L' + leaveList[i]['LEAVE_ID'] + '_' + 'TAKEN',
                                 width: 100
                             },
-//                            {
-//                                title: 'BALANCE',
-//                                field: 'L' + leaveList[i]['LEAVE_ID'] + '_' + 'BALANCE',
-//                                width: 100
-//                            },
+                           {
+                                title: 'BALANCE',
+                                field: 'L' + leaveList[i]['LEAVE_ID'] + '_' + 'BALANCE',
+                                width: 100
+                            },
                         ]
                     };
                     map['L' + leaveList[i]['LEAVE_ID'] + '_TAKEN'] = leaveList[i]['LEAVE_ENAME'] + ' TAKEN';
-//                    map['L' + leaveList[i]['LEAVE_ID'] + '_BALANCE'] = leaveList[i]['LEAVE_ENAME'] + ' BALANCE';
+                    map['L' + leaveList[i]['LEAVE_ID'] + '_BALANCE'] = leaveList[i]['LEAVE_ENAME'] + ' BALANCE';
                     columns.push(columnsList);
 
                 }

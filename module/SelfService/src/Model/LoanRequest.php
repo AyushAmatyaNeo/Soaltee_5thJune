@@ -14,7 +14,7 @@ class LoanRequest extends Model{
     const LOAN_DATE = "LOAN_DATE";
     const REASON = "REASON";
     const STATUS = "STATUS";
-    const APPROVED_AMOUNT = "APPROVED_AMOUNT";
+    //const APPROVED_AMOUNT = "APPROVED_AMOUNT";
     const INTEREST_RATE = "INTEREST_RATE";
     const RECOMMENDED_BY = "RECOMMENDED_BY";
     const RECOMMENDED_DATE = "RECOMMENDED_DATE";
@@ -23,6 +23,7 @@ class LoanRequest extends Model{
     const APPROVED_DATE = "APPROVED_DATE";
     const APPROVED_REMARKS = "APPROVED_REMARKS";
     const DEDUCT_ON_SALARY = "DEDUCT_ON_SALARY";
+	const PRINT_FLAG = "PRINT_FLAG";
      
     public $loanRequestId;
     public $employeeId;
@@ -33,7 +34,7 @@ class LoanRequest extends Model{
     public $loanDate;
     public $reason;
     public $status;
-    public $approvedAmount;
+    //public $approvedAmount;
     public $deductOnSalary;
     public $recommendedBy;
     public $recommendedDate;
@@ -42,6 +43,7 @@ class LoanRequest extends Model{
     public $approvedBy;
     public $approvedDate;
     public $approvedRemarks;
+	public $printFlag;
     
     public $mappings = [
         'loanRequestId'=> self::LOAN_REQUEST_ID,
@@ -53,7 +55,7 @@ class LoanRequest extends Model{
         'reason'=>self::REASON,
         'status'=>self::STATUS,
         'repaymentMonths' => self::REPAYMENT_MONTHS,
-        'approvedAmount'=>self::APPROVED_AMOUNT,
+        //'approvedAmount'=>self::APPROVED_AMOUNT,
         'interestRate'=>self::INTEREST_RATE,
         'recommendedBy'=>self::RECOMMENDED_BY,
         'recommendedDate'=>self::RECOMMENDED_DATE,
@@ -61,7 +63,8 @@ class LoanRequest extends Model{
         'approvedBy'=>self::APPROVED_BY,
         'approvedDate'=>self::APPROVED_DATE,
         'approvedRemarks'=>self::APPROVED_REMARKS,
-        'deductOnSalary'=>self::DEDUCT_ON_SALARY
+        'deductOnSalary'=>self::DEDUCT_ON_SALARY,
+		'printFlag'=>self::PRINT_FLAG
     ];
     
 }

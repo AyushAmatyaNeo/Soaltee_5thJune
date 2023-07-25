@@ -22,6 +22,7 @@
                         break;
                     case 4:
                         app.datePickerWithNepali('joinDate', 'nepalijoinDate');
+                        app.datePickerWithNepali('leftDate', 'nepalileftDate');
                         app.datePickerWithNepali('toDate', 'nepaliToDate');
                         app.datePickerWithNepali('eventDate', 'nepalieventDate');
                         app.datePickerWithNepali('startDate', 'nepalistartDate');

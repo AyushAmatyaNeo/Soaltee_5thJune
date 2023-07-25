@@ -106,6 +106,8 @@ class NotificationEvents {
     const OVERTIME_CANCELLED = 74;
     
     const BIRTHDAY_WISHED= 78;
+	const LEAVE_DEDUCTION_REJECTED = 83;
+    const LEAVE_DEDUCTION_APPROVED = 84;
     
 //    note number 79 80 81 82 already used in leave above
     

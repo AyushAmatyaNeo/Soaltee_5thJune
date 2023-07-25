@@ -16,7 +16,9 @@
                 
             },
             delete: {
-                
+                'ALLOW_DELETE': document.acl.ALLOW_DELETE,
+                'params': ["EMPLOYEE_ID"],
+                'url': document.deleteLink
             }
         };
         app.initializeKendoGrid($employeeTable, [
@@ -40,7 +42,7 @@
             {field: "LOCATION_EDESC", title: "Location", width: 150},
             {field: "FUNCTIONAL_TYPE_EDESC", title: "Functional Type", width: 150},
             {field: "FUNCTIONAL_LEVEL_EDESC", title: "Functional Level", width: 150},
-            {field: "EMPLOYEE_ID", title: "Action", width: 60, locked: true, template: app.genKendoActionTemplate(actiontemplateConfig)}
+            {field: "EMPLOYEE_ID", title: "Action", width: 100, locked: true, template: app.genKendoActionTemplate(actiontemplateConfig)}
         ], null, null, null, 'Resigned or Retired Employees List');
         app.searchTable('employeeTable', ['EMPLOYEE_CODE', 'FULL_NAME', 'MOBILE_NO', 'BIRTH_DATE', 'COMPANY_NAME', 'BRANCH_NAME', 'DEPARTMENT_NAME', 'DESIGNATION_TITLE'], false);
   

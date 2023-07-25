@@ -22,14 +22,23 @@
                 $table.empty();
                 
                 var dateRange = app.getDateRangeBetween(nepaliDatePickerExt.getDate(q['fromDate']), nepaliDatePickerExt.getDate(q['toDate']));
+                
+                var weekday = new Array(7);
+                weekday[0] = "Sun";
+                weekday[1] = "Mon";
+                weekday[2] = "Tue";
+                weekday[3] = "Wed";
+                weekday[4] = "Thu";
+                weekday[5] = "Fri";
+                weekday[6] = "Sat";
+
                 columns = [{field: "EMPLOYEE_CODE", title: "Code", locked: true, width: 100},
-                        {field: "FULL_NAME", title: "Employee Name", locked: true, width: 100}
-                    ];
+                    {field: "FULL_NAME", title: "Employee Name", locked: true, width: 100}
+                ];
                 for(var i = 0; i < response.dates.length; i++){
-                    var columnTitle = dateRange[i].getFullYear() + "-" + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + "-" + ("0" + dateRange[i].getDate()).slice(-2) ;
+                    var columnTitle = dateRange[i].getFullYear() + "-" + ("0" + (dateRange[i].getMonth() + 1)).slice(-2) + "-" + ("0" + dateRange[i].getDate()).slice(-2) + " " + "(" + weekday[dateRange[i].getDay()] + ")";
                     let temp = response.dates[i].replace(/-/g, '_');
                     columns.push({field: "DATE_"+ temp.toUpperCase(), title: columnTitle, width: 150 });
-                   
                 }
                 app.initializeKendoGrid($table, columns, null, null, null, 'Roster Report');
                 app.renderKendoGrid($table, response.data);

@@ -1,4 +1,5 @@
 <?php
+
 namespace Setup\Controller;
 
 use Application\Controller\HrisController;
@@ -64,7 +65,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
-class EmployeeController extends HrisController {
+class EmployeeController extends HrisController
+{
 
     private $config;
     private $employeeFileRepo;
@@ -80,7 +82,8 @@ class EmployeeController extends HrisController {
     private $countryList;
     private $erpCompanyCode;
 
-    public function __construct(AdapterInterface $adapter, StorageInterface $storage, ConfigInterface $config) {
+    public function __construct(AdapterInterface $adapter, StorageInterface $storage, ConfigInterface $config)
+    {
         parent::__construct($adapter, $storage);
         $this->repository = new EmployeeRepository($adapter);
         $this->employeeFileRepo = new EmployeeFile($this->adapter);
@@ -88,33 +91,37 @@ class EmployeeController extends HrisController {
         $this->config = $config;
     }
 
-    public function getCountryList() {
+    public function getCountryList()
+    {
         if (!isset($this->countryList)) {
             $this->countryList = ApplicationHelper::getTableKVList($this->adapter, 'HRIS_COUNTRIES', 'COUNTRY_ID', ['COUNTRY_NAME'], null, null, true);
         }
         return $this->countryList;
     }
 
-    public function indexAction() {
+    public function indexAction()
+    {
         return $this->stickFlashMessagesTo([
-                'searchValues' => ApplicationHelper::getSearchData($this->adapter),
-                'acl' => $this->acl,
-                'employeeDetail' => $this->storageData['employee_detail'],
-                'preference' => $this->preference,
-                'provinces' => ApplicationHelper::getProvinceList($this->adapter),
-                'braProv' => ApplicationHelper::getBranchFromProvince($this->adapter),
+            'searchValues' => ApplicationHelper::getSearchData($this->adapter),
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail'],
+            'preference' => $this->preference,
+            'provinces' => ApplicationHelper::getProvinceList($this->adapter),
+            'braProv' => ApplicationHelper::getBranchFromProvince($this->adapter),
         ]);
     }
 
-    public function contactAction() {
+    public function contactAction()
+    {
         return $this->stickFlashMessagesTo([
-                'searchValues' => ApplicationHelper::getSearchData($this->adapter),
-                'acl' => $this->acl,
-                'employeeDetail' => $this->storageData['employee_detail'],
+            'searchValues' => ApplicationHelper::getSearchData($this->adapter),
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail'],
         ]);
     }
 
-    public function initializeMultipleForm() {
+    public function initializeMultipleForm()
+    {
         $builder = new AnnotationBuilder();
         $formTabOne = new HrEmployeesFormTabOne();
         $formTabTwo = new HrEmployeesFormTabTwo();
@@ -143,7 +150,7 @@ class EmployeeController extends HrisController {
             $zoneList = ApplicationHelper::getTableKVList($this->adapter, \Setup\Model\Zones::TABLE_NAME, \Setup\Model\Zones::ZONE_ID, [\Setup\Model\Zones::ZONE_NAME], null, null, true);
             $religionList = ApplicationHelper::getTableKVList($this->adapter, 'HRIS_RELIGIONS', 'RELIGION_ID', ['RELIGION_NAME'], null, null, true);
             $companyList = ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_COMPANY", "COMPANY_ID", ["COMPANY_NAME"], ["STATUS" => "E"], "COMPANY_NAME", "ASC", null, false, true);
-            $provinceList = ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_PROVINCES", "PROVINCE_ID", ["PROVINCE_NAME"], null ,"PROVINCE_ID", "ASC", "-", true, true, null);
+            $provinceList = ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_PROVINCES", "PROVINCE_ID", ["PROVINCE_NAME"], null, "PROVINCE_ID", "ASC", "-", true, true, null);
 
 
             $genderId->setValueOptions($genderList);
@@ -165,17 +172,17 @@ class EmployeeController extends HrisController {
             $bankAccountList = $this->repository->fetchBankAccountList($this->erpCompanyCode);
             $bankAccountKVList = $this->listValueToKV($bankAccountList, "ACC_CODE", "ACC_EDESC");
             $idAccCode->setValueOptions($bankAccountKVList);
-            
+
             $empowerCompanyList = $this->repository->fetchEmpowerCompany();
             $empowerBranchList = $this->repository->fetchEmpowerBranch($this->erpCompanyCode);
-            $empowerCompanyCodeKVList = $this->listValueToKV($empowerCompanyList, "COMPANY_CODE", "COMPANY_EDESC",true);
-            $empowerBranchKVList = $this->listValueToKV($empowerBranchList, "BRANCH_CODE", "BRANCH_EDESC",true);
-            
-            
-             $empowerCompanyCode = $this->formThree->get('empowerCompanyCode');
-             $empowerBranchCode = $this->formThree->get('empowerBranchCode');
-             $empowerCompanyCode->setValueOptions($empowerCompanyCodeKVList);
-             $empowerBranchCode->setValueOptions($empowerBranchKVList);
+            $empowerCompanyCodeKVList = $this->listValueToKV($empowerCompanyList, "COMPANY_CODE", "COMPANY_EDESC", true);
+            $empowerBranchKVList = $this->listValueToKV($empowerBranchList, "BRANCH_CODE", "BRANCH_EDESC", true);
+
+
+            $empowerCompanyCode = $this->formThree->get('empowerCompanyCode');
+            $empowerBranchCode = $this->formThree->get('empowerBranchCode');
+            $empowerCompanyCode->setValueOptions($empowerCompanyCodeKVList);
+            $empowerBranchCode->setValueOptions($empowerBranchKVList);
         }
         if (!$this->formFour) {
             $this->formFour = $builder->createForm($formTabFour);
@@ -194,20 +201,21 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function editAction() {
+    public function editAction()
+    {
         $id = (int) $this->params()->fromRoute('id', 0);
         $tab = (int) $this->params()->fromRoute('tab', 1);
-//echo $tab; die;
+        //echo $tab; die;
         if (11 === $tab) {
             $this->flashmessenger()->addMessage("Employee Successfully Submitted!!!");
             return $this->redirect()->toRoute('employee', ['action' => 'index']);
         }
-        
-            $syngergyTable=$this->repository->checkIfTableExists('COMPANY_SETUP');
-            $distributionTable=$this->repository->checkIfTableExists('DIST_LOGIN_USER');
-        
-        $this->erpCompanyCode=$this->repository->getCompanyCodeByEmpId($id)['COMPANY_CODE'];
-        
+
+        $syngergyTable = $this->repository->checkIfTableExists('COMPANY_SETUP');
+        $distributionTable = $this->repository->checkIfTableExists('DIST_LOGIN_USER');
+
+        $this->erpCompanyCode = $this->repository->getCompanyCodeByEmpId($id)['COMPANY_CODE'];
+
         $this->initializeMultipleForm();
         $request = $this->getRequest();
 
@@ -309,7 +317,7 @@ class EmployeeController extends HrisController {
                             $recommApproverRepo->edit($recommendApprove, $id);
                         }
 
-                        if($postData->update == 'Y'){
+                        if ($postData->update == 'Y') {
                             $data = $postData;
                             $data['employeeId'] = $id;
                             $data['createdBy'] = $this->employeeId;
@@ -345,7 +353,7 @@ class EmployeeController extends HrisController {
                 $address['addrTempVdcMunicipalityId'] = $formOneModel->addrTempVdcMunicipalityId;
                 $address['addrPermProvinceId'] = $formOneModel->addrPermProvinceId;
                 $address['addrTempProvinceId'] = $formOneModel->addrTempProvinceId;
-                
+
                 $formOneModel->addrPermVdcMunicipalityId = $this->repository->vdcIdToString($formOneModel->addrPermVdcMunicipalityId);
                 $formOneModel->addrTempVdcMunicipalityId = $this->repository->vdcIdToString($formOneModel->addrTempVdcMunicipalityId);
                 $this->formOne->bind($formOneModel);
@@ -358,9 +366,8 @@ class EmployeeController extends HrisController {
 
             if ($tab != 3 || !$request->isPost()) {
                 $formThreeModel->exchangeArrayFromDB($employeeData);
-                $address['citizenshipIssuePlace']=$formThreeModel->idCitizenshipIssuePlace;
+                $address['citizenshipIssuePlace'] = $formThreeModel->idCitizenshipIssuePlace;
                 $this->formThree->bind($formThreeModel);
-                
             }
 
             if ($tab != 4 || !$request->isPost()) {
@@ -368,7 +375,6 @@ class EmployeeController extends HrisController {
                 $this->formFour->bind($formFourModel);
             }
             if ($tab != 5 || !$request->isPost()) {
-                
             }
             if ($tab != 6 || !$request->isPost()) {
                 $formSixModel->exchangeArrayFromDB($employeeData);
@@ -376,11 +382,9 @@ class EmployeeController extends HrisController {
             }
 
             if ($tab != 7 || !$request->isPost()) {
-                
             }
 
             if ($tab != 8 || !$request->isPost()) {
-                
             }
         }
         $rankTypes = array(
@@ -390,52 +394,53 @@ class EmployeeController extends HrisController {
         $programKVList = ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ACADEMIC_PROGRAMS", "ACADEMIC_PROGRAM_ID", ["ACADEMIC_PROGRAM_NAME"], ["STATUS" => 'E'], "ACADEMIC_PROGRAM_NAME", "ASC", null, false, true);
         $programSE = $this->getSelectElement(['name' => 'academicProgramId', 'id' => 'academicProgramId', 'label' => "Academic Program", 'class' => 'form-control'], $programKVList);
         return Helper::addFlashMessagesToArray($this, [
-                'tab' => $tab,
-                "id" => $id,
-                'formOne' => $this->formOne,
-                'formTwo' => $this->formTwo,
-                'formThree' => $this->formThree,
-                'formFour' => $this->formFour,
-                'formSix' => $this->formSix,
-                'formSeven' => $this->formSeven,
-                'formEight' => $this->formEight,
-                'formNine' => $this->formNine,
-                'filetypes' => ApplicationHelper::getTableKVList($this->adapter, 'HRIS_FILE_TYPE', 'FILETYPE_CODE', ['NAME'],"Status='E'"),
-                'serviceTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SERVICE_TYPES", "SERVICE_TYPE_ID", ["SERVICE_TYPE_NAME"], ["STATUS" => 'E'], "SERVICE_TYPE_NAME", "ASC", null, true, true),
-                'positions' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_POSITIONS", "POSITION_ID", ["POSITION_NAME"], ["STATUS" => 'E'], "POSITION_NAME", "ASC", null, true, true),
-                'designations' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_DESIGNATIONS", "DESIGNATION_ID", ["DESIGNATION_TITLE"], ["STATUS" => 'E'], "DESIGNATION_TITLE", "ASC", null, true, true),
-                'departments' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_DEPARTMENTS", "DEPARTMENT_ID", ["DEPARTMENT_NAME"], ["STATUS" => 'E'], "DEPARTMENT_NAME", "ASC", null, true, true),
-                'branches' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_BRANCHES", "BRANCH_ID", ["BRANCH_NAME"], ["STATUS" => 'E'], "BRANCH_NAME", "ASC", null, true, true),
-                'locations' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_LOCATIONS", "LOCATION_ID", ["LOCATION_EDESC"], ["STATUS" => 'E'], "LOCATION_EDESC", "ASC", null, true, true),
-                'functionalTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_FUNCTIONAL_TYPES", "FUNCTIONAL_TYPE_ID", ["FUNCTIONAL_TYPE_EDESC"], ["STATUS" => 'E'], "FUNCTIONAL_TYPE_EDESC", "ASC", null, true, true),
-                'functionalLevels' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_FUNCTIONAL_LEVELS", "FUNCTIONAL_LEVEL_ID", ["FUNCTIONAL_LEVEL_EDESC"], ["STATUS" => 'E'], "FUNCTIONAL_LEVEL_EDESC", "ASC", null, true, true),
-                'academicDegree' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ACADEMIC_DEGREES", "ACADEMIC_DEGREE_ID", ["ACADEMIC_DEGREE_NAME"], ["STATUS" => 'E'], "ACADEMIC_DEGREE_NAME", "ASC", null, false, true),
-                'academicUniversity' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ACADEMIC_UNIVERSITY", "ACADEMIC_UNIVERSITY_ID", ["ACADEMIC_UNIVERSITY_NAME"], ["STATUS" => 'E'], "ACADEMIC_UNIVERSITY_NAME", "ASC", null, false, true),
-                'academicProgram' => $programKVList,
-                'academicCourse' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ACADEMIC_COURSES", "ACADEMIC_COURSE_ID", ["ACADEMIC_COURSE_NAME"], ["STATUS" => 'E'], "ACADEMIC_COURSE_NAME", "ASC", null, false, true),
-                'rankTypes' => $rankTypes,
-                'profilePictureId' => $profilePictureId,
-                'address' => $address,
-                'recommenderId' => ($recAppDetail != null) ? $recAppDetail['RECOMMEND_BY'] : 0,
-                'approverId' => ($recAppDetail != null) ? $recAppDetail['APPROVED_BY'] : 0,
-                'shifts' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, ShiftSetup::TABLE_NAME, ShiftSetup::SHIFT_ID, [ShiftSetup::SHIFT_ENAME], [ShiftSetup::STATUS => 'E'], ShiftSetup::SHIFT_ENAME, "ASC", null, false, true),
-                'leaves' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, LeaveMaster::TABLE_NAME, LeaveMaster::LEAVE_ID, [LeaveMaster::LEAVE_ENAME], [LeaveMaster::STATUS => 'E'], LeaveMaster::LEAVE_ENAME, "ASC", null, false, true),
-                'recommenders' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["FIRST_NAME", "MIDDLE_NAME", "LAST_NAME"], ["STATUS" => "E"], "FIRST_NAME", "ASC", " ", false, true),
-                'approvers' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["FIRST_NAME", "MIDDLE_NAME", "LAST_NAME"], ["STATUS" => "E"], "FIRST_NAME", "ASC", " ", false, true),
-                'customRender' => Helper::renderCustomView(),
-                'programSE' => $programSE,
-                'countries' => $this->getCountryList(),
-                'allDistricts' =>ApplicationHelper::getTableKVList($this->adapter, 'HRIS_DISTRICTS', 'DISTRICT_ID', ['DISTRICT_NAME'], null, null, true),
-                'syngergyTable' =>$syngergyTable,
-                'distributionTable' =>$distributionTable,
-//                'relation' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_RELATIONS", "RELATION_ID", ["RELATION_NAME"], ["STATUS" => 'E'], "RELATION_NAME", "ASC", null, false, true),
-            'relation' => ApplicationHelper::getTableList($this->adapter, "HRIS_RELATIONS", ["RELATION_ID","RELATION_NAME"], ["STATUS" => 'E']),
+            'tab' => $tab,
+            "id" => $id,
+            'formOne' => $this->formOne,
+            'formTwo' => $this->formTwo,
+            'formThree' => $this->formThree,
+            'formFour' => $this->formFour,
+            'formSix' => $this->formSix,
+            'formSeven' => $this->formSeven,
+            'formEight' => $this->formEight,
+            'formNine' => $this->formNine,
+            'filetypes' => ApplicationHelper::getTableKVList($this->adapter, 'HRIS_FILE_TYPE', 'FILETYPE_CODE', ['NAME'], "Status='E'"),
+            'serviceTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SERVICE_TYPES", "SERVICE_TYPE_ID", ["SERVICE_TYPE_NAME"], ["STATUS" => 'E'], "SERVICE_TYPE_NAME", "ASC", null, true, true),
+            'positions' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_POSITIONS", "POSITION_ID", ["POSITION_NAME"], ["STATUS" => 'E'], "POSITION_NAME", "ASC", null, true, true),
+            'designations' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_DESIGNATIONS", "DESIGNATION_ID", ["DESIGNATION_TITLE"], ["STATUS" => 'E'], "DESIGNATION_TITLE", "ASC", null, true, true),
+            'departments' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_DEPARTMENTS", "DEPARTMENT_ID", ["DEPARTMENT_NAME"], ["STATUS" => 'E'], "DEPARTMENT_NAME", "ASC", null, true, true),
+            'branches' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_BRANCHES", "BRANCH_ID", ["BRANCH_NAME"], ["STATUS" => 'E'], "BRANCH_NAME", "ASC", null, true, true),
+            'locations' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_LOCATIONS", "LOCATION_ID", ["LOCATION_EDESC"], ["STATUS" => 'E'], "LOCATION_EDESC", "ASC", null, true, true),
+            'functionalTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_FUNCTIONAL_TYPES", "FUNCTIONAL_TYPE_ID", ["FUNCTIONAL_TYPE_EDESC"], ["STATUS" => 'E'], "FUNCTIONAL_TYPE_EDESC", "ASC", null, true, true),
+            'functionalLevels' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_FUNCTIONAL_LEVELS", "FUNCTIONAL_LEVEL_ID", ["FUNCTIONAL_LEVEL_EDESC"], ["STATUS" => 'E'], "FUNCTIONAL_LEVEL_EDESC", "ASC", null, true, true),
+            'academicDegree' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ACADEMIC_DEGREES", "ACADEMIC_DEGREE_ID", ["ACADEMIC_DEGREE_NAME"], ["STATUS" => 'E'], "ACADEMIC_DEGREE_NAME", "ASC", null, false, true),
+            'academicUniversity' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ACADEMIC_UNIVERSITY", "ACADEMIC_UNIVERSITY_ID", ["ACADEMIC_UNIVERSITY_NAME"], ["STATUS" => 'E'], "ACADEMIC_UNIVERSITY_NAME", "ASC", null, false, true),
+            'academicProgram' => $programKVList,
+            'academicCourse' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ACADEMIC_COURSES", "ACADEMIC_COURSE_ID", ["ACADEMIC_COURSE_NAME"], ["STATUS" => 'E'], "ACADEMIC_COURSE_NAME", "ASC", null, false, true),
+            'rankTypes' => $rankTypes,
+            'profilePictureId' => $profilePictureId,
+            'address' => $address,
+            'recommenderId' => ($recAppDetail != null) ? $recAppDetail['RECOMMEND_BY'] : 0,
+            'approverId' => ($recAppDetail != null) ? $recAppDetail['APPROVED_BY'] : 0,
+            'shifts' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, ShiftSetup::TABLE_NAME, ShiftSetup::SHIFT_ID, [ShiftSetup::SHIFT_ENAME], [ShiftSetup::STATUS => 'E'], ShiftSetup::SHIFT_ENAME, "ASC", null, false, true),
+            'leaves' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, LeaveMaster::TABLE_NAME, LeaveMaster::LEAVE_ID, [LeaveMaster::LEAVE_ENAME], [LeaveMaster::STATUS => 'E'], LeaveMaster::LEAVE_ENAME, "ASC", null, false, true),
+            'recommenders' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["FIRST_NAME", "MIDDLE_NAME", "LAST_NAME"], ["STATUS" => "E"], "FIRST_NAME", "ASC", " ", false, true),
+            'approvers' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["FIRST_NAME", "MIDDLE_NAME", "LAST_NAME"], ["STATUS" => "E"], "FIRST_NAME", "ASC", " ", false, true),
+            'customRender' => Helper::renderCustomView(),
+            'programSE' => $programSE,
+            'countries' => $this->getCountryList(),
+            'allDistricts' => ApplicationHelper::getTableKVList($this->adapter, 'HRIS_DISTRICTS', 'DISTRICT_ID', ['DISTRICT_NAME'], null, null, true),
+            'syngergyTable' => $syngergyTable,
+            'distributionTable' => $distributionTable,
+            //                'relation' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_RELATIONS", "RELATION_ID", ["RELATION_NAME"], ["STATUS" => 'E'], "RELATION_NAME", "ASC", null, false, true),
+            'relation' => ApplicationHelper::getTableList($this->adapter, "HRIS_RELATIONS", ["RELATION_ID", "RELATION_NAME"], ["STATUS" => 'E']),
             'serviceEventTypes' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SERVICE_EVENT_TYPES", "SERVICE_EVENT_TYPE_ID", ["SERVICE_EVENT_TYPE_NAME"], ["STATUS" => 'E'], "SERVICE_EVENT_TYPE_NAME", "ASC", null, true, true),
-            'group' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SALARY_SHEET_GROUP", "GROUP_ID", ["GROUP_NAME"],null, "GROUP_NAME", "ASC", null, true, true),
+            'group' => ApplicationHelper::getTableKVListWithSortOption($this->adapter, "HRIS_SALARY_SHEET_GROUP", "GROUP_ID", ["GROUP_NAME"], null, "GROUP_NAME", "ASC", null, true, true),
         ]);
     }
 
-    public function viewAction() {
+    public function viewAction()
+    {
         $id = (int) $this->params()->fromRoute('id');
         if (0 === $id) {
             return $this->redirect()->toRoute('employee', ['action' => 'index']);
@@ -460,7 +465,7 @@ class EmployeeController extends HrisController {
         $tempDistrictDtl = $this->repository->getDistrictDtl($employeeData[HrEmployees::ADDR_TEMP_DISTRICT_ID]);
         $tempZoneDtl = $this->repository->getZoneDtl($employeeData[HrEmployees::ADDR_TEMP_ZONE_ID]);
         $tempProvinceDtl = $this->repository->getProvinceDtl($id)['TEMP_PROVINCE'];
-        
+
         $empQualificationDtl = $empQualificationRepo->getByEmpId($id);
         $empExperienceList = $empExperienceRepo->getByEmpId($id);
         $empTrainingList = $empTrainingRepo->getByEmpId($id);
@@ -473,40 +478,41 @@ class EmployeeController extends HrisController {
 
         $assetRepo = new IssueRepository($this->adapter);
         $assetDetails = $assetRepo->fetchAssetByEmployee($id);
-        
+
         $relationRepo = new \Setup\Repository\EmployeeRelationRepo($this->adapter);
         $relationDetails = $relationRepo->getByEmpId($id);
-        
+
         return Helper::addFlashMessagesToArray($this, [
-                'formOne' => $this->formOne,
-                'formTwo' => $this->formTwo,
-                'formThree' => $this->formThree,
-                'formFour' => $this->formFour,
-                'formSix' => $this->formSix,
-                "formSeven" => $this->formSeven,
-                'formEight' => $this->formEight,
-                "id" => $id,
-                'profilePictureId' => $profilePictureId,
-                'employeeData' => $employeeData,
-                'filePath' => $filePath,
-                'perDistrictName' => $perDistrictDtl['DISTRICT_NAME'],
-                'perZoneName' => $perZoneDtl['ZONE_NAME'],
-                'tempDistrictName' => $tempDistrictDtl['DISTRICT_NAME'],
-                'tempZoneName' => $tempZoneDtl['ZONE_NAME'],
-                'empQualificationList' => $empQualificationDtl,
-                'empExperienceList' => $empExperienceList,
-                'empTrainingList' => $empTrainingList,
-                'jobHistoryList' => $jobHistoryList,
-                "employeeFile" => $employeeFile,
-                "assetDetails" => $assetDetails,
-                "relationDetails" => $relationDetails,
-                'acl' => $this->acl,
-                'tempProvinceName' => $tempProvinceDtl,
-                'perProvinceName' => $perProvinceDtl,
+            'formOne' => $this->formOne,
+            'formTwo' => $this->formTwo,
+            'formThree' => $this->formThree,
+            'formFour' => $this->formFour,
+            'formSix' => $this->formSix,
+            "formSeven" => $this->formSeven,
+            'formEight' => $this->formEight,
+            "id" => $id,
+            'profilePictureId' => $profilePictureId,
+            'employeeData' => $employeeData,
+            'filePath' => $filePath,
+            'perDistrictName' => $perDistrictDtl['DISTRICT_NAME'],
+            'perZoneName' => $perZoneDtl['ZONE_NAME'],
+            'tempDistrictName' => $tempDistrictDtl['DISTRICT_NAME'],
+            'tempZoneName' => $tempZoneDtl['ZONE_NAME'],
+            'empQualificationList' => $empQualificationDtl,
+            'empExperienceList' => $empExperienceList,
+            'empTrainingList' => $empTrainingList,
+            'jobHistoryList' => $jobHistoryList,
+            "employeeFile" => $employeeFile,
+            "assetDetails" => $assetDetails,
+            "relationDetails" => $relationDetails,
+            'acl' => $this->acl,
+            'tempProvinceName' => $tempProvinceDtl,
+            'perProvinceName' => $perProvinceDtl,
         ]);
     }
 
-    public function deleteAction() {
+    public function deleteAction()
+    {
         $id = (int) $this->params()->fromRoute("id");
         $employee = new HrEmployees();
         $employee->employeeId = $id;
@@ -517,7 +523,8 @@ class EmployeeController extends HrisController {
         return $this->redirect()->toRoute('employee');
     }
 
-    public function pullAcademicDetailAction() {
+    public function pullAcademicDetailAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -616,7 +623,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function pullExperienceDetailAction() {
+    public function pullExperienceDetailAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -641,7 +649,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function pullTrainingDetailAction() {
+    public function pullTrainingDetailAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -666,7 +675,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function submitQualificationDtlAction() {
+    public function submitQualificationDtlAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -712,7 +722,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function submitExperienceDtlAction() {
+    public function submitExperienceDtlAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -760,7 +771,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function submitTrainingDtlAction() {
+    public function submitTrainingDtlAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -806,7 +818,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function deleteQualificationDtlAction() {
+    public function deleteQualificationDtlAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -822,7 +835,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function deleteExperienceDtlAction() {
+    public function deleteExperienceDtlAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -837,7 +851,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function deleteTrainingDtlAction() {
+    public function deleteTrainingDtlAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -852,7 +867,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function pullEmployeeFileAction() {
+    public function pullEmployeeFileAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -869,7 +885,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function pushEmployeeProfileAction() {
+    public function pushEmployeeProfileAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -907,7 +924,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function pushEmployeeDocumentAction() {
+    public function pushEmployeeDocumentAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -931,7 +949,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function pullEmployeeFileByEmpIdAction() {
+    public function pullEmployeeFileByEmpIdAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -947,7 +966,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function dropEmployeeFileAction() {
+    public function dropEmployeeFileAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -960,8 +980,9 @@ class EmployeeController extends HrisController {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
     }
- 
-    public function pullEmployeeListForEmployeeTableAction() {
+
+    public function pullEmployeeListForEmployeeTableAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -973,7 +994,38 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function addDegreeAction() {
+    public function salaryAction()
+    {
+
+
+        return $this->stickFlashMessagesTo([
+            'searchValues' => ApplicationHelper::getSearchData($this->adapter),
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail'],
+            'preference' => $this->preference,
+            'provinces' => ApplicationHelper::getProvinceList($this->adapter),
+            'braProv' => ApplicationHelper::getBranchFromProvince($this->adapter),
+        ]);
+    }
+
+    public function pullSalaryListForEmployeeTableAction()
+    {
+        //echo("here");
+        //die();
+
+        try {
+            $request = $this->getRequest();
+            $data = $request->getPost();
+
+            $list = $this->repository->fetchBy($data);
+            return new JsonModel(['success' => true, 'data' => $list, 'message' => null]);
+        } catch (Exception $e) {
+            return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function addDegreeAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -995,7 +1047,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function addUniversityAction() {
+    public function addUniversityAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -1015,7 +1068,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function addProgramAction() {
+    public function addProgramAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -1035,7 +1089,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function addCourseAction() {
+    public function addCourseAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -1055,7 +1110,8 @@ class EmployeeController extends HrisController {
         }
     }
 
-    public function setupEmployeeAction() {
+    public function setupEmployeeAction()
+    {
         $id = (int) $this->params()->fromRoute("id", 0);
         if ($id === 0) {
             return $this->redirect()->toRoute('employee', ['action' => 'edit', 'id' => $id, 'tab' => 11]);
@@ -1065,7 +1121,8 @@ class EmployeeController extends HrisController {
         return $this->redirect()->toRoute('employee', ['action' => 'edit', 'id' => $id, 'tab' => 11]);
     }
 
-    public function districtAction() {
+    public function districtAction()
+    {
         $request = $this->getRequest();
         $post = $request->getPost();
         $zoneId = $post->id;
@@ -1080,7 +1137,8 @@ class EmployeeController extends HrisController {
         return new JsonModel($districtKV);
     }
 
-    public function municipalityAction() {
+    public function municipalityAction()
+    {
         $request = $this->getRequest();
         $post = $request->getPost();
         $districtId = $post->id;
@@ -1094,24 +1152,25 @@ class EmployeeController extends HrisController {
             ->result();
         return new JsonModel($districtKV);
     }
-    
-    public function addDistributionEmpAction(){
-        try{
-             $request = $this->getRequest();
-             $id = $request->getPost('id');
-             if($id>0 && $id!=null){
-             ApplicationHelper::rawQueryResult($this->adapter, '
-                     BEGIN HRIS_CREATE_DIS_EMP('.$id.'); END;');
-             }
+
+    public function addDistributionEmpAction()
+    {
+        try {
+            $request = $this->getRequest();
+            $id = $request->getPost('id');
+            if ($id > 0 && $id != null) {
+                ApplicationHelper::rawQueryResult($this->adapter, '
+                     BEGIN HRIS_CREATE_DIS_EMP(' . $id . '); END;');
+            }
             return new JsonModel(['success' => true, 'data' => null, 'message' => "Successfully Created Distribution Employee."]);
         } catch (Exception $e) {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
-        
     }
-    
-    
-    public function pullRelationDetailAction() {
+
+
+    public function pullRelationDetailAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -1135,17 +1194,17 @@ class EmployeeController extends HrisController {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
     }
-    
-    
+
+
     public function submitRelationDtlAction()
     {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
-            
+
             $relationListEmpty = (int) $data['relationListEmpty'];
             $employeeId = (int) $data['employeeId'];
-            
+
             $employeeRepo = new EmployeeRepository($this->adapter);
             $employeeRelationRepo = new \Setup\Repository\EmployeeRelationRepo($this->adapter);
             $employeeDetail = $employeeRepo->fetchById((int) $this->employeeId);
@@ -1154,14 +1213,14 @@ class EmployeeController extends HrisController {
             if ($relationListEmpty == 1) {
                 $relationList = $data['relationList'];
                 foreach ($relationList as $relations) {
-                    $employeeRelationModel= new \Setup\Model\EmployeeRelation();
-                    $employeeRelationModel->employeeId= (int)$employeeId;
-                    $employeeRelationModel->status= 'E';
-                    $employeeRelationModel->personName=$relations['personName'] ;
-                    $employeeRelationModel->relationId=$relations['relationId']['RELATION_ID'] ;
-                    $employeeRelationModel->dob=$relations['dob'] ;
-                    $employeeRelationModel->isDependent=$relations['isDependent']['id'] ;
-                    $employeeRelationModel->isNominee=$relations['isNominee']['id'] ;
+                    $employeeRelationModel = new \Setup\Model\EmployeeRelation();
+                    $employeeRelationModel->employeeId = (int)$employeeId;
+                    $employeeRelationModel->status = 'E';
+                    $employeeRelationModel->personName = $relations['personName'];
+                    $employeeRelationModel->relationId = $relations['relationId']['RELATION_ID'];
+                    $employeeRelationModel->dob = $relations['dob'];
+                    $employeeRelationModel->isDependent = $relations['isDependent']['id'];
+                    $employeeRelationModel->isNominee = $relations['isNominee']['id'];
 
                     $id = (int) $relations['eRId'];
                     if ($id == 0) {
@@ -1182,9 +1241,10 @@ class EmployeeController extends HrisController {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
     }
-    
-    
-    public function deleteRelationDtlAction() {
+
+
+    public function deleteRelationDtlAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -1198,16 +1258,18 @@ class EmployeeController extends HrisController {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
     }
-    
-    public function resignedOrRetiredAction(){
+
+    public function resignedOrRetiredAction()
+    {
         return $this->stickFlashMessagesTo([
-                'searchValues' => $this->getSearchDataforResignedOrRetired(),
-                'acl' => $this->acl,
-                'employeeDetail' => $this->storageData['employee_detail'],
+            'searchValues' => $this->getSearchDataforResignedOrRetired(),
+            'acl' => $this->acl,
+            'employeeDetail' => $this->storageData['employee_detail'],
         ]);
     }
-    
-    public function pullResignedOrResignedAction() {
+
+    public function pullResignedOrResignedAction()
+    {
         try {
             $request = $this->getRequest();
             $data = $request->getPost();
@@ -1218,36 +1280,47 @@ class EmployeeController extends HrisController {
             return new JsonModel(['success' => false, 'data' => null, 'message' => $e->getMessage()]);
         }
     }
-    
-    public function getSearchDataforResignedOrRetired(){
-        $employeeWhere = ["RETIRED_FLAG = 'Y' OR RESIGNED_FLAG = 'Y'"];
+
+    public function deleteResignedAction()
+    {
+        $id = (int) $this->params()->fromRoute("id");
+        $this->repository->deleteResigned($id);
+        return $this->redirect()->toRoute('employee', array(
+            'controller' => 'EmployeeController',
+            'action' =>  'resignedOrRetired'
+        ));
+    }
+
+    public function getSearchDataforResignedOrRetired()
+    {
+        $employeeWhere = ["RETIRED_FLAG = 'Y' OR RESIGNED_FLAG = 'Y' OR STATUS = 'D'"];
         $companyList = ApplicationHelper::getTableList($this->adapter, Company::TABLE_NAME, [Company::COMPANY_ID, Company::COMPANY_NAME], [Company::STATUS => "E"]);
-        $branchList = ApplicationHelper::getTableList($this->adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME, Branch::COMPANY_ID], [Branch::STATUS => "E"],"","BRANCH_NAME ASC");
-        $departmentList = ApplicationHelper::getTableList($this->adapter, Department::TABLE_NAME, [Department::DEPARTMENT_ID, Department::DEPARTMENT_NAME, Department::COMPANY_ID, Department::BRANCH_ID], [Department::STATUS => "E"],"","DEPARTMENT_NAME ASC");
-        $designationList = ApplicationHelper::getTableList($this->adapter, Designation::TABLE_NAME, [Designation::DESIGNATION_ID, Designation::DESIGNATION_TITLE, Designation::COMPANY_ID], [Designation::STATUS => 'E'],"","DESIGNATION_TITLE ASC");
-        $positionList = ApplicationHelper::getTableList($this->adapter, Position::TABLE_NAME, [Position::POSITION_ID, Position::POSITION_NAME, Position::COMPANY_ID], [Position::STATUS => "E"],"","POSITION_NAME ASC");
-        $serviceTypeList = ApplicationHelper::getTableList($this->adapter, ServiceType::TABLE_NAME, [ServiceType::SERVICE_TYPE_ID, ServiceType::SERVICE_TYPE_NAME], [ServiceType::STATUS => "E"],"","SERVICE_TYPE_NAME ASC");
-        $serviceEventTypeList = ApplicationHelper::getTableList($this->adapter, ServiceEventType::TABLE_NAME, [ServiceEventType::SERVICE_EVENT_TYPE_ID, ServiceEventType::SERVICE_EVENT_TYPE_NAME], [ServiceEventType::STATUS => "E"],"","SERVICE_EVENT_TYPE_NAME ASC");
+        $branchList = ApplicationHelper::getTableList($this->adapter, Branch::TABLE_NAME, [Branch::BRANCH_ID, Branch::BRANCH_NAME, Branch::COMPANY_ID], [Branch::STATUS => "E"], "", "BRANCH_NAME ASC");
+        $departmentList = ApplicationHelper::getTableList($this->adapter, Department::TABLE_NAME, [Department::DEPARTMENT_ID, Department::DEPARTMENT_NAME, Department::COMPANY_ID, Department::BRANCH_ID], [Department::STATUS => "E"], "", "DEPARTMENT_NAME ASC");
+        $designationList = ApplicationHelper::getTableList($this->adapter, Designation::TABLE_NAME, [Designation::DESIGNATION_ID, Designation::DESIGNATION_TITLE, Designation::COMPANY_ID], [Designation::STATUS => 'E'], "", "DESIGNATION_TITLE ASC");
+        $positionList = ApplicationHelper::getTableList($this->adapter, Position::TABLE_NAME, [Position::POSITION_ID, Position::POSITION_NAME, Position::COMPANY_ID], [Position::STATUS => "E"], "", "POSITION_NAME ASC");
+        $serviceTypeList = ApplicationHelper::getTableList($this->adapter, ServiceType::TABLE_NAME, [ServiceType::SERVICE_TYPE_ID, ServiceType::SERVICE_TYPE_NAME], [ServiceType::STATUS => "E"], "", "SERVICE_TYPE_NAME ASC");
+        $serviceEventTypeList = ApplicationHelper::getTableList($this->adapter, ServiceEventType::TABLE_NAME, [ServiceEventType::SERVICE_EVENT_TYPE_ID, ServiceEventType::SERVICE_EVENT_TYPE_NAME], [ServiceEventType::STATUS => "E"], "", "SERVICE_EVENT_TYPE_NAME ASC");
         $genderList = ApplicationHelper::getTableList($this->adapter, Gender::TABLE_NAME, [Gender::GENDER_ID, Gender::GENDER_NAME], [Gender::STATUS => "E"]);
         $locationList = ApplicationHelper::getTableList($this->adapter, Location::TABLE_NAME, [Location::LOCATION_ID, Location::LOCATION_EDESC], [Location::STATUS => "E"]);
-        $functionalTypeList = ApplicationHelper::getTableList($this->adapter, FunctionalTypes::TABLE_NAME, [FunctionalTypes::FUNCTIONAL_TYPE_ID, FunctionalTypes::FUNCTIONAL_TYPE_EDESC], [FunctionalTypes::STATUS=> "E"],"","FUNCTIONAL_TYPE_EDESC ASC");
+        $functionalTypeList = ApplicationHelper::getTableList($this->adapter, FunctionalTypes::TABLE_NAME, [FunctionalTypes::FUNCTIONAL_TYPE_ID, FunctionalTypes::FUNCTIONAL_TYPE_EDESC], [FunctionalTypes::STATUS => "E"], "", "FUNCTIONAL_TYPE_EDESC ASC");
         $employeeList = ApplicationHelper::getTableList($this->adapter, HrEmployees::TABLE_NAME, [
-                    new Expression(HrEmployees::EMPLOYEE_ID." AS ".HrEmployees::EMPLOYEE_ID),
-                    new Expression(HrEmployees::EMPLOYEE_CODE." AS ".HrEmployees::EMPLOYEE_CODE),
-                    new Expression("EMPLOYEE_CODE||'-'||FULL_NAME AS FULL_NAME"),
-                    new Expression(HrEmployees::FULL_NAME." AS FULL_NAME_SCIENTIFIC"),
-                    new Expression(HrEmployees::COMPANY_ID." AS ".HrEmployees::COMPANY_ID),
-                    new Expression(HrEmployees::BRANCH_ID." AS ".HrEmployees::BRANCH_ID),
-                    new Expression(HrEmployees::DEPARTMENT_ID." AS ".HrEmployees::DEPARTMENT_ID),
-                    new Expression(HrEmployees::DESIGNATION_ID." AS ".HrEmployees::DESIGNATION_ID),
-                    new Expression(HrEmployees::POSITION_ID." AS ".HrEmployees::POSITION_ID),
-                    new Expression(HrEmployees::SERVICE_TYPE_ID." AS ".HrEmployees::SERVICE_TYPE_ID),
-                    new Expression(HrEmployees::SERVICE_EVENT_TYPE_ID." AS ".HrEmployees::SERVICE_EVENT_TYPE_ID),
-                    new Expression(HrEmployees::GENDER_ID." AS ".HrEmployees::GENDER_ID),
-                    new Expression(HrEmployees::EMPLOYEE_TYPE." AS ".HrEmployees::EMPLOYEE_TYPE),
-                    new Expression(HrEmployees::GROUP_ID." AS ".HrEmployees::GROUP_ID),
-                    new Expression(HrEmployees::FUNCTIONAL_TYPE_ID." AS ".HrEmployees::FUNCTIONAL_TYPE_ID),
-                        ], $employeeWhere,"","FULL_NAME_SCIENTIFIC ASC");
+            new Expression(HrEmployees::EMPLOYEE_ID . " AS " . HrEmployees::EMPLOYEE_ID),
+            new Expression(HrEmployees::EMPLOYEE_CODE . " AS " . HrEmployees::EMPLOYEE_CODE),
+            new Expression("EMPLOYEE_CODE||'-'||FULL_NAME AS FULL_NAME"),
+            new Expression(HrEmployees::FULL_NAME . " AS FULL_NAME_SCIENTIFIC"),
+            new Expression(HrEmployees::COMPANY_ID . " AS " . HrEmployees::COMPANY_ID),
+            new Expression(HrEmployees::BRANCH_ID . " AS " . HrEmployees::BRANCH_ID),
+            new Expression(HrEmployees::DEPARTMENT_ID . " AS " . HrEmployees::DEPARTMENT_ID),
+            new Expression(HrEmployees::DESIGNATION_ID . " AS " . HrEmployees::DESIGNATION_ID),
+            new Expression(HrEmployees::POSITION_ID . " AS " . HrEmployees::POSITION_ID),
+            new Expression(HrEmployees::SERVICE_TYPE_ID . " AS " . HrEmployees::SERVICE_TYPE_ID),
+            new Expression(HrEmployees::SERVICE_EVENT_TYPE_ID . " AS " . HrEmployees::SERVICE_EVENT_TYPE_ID),
+            new Expression(HrEmployees::GENDER_ID . " AS " . HrEmployees::GENDER_ID),
+            new Expression(HrEmployees::EMPLOYEE_TYPE . " AS " . HrEmployees::EMPLOYEE_TYPE),
+            new Expression(HrEmployees::GROUP_ID . " AS " . HrEmployees::GROUP_ID),
+            new Expression(HrEmployees::FUNCTIONAL_TYPE_ID . " AS " . HrEmployees::FUNCTIONAL_TYPE_ID),
+        ], $employeeWhere, "", "FULL_NAME_SCIENTIFIC ASC");
 
         $searchValues = [
             'company' => $companyList,
@@ -1266,49 +1339,80 @@ class EmployeeController extends HrisController {
         return $searchValues;
     }
 
-    public function excelExportAction(){
+    public function excelExportAction()
+    {
         $request = $this->getRequest();
         $data = $request->getPost();
         $columns = $data['map'];
         $columns['PROFILE_PICTURE'] = 'Profile Picture';
-        $employeeData = $data['exportData'];
 
+        $employeeData = $this->repository->fetchBy($data['searchData']);
         unlink(realpath(Helper::UPLOAD_DIR . "/Employees_List.xlsx"));
 
         $spreadsheet = new Spreadsheet();
         $writer = new Xlsx($spreadsheet);
         $writer->setPreCalculateFormulas(false);
         $this->employeeFileRepo = new EmployeeFile($this->adapter);
+
+        $headerRow = 1;
+        $currentColumn = Coordinate::stringFromColumnIndex(1);
+        $cell = $currentColumn . '1';
+        $spreadsheet->getActiveSheet()->setCellValue($cell, 'Photo');
+        $spreadsheet->getActiveSheet()->getRowDimension($headerRow)->setRowHeight(100);
+        $spreadsheet->getActiveSheet()->getColumnDimension($currentColumn)->setWidth(20);
+        $column = 2;
+
+        foreach ($columns as $key => $value) {
+
+            $currentColumn = Coordinate::stringFromColumnIndex($column);
+            $cell = $currentColumn . '' . $headerRow;
+            $spreadsheet->getActiveSheet()->getColumnDimension($currentColumn)->setWidth(40);
+            $spreadsheet->getActiveSheet()->setCellValue($cell, $value);
+            $column++;
+        }
+
         $row = 2;
-        foreach($employeeData as $employee){
-            $column = 1;
-            foreach($employee as $key => $value){
-                if(array_key_exists($key, $columns)){
-                    $currentColumn = Coordinate::stringFromColumnIndex($column);
-                    $cell = $currentColumn.''.$row;
-                    $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(40);
-                    $spreadsheet->getActiveSheet()->getColumnDimension($currentColumn)->setWidth(40);
-                    if($column == 1){
-                        $drawing = new Drawing();
-                        $drawing->setName('Profile Picture');
-                        $drawing->setDescription('Profile Picture');
-                        $drawing->setWidthAndHeight(40, 40);
-                        $profile = $this->employeeFileRepo->fetchByEmpId($employee['EMPLOYEE_ID']);
-                        $drawing->setPath(Helper::UPLOAD_DIR . '/1516775880.jpg'); 
-                        $drawing->setCoordinates($cell);
-                        //$drawing->setOffsetX(110);
-                        //$drawing->setRotation(25);
-                        $drawing->getShadow()->setVisible(true);
-                        $drawing->getShadow()->setDirection(45);
-                        $drawing->setWorksheet($spreadsheet->getActiveSheet());
-                        $column++;
-                        continue;
-                    }
-                    $spreadsheet->getActiveSheet()->setCellValue($cell, $value);
-                    $column++;
-                } 
-            } 
-        } 
+        foreach ($employeeData as $employee) {
+            $cell = 'A' . $row;
+            $spreadsheet->getActiveSheet()->getRowDimension($row)->setRowHeight(100);
+            $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+            $drawing->setName('Paid');
+            $drawing->setDescription('Paid');
+
+            $noProfileImg = Helper::UPLOAD_DIR . '/default-profile-picture.jpg';
+            if ($employee['FILE_PATH']) {
+                $userImg = Helper::UPLOAD_DIR . '/' . $employee['FILE_PATH'];
+                if (file_exists($userImg)) {
+                    $drawing->setPath($userImg); // put your path and image here
+                } else {
+                    $drawing->setPath($noProfileImg); // put your path and image here
+                }
+            } else {
+                $drawing->setPath($noProfileImg); // put your path and image here
+            }
+
+            $drawing->setCoordinates($cell);
+            $drawing->setHeight(100);
+            $drawing->setWidth(100);
+            $drawing->setResizeProportional(true);
+            $drawing->setOffsetX(10);
+            $drawing->getShadow()->setVisible(true);
+            $drawing->getShadow()->setDirection(45);
+            $drawing->setWorksheet($spreadsheet->getActiveSheet());
+
+            $column = 2;
+            foreach ($columns as $key => $value) {
+
+                $currentColumn = Coordinate::stringFromColumnIndex($column);
+                $cell = $currentColumn . '' . $row;
+                $spreadsheet->getActiveSheet()->setCellValue($cell, $value);
+                $spreadsheet->getActiveSheet()->setCellValue($cell, $employee[$key]);
+                $column++;
+            }
+            $row++;
+        }
+
+        ($spreadsheet->getActiveSheet()->set);
         $writer->save(Helper::UPLOAD_DIR . "/Employees_List.xlsx");
         return new JsonModel(['success' => true, 'message' => null]);
     }
