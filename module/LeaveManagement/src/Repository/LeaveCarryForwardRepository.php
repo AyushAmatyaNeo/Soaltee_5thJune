@@ -14,143 +14,146 @@ use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Sql;
 use Zend\Db\TableGateway\TableGateway;
 
-class LeaveCarryForwardRepository implements RepositoryInterface {
+class LeaveCarryForwardRepository implements RepositoryInterface
+{
 
     private $tableGateway;
     private $adapter;
 
-    public function __construct(AdapterInterface $adapter) {
+    public function __construct(AdapterInterface $adapter)
+    {
         $this->tableGateway = new TableGateway(LeaveCarryForward::TABLE_NAME, $adapter);
         $this->tableGatewayLeaveAssign = new TableGateway(LeaveAssign::TABLE_NAME, $adapter);
         $this->adapter = $adapter;
     }
 
-    
-public function fetchCarryForward($id)
-{
-   $sql = "SELECT HE.ID AS ID, HS.LEAVE_ENAME AS LEAVE_ENAME,HR.FULL_NAME AS FULL_NAME,HE.ENCASH_DAYS,HE.CARRY_FORWARD_DAYS from HRIS_EMP_SELF_LEAVE_CLOSING HE join "
-                   . " HRIS_LEAVE_MASTER_SETUP HS on (HE.LEAVE_ID=HS.LEAVE_ID) join HRIS_EMPLOYEES HR ON(HE.EMPLOYEE_ID=HR.EMPLOYEE_ID)";
-    
-    if(!empty($id)){
-         $id = implode(',',$id);
-            $sql.= " WHERE HE.EMPLOYEE_ID IN ($id)  ";
+
+    public function fetchCarryForward($id)
+    {
+        $sql = "SELECT HE.ID AS ID, HS.LEAVE_ENAME AS LEAVE_ENAME,HR.FULL_NAME AS FULL_NAME,HE.ENCASH_DAYS,HE.CARRY_FORWARD_DAYS from HRIS_EMP_SELF_LEAVE_CLOSING HE join "
+            . " HRIS_LEAVE_MASTER_SETUP HS on (HE.LEAVE_ID=HS.LEAVE_ID) join HRIS_EMPLOYEES HR ON(HE.EMPLOYEE_ID=HR.EMPLOYEE_ID)";
+
+        if (!empty($id)) {
+            $id = implode(',', $id);
+            $sql .= " WHERE HE.EMPLOYEE_ID IN ($id)  ";
+        }
+        $statement = $this->adapter->query($sql);
+        return $statement->execute();
     }
-    $statement = $this->adapter->query($sql);
-    return $statement->execute();
-}
 
-   
 
-   
-public function carryForward($data)
-{
-   
-        if(!empty($data)){
-            
-            $createdDate=$data -> createdDate;
-           
-        $carryforward=  $data->carryforward;
-        
-          $employeeId= $data->employeeId;
-          $encashment= $data->encashment;
-           $leaveId=$data->leaveId;
-          
-           $id=((int) Helper::getMaxId($this->adapter, 'HRIS_EMP_SELF_LEAVE_CLOSING', 'ID')) + 1;
-           $sql = "BEGIN
+
+
+    public function carryForward($data)
+    {
+
+        if (!empty($data)) {
+
+            $carryforward =  $data->carryForwardDays;
+
+            $employeeId = $data->employeeId;
+            $encashment = $data->encashDays;
+            $leaveId = $data->leaveId;
+            $id = ((int) Helper::getMaxId($this->adapter, 'HRIS_EMP_SELF_LEAVE_CLOSING', 'ID')) + 1;
+            $sql = "BEGIN
                    INSERT INTO HRIS_EMP_SELF_LEAVE_CLOSING 
                    (EMPLOYEE_ID,LEAVE_ID,ENCASH_DAYS,CARRY_FORWARD_DAYS,CREATED_DATE,STATUS,ID)
                    VALUES ({$employeeId} , {$leaveId} ,{$encashment},{$carryforward},trunc(sysdate),'E',{$id}); 
            HRIS_RECALCULATE_LEAVE({$employeeId},{$leaveId});
                    END;";
-           $statement = $this->adapter->query($sql);
-          $statement->execute();
-           
-          
-         
+            $statement = $this->adapter->query($sql);
+            $statement->execute();
         }
     }
 
-    
-    public function add(Model $model) {
-        
+
+    public function add(Model $model)
+    {
+
         $this->tableGateway->insert($model->getArrayCopyForDB());
-        
+
         $this->linkLeaveWithFiles();
     }
 
-    public function edit(Model $model, $id) {
+    public function edit(Model $model, $id)
+    {
         // TODO: Implement edit() method.
     }
-    
-    public function editCarryForward($data){
-        if(!empty($data)){
-          $carryforward=  $data['carryforward'];
-          $encashment= $data['encashment'];
-           $id=$data['id'];
-           $dataIds = $this->getIds($id);
-           $leaveId = $dataIds[0]['LEAVE_ID'];
-           $employeeId = $dataIds[0]['EMPLOYEE_ID'];
-           $sql = "BEGIN
+
+    public function editCarryForward($data)
+    {
+        if (!empty($data)) {
+            $carryforward =  $data['carryforward'];
+            $encashment = $data['encashment'];
+            $id = $data['id'];
+            $dataIds = $this->getIds($id);
+            $leaveId = $dataIds[0]['LEAVE_ID'];
+            $employeeId = $dataIds[0]['EMPLOYEE_ID'];
+            $sql = "BEGIN
                    UPDATE HRIS_EMP_SELF_LEAVE_CLOSING SET ENCASH_DAYS = {$encashment}, CARRY_FORWARD_DAYS = {$carryforward}, 
                        MODIFED_DT = trunc(sysdate) WHERE ID = {$id}; 
            HRIS_RECALCULATE_LEAVE({$employeeId},{$leaveId});
                    END;";
-           
-           $statement = $this->adapter->query($sql);
-          $statement->execute();
-           
+
+            $statement = $this->adapter->query($sql);
+            $statement->execute();
         }
     }
-    
-    public function getDetailsById($id){
+
+    public function getDetailsById($id)
+    {
         $sql = "SELECT HE.ID AS ID, HS.LEAVE_ENAME AS LEAVE_ENAME, HR.FULL_NAME AS FULL_NAME,HE.ENCASH_DAYS,HE.CARRY_FORWARD_DAYS from HRIS_EMP_SELF_LEAVE_CLOSING HE join "
-                   . " HRIS_LEAVE_MASTER_SETUP HS on (HE.LEAVE_ID=HS.LEAVE_ID) join HRIS_EMPLOYEES HR ON(HE.EMPLOYEE_ID=HR.EMPLOYEE_ID) WHERE ID = $id ";
+            . " HRIS_LEAVE_MASTER_SETUP HS on (HE.LEAVE_ID=HS.LEAVE_ID) join HRIS_EMPLOYEES HR ON(HE.EMPLOYEE_ID=HR.EMPLOYEE_ID) WHERE ID = $id ";
         $statement = $this->adapter->query($sql);
         return $statement->execute();
     }
-    
-    public function deleteRecord($id) {
+
+    public function deleteRecord($id)
+    {
         $data = $this->getIds($id);
-        
+
         $employeeId = $data[0]['EMPLOYEE_ID'];
-        $leaveId= $data[0]['LEAVE_ID'];
-        
+        $leaveId = $data[0]['LEAVE_ID'];
+
         $sql = "BEGIN DELETE FROM HRIS_EMP_SELF_LEAVE_CLOSING WHERE ID = {$id}; 
            HRIS_RECALCULATE_LEAVE({$employeeId},{$leaveId});
                    END;";
         $statement = $this->adapter->query($sql);
         $statement->execute();
     }
-    
-    public function getBalance($id){
-        
+
+    public function getBalance($id)
+    {
+
         $data = $this->getIds($id);
-        
+
         $empId = $data[0]['EMPLOYEE_ID'];
-        $leaveId= $data[0]['LEAVE_ID'];
-        
+        $leaveId = $data[0]['LEAVE_ID'];
+
         $sql = "select balance from HRIS_EMPLOYEE_LEAVE_ASSIGN where employee_id = $empId AND leave_id = $leaveId";
-        
+
         $statement = $this->adapter->query($sql);
         return $statement->execute();
     }
-    
-    public function getIds($id){
+
+    public function getIds($id)
+    {
         $sql = "select employee_id, leave_id from HRIS_EMP_SELF_LEAVE_CLOSING where id = $id";
         $statement = $this->adapter->query($sql);
         $data = $statement->execute();
         $data = Helper::extractDbData($data);
         return $data;
-    
     }
-    
 
-    public function fetchAll() {
+
+    public function fetchAll()
+    {
         // TODO: Implement fetchAll() method.
     }
 
     //to get the all applied leave request list
-    public function selectAll($employeeId) {
+    public function selectAll($employeeId)
+    {
 
         $sql = new Sql($this->adapter);
         $select = $sql->select();
@@ -161,11 +164,11 @@ public function carryForward($data)
             new Expression("INITCAP(TO_CHAR(LA.REQUESTED_DT, 'DD-MON-YYYY')) AS REQUESTED_DT"),
             new Expression("LA.NO_OF_DAYS AS NO_OF_DAYS"),
             new Expression("LA.ID AS ID"),
-                ], true);
+        ], true);
 
         $select->from(['LA' => LeaveApply::TABLE_NAME])
-                ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=LA.EMPLOYEE_ID", ["FIRST_NAME" => new Expression("INITCAP(E.FIRST_NAME)"), "MIDDLE_NAME" => new Expression("INITCAP(E.MIDDLE_NAME)"), "LAST_NAME" => new Expression("INITCAP(E.LAST_NAME)")])
-                ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")]);
+            ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=LA.EMPLOYEE_ID", ["FIRST_NAME" => new Expression("INITCAP(E.FIRST_NAME)"), "MIDDLE_NAME" => new Expression("INITCAP(E.MIDDLE_NAME)"), "LAST_NAME" => new Expression("INITCAP(E.LAST_NAME)")])
+            ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")]);
 
         $select->where([
             "L.STATUS='E'",
@@ -178,7 +181,8 @@ public function carryForward($data)
     }
 
     //to get the leave detail based on assigned employee id
-    public function getLeaveDetail($employeeId, $leaveId, $startDate = null) {
+    public function getLeaveDetail($employeeId, $leaveId, $startDate = null)
+    {
         $date = "TRUNC(SYSDATE)";
         if ($startDate != null) {
             $date = "TO_DATE('{$startDate}','DD-MON-YYYY')";
@@ -230,16 +234,17 @@ public function carryForward($data)
     }
 
     //to get the leave list based on assigned employee id for select option
-    public function getLeaveList($employeeId) {
+    public function getLeaveList($employeeId)
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from(['LA' => LeaveAssign::TABLE_NAME])
-                ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")]);
+            ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")]);
         $select->where([
             "L.STATUS='E'",
             "LA.EMPLOYEE_ID=" . $employeeId,
             "L.CARRY_FORWARD= 'Y'"
-            
+
         ]);
 
         $statement = $sql->prepareStatementForSqlObject($select);
@@ -253,7 +258,8 @@ public function carryForward($data)
         return $entitiesArray;
     }
 
-    public function fetchById($id) {
+    public function fetchById($id)
+    {
 
         // TODO: Implement fetchById() method.
 
@@ -261,14 +267,15 @@ public function carryForward($data)
         $select = $sql->select();
         $select->from(LeaveApply::TABLE_NAME);
         $select->where([
-            "ID=".$id
+            "ID=" . $id
         ]);
         $statement = $sql->prepareStatementForSqlObject($select);
         $resultset = $statement->execute();
         return $resultset->current();
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $leaveStatus = $this->getLeaveFrontOrBack($id);
         $currentDate = Helper::getcurrentExpressionDate();
         if ($leaveStatus['DATE_STATUS'] == 'BD' && $leaveStatus['LEAVE_STATUS'] == 'AP') {
@@ -303,7 +310,8 @@ public function carryForward($data)
         }
     }
 
-    public function checkEmployeeLeave($employeeId, $date) {
+    public function checkEmployeeLeave($employeeId, $date)
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from(['L' => LeaveApply::TABLE_NAME]);
@@ -315,7 +323,8 @@ public function carryForward($data)
         return $result->current();
     }
 
-    public function getfilterRecords($data) {
+    public function getfilterRecords($data)
+    {
         $employeeId = $data['employeeId'];
         $leaveId = $data['leaveId'];
         $leaveRequestStatusId = $data['leaveRequestStatusId'];
@@ -350,16 +359,16 @@ public function carryForward($data)
             new Expression("LA.APPROVED_REMARKS AS APPROVED_REMARKS"),
             new Expression("(CASE WHEN LA.STATUS = 'XX' THEN 'Y' ELSE 'N' END) AS ALLOW_EDIT"),
             new Expression("(CASE WHEN LA.STATUS IN ('RQ','RC','AP') THEN 'Y' ELSE 'N' END) AS ALLOW_DELETE"),
-                ], true);
+        ], true);
 
         $select->from(['LA' => LeaveApply::TABLE_NAME])
-                ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")])
-                ->join(['E' => 'HRIS_EMPLOYEES'], 'LA.EMPLOYEE_ID=E.EMPLOYEE_ID', ["FULL_NAME" => new Expression("INITCAP(E.FULL_NAME)")], "left")
-                ->join(['E2' => "HRIS_EMPLOYEES"], "E2.EMPLOYEE_ID=LA.RECOMMENDED_BY", ['RECOMMENDED_BY_NAME' => new Expression("INITCAP(E2.FULL_NAME)")], "left")
-                ->join(['E3' => "HRIS_EMPLOYEES"], "E3.EMPLOYEE_ID=LA.APPROVED_BY", ['APPROVED_BY_NAME' => new Expression("INITCAP(E3.FULL_NAME)")], "left")
-                ->join(['RA' => "HRIS_RECOMMENDER_APPROVER"], "RA.EMPLOYEE_ID=LA.EMPLOYEE_ID", ['RECOMMENDER_ID' => 'RECOMMEND_BY', 'APPROVER_ID' => 'APPROVED_BY'], "left")
-                ->join(['RECM' => "HRIS_EMPLOYEES"], "RECM.EMPLOYEE_ID=RA.RECOMMEND_BY", ['RECOMMENDER_NAME' => new Expression("INITCAP(RECM.FULL_NAME)")], "left")
-                ->join(['APRV' => "HRIS_EMPLOYEES"], "APRV.EMPLOYEE_ID=RA.APPROVED_BY", ['APPROVER_NAME' => new Expression("INITCAP(APRV.FULL_NAME)")], "left");
+            ->join(['L' => 'HRIS_LEAVE_MASTER_SETUP'], "L.LEAVE_ID=LA.LEAVE_ID", ['LEAVE_CODE', 'LEAVE_ENAME' => new Expression("INITCAP(L.LEAVE_ENAME)")])
+            ->join(['E' => 'HRIS_EMPLOYEES'], 'LA.EMPLOYEE_ID=E.EMPLOYEE_ID', ["FULL_NAME" => new Expression("INITCAP(E.FULL_NAME)")], "left")
+            ->join(['E2' => "HRIS_EMPLOYEES"], "E2.EMPLOYEE_ID=LA.RECOMMENDED_BY", ['RECOMMENDED_BY_NAME' => new Expression("INITCAP(E2.FULL_NAME)")], "left")
+            ->join(['E3' => "HRIS_EMPLOYEES"], "E3.EMPLOYEE_ID=LA.APPROVED_BY", ['APPROVED_BY_NAME' => new Expression("INITCAP(E3.FULL_NAME)")], "left")
+            ->join(['RA' => "HRIS_RECOMMENDER_APPROVER"], "RA.EMPLOYEE_ID=LA.EMPLOYEE_ID", ['RECOMMENDER_ID' => 'RECOMMEND_BY', 'APPROVER_ID' => 'APPROVED_BY'], "left")
+            ->join(['RECM' => "HRIS_EMPLOYEES"], "RECM.EMPLOYEE_ID=RA.RECOMMEND_BY", ['RECOMMENDER_NAME' => new Expression("INITCAP(RECM.FULL_NAME)")], "left")
+            ->join(['APRV' => "HRIS_EMPLOYEES"], "APRV.EMPLOYEE_ID=RA.APPROVED_BY", ['APPROVER_NAME' => new Expression("INITCAP(APRV.FULL_NAME)")], "left");
         $select->where([
             "L.STATUS='E'",
             "E.EMPLOYEE_ID=" . $employeeId
@@ -394,18 +403,21 @@ public function carryForward($data)
         return $result;
     }
 
-    public function fetchAvailableDays($fromDate, $toDate, $employeeId, $halfDay, $leaveId) {
+    public function fetchAvailableDays($fromDate, $toDate, $employeeId, $halfDay, $leaveId)
+    {
         $rawResult = EntityHelper::rawQueryResult($this->adapter, "SELECT HRIS_AVAILABLE_LEAVE_DAYS({$fromDate},{$toDate},{$employeeId},'{$leaveId}','{$halfDay}') AS AVAILABLE_DAYS FROM DUAL");
         return $rawResult->current();
     }
 
-    public function validateLeaveRequest($fromDate, $toDate, $employeeId) {
+    public function validateLeaveRequest($fromDate, $toDate, $employeeId)
+    {
         $rawResult = EntityHelper::rawQueryResult($this->adapter, "SELECT HRIS_VALIDATE_LEAVE_REQUEST({$fromDate},{$toDate},{$employeeId}) AS ERROR FROM DUAL");
         return $rawResult->current();
     }
 
 
-    public function fetchByEmpId($employeeId) {
+    public function fetchByEmpId($employeeId)
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->from(['L' => LeaveApply::TABLE_NAME]);
@@ -413,8 +425,9 @@ public function carryForward($data)
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
         return $result;
-}
-    public function getLeaveFrontOrBack($id) {
+    }
+    public function getLeaveFrontOrBack($id)
+    {
         $sql = "SELECT START_DATE,TRUNC(SYSDATE) AS CURDATE,
             CASE WHEN
             STATUS IN ('RQ','RC') THEN 'NA'
@@ -433,5 +446,4 @@ public function carryForward($data)
         $statement = $this->adapter->query($sql);
         return $statement->execute()->current();
     }
-
 }

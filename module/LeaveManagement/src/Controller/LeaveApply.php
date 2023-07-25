@@ -80,7 +80,9 @@ class LeaveApply extends HrisController
             $leaveSubstitute = $postedData->leaveSubstitute;
             $leaveRequestRepo = new LeaverequestRepository($this->adapter);
             $checkAttendance = $leaveRequestRepo->getCurrentAttd($postedData['employeeId']);
-
+            echo '<pre>';
+            print_r($this->form);
+            die;
             if ($this->form->isValid()) {
                 $leaveRequest = new LeaveApplyModel();
                 $leaveRequest->exchangeArrayFromForm($this->form->getData());
@@ -110,9 +112,7 @@ class LeaveApply extends HrisController
                         $leaveRequest->status = "RQ";
                     }
                 }
-                echo '<pre>';
-                print_r($leaveRequest);
-                die;
+
                 $this->repository->add($leaveRequest);
                 $this->flashmessenger()->addMessage("Leave Request Successfully added!!!");
                 if ($leaveRequest->status == 'RQ') {

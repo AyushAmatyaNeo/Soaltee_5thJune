@@ -18,33 +18,38 @@ use Zend\Db\Adapter\AdapterInterface;
 use Zend\Db\TableGateway\TableGateway;
 use LeaveManagement\Model\LeaveDeduction;
 
-class LeaveDeductionRepository  extends HrisRepository implements RepositoryInterface {
+class LeaveDeductionRepository  extends HrisRepository implements RepositoryInterface
+{
 
     protected $gateway;
 
-    public function __construct(AdapterInterface $adapter) {
+    public function __construct(AdapterInterface $adapter)
+    {
         parent::__construct($adapter);
         $this->gateway = new TableGateway(LeaveDeduction::TABLE_NAME, $adapter);
     }
 
-    public function add(Model $model) {
+    public function add(Model $model)
+    {
         $this->gateway->insert($model->getArrayCopyForDB());
     }
 
-    public function delete($id) {
-
+    public function delete($id)
+    {
     }
 
-    public function edit(Model $model, $id) {
+    public function edit(Model $model, $id)
+    {
         $temp = $model->getArrayCopyForDB();
         $this->gateway->update($temp, [LeaveDeduction::ID => $id]);
     }
 
-    public function fetchAll() {
-
+    public function fetchAll()
+    {
     }
 
-    public function fetchById($id) {
+    public function fetchById($id)
+    {
 
         $sql = "SELECT 
               LD.ID             AS ID,
@@ -58,13 +63,14 @@ class LeaveDeductionRepository  extends HrisRepository implements RepositoryInte
             ON (LD.LEAVE_ID = LMS.LEAVE_ID)
             WHERE LD.ID     = {$id}";
 
-           
-         $statement = $this->adapter->query($sql);
-         $result = $statement->execute();
-         return $result->current();
+
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute();
+        return $result->current();
     }
 
-    public function fetchLeaveDeductionList($data) {
+    public function fetchLeaveDeductionList($data)
+    {
         $employeeId = $data['employeeId'];
         $companyId = $data['companyId'];
         $branchId = $data['branchId'];
@@ -96,15 +102,13 @@ class LeaveDeductionRepository  extends HrisRepository implements RepositoryInte
 
         $fromDateCondition = "";
         $toDateCondition = "";
-        
+
         if ($fromDate != null) {
             $fromDateCondition = " AND LA.START_DATE>=TO_DATE({$fromDate},'DD-MM-YYYY')";
-            
         }
 
         if ($toDate != null) {
             $toDateCondition = " AND LA.END_DATE<=TO_DATE({$toDate},'DD-MM-YYYY')";
-         
         }
 
         $sql = "SELECT FUNT.FUNCTIONAL_TYPE_EDESC AS FUNCTIONAL_TYPE_EDESC,
@@ -131,9 +135,8 @@ class LeaveDeductionRepository  extends HrisRepository implements RepositoryInte
         AND E.STATUS           ='E'
                {$searchCondition} {$fromDateCondition} {$toDateCondition}
                 ORDER BY LD.MODIFIED_DT DESC";
-               
-		 return $this->rawQuery($sql);
-         
-    }
 
+
+        return $this->rawQuery($sql);
+    }
 }

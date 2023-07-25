@@ -565,6 +565,8 @@ class LeaveApproveController extends HrisController
             $postedData = $request->getPost();
             $this->form->setData($postedData);
             $leaveSubstitute = $postedData->leaveSubstitute;
+            $leaveRequestRepo = new LeaverequestRepository($this->adapter);
+            $checkAttendance = $leaveRequestRepo->getCurrentAttd($postedData['employeeId']);
             if ($this->form->isValid()) {
                 $leaveRequest = new LeaveApply();
                 $leaveRequest->exchangeArrayFromForm($this->form->getData());
@@ -586,6 +588,13 @@ class LeaveApproveController extends HrisController
                     $leaveRequest->recommendedDt = Helper::getcurrentExpressionDate();
                     $leaveRequest->approvedBy = $this->employeeId;
                     $leaveRequest->approvedDt = Helper::getcurrentExpressionDate();
+                }
+                if ($leaveRequest->status == 'RQ') {
+                    if ($checkAttendance['OVERALL_STATUS'] != 'PR') {
+                        $leaveRequest->status = "RC";
+                    } else {
+                        $leaveRequest->status = "RQ";
+                    }
                 }
                 //echo '<pre>'; print_r($leaveRequest); die;
                 $LeaveApplyRepository = new LeaveApplyRepository($this->adapter);
@@ -617,7 +626,13 @@ class LeaveApproveController extends HrisController
                         }
                     }
                 }
-
+                if ($leaveRequest->status == 'RC') {
+                    try {
+                        HeadNotification::pushNotification(NotificationEvents::LEAVE_APPLIED_APPROVER, $leaveRequest, $this->adapter, $this);
+                    } catch (Exception $e) {
+                        $this->flashmessenger()->addMessage($e->getMessage());
+                    }
+                }
                 return $this->redirect()->toRoute('leaveapprove', [
                     'controller' => 'LeaveApproveController',
                     'action' =>  'status'

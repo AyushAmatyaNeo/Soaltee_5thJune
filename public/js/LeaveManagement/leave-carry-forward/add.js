@@ -1,9 +1,9 @@
 (function ($, app) {
-//    'use strict';
+    //    'use strict';
     $(document).ready(function () {
-        
+
         console.log(document.leaveMaxEncash);
-        
+
         $('select').select2();
 
         var $employee = $('#employeeId');
@@ -16,33 +16,33 @@
         var $startDate = $('#startDate'), $endDate = $('#endDate');
         var $leaveSubstitute = $('#leaveSubstitute');
 
-        var dateDiff = ""; 
-        
-        $("#carryforward").on('input', function(){
+        var dateDiff = "";
+
+        $("#carryforward").on('input', function () {
             var ad = parseFloat($("#availableDays").val());
             var lfd = parseFloat($("#carryforward").val());
             var diff = ad - lfd;
             $("#encashment").attr('value', diff);
         });
-        
-        $('#request').click(function(){
-                var carryforward = parseFloat($("#carryforward").val());
-                var availableDays = parseFloat($("#availableDays").val());
-                if (carryforward > availableDays ) {
-                    app.showMessage("Carry Forward can't be more than available days. ",'info','error');
-                    return false;
-                } else if (carryforward > document.leaveMaxEncash) {
-                    app.showMessage("Applied days can't be greater than "+document.leaveMaxEncash,'info','error');
-                    return false;
-                } else {
-                    $errorMsg.html("");
-                    return true;
-                }
+
+        $('#request').click(function () {
+            var carryforward = parseFloat($("#carryforward").val());
+            var availableDays = parseFloat($("#availableDays").val());
+            if (carryforward > availableDays) {
+                app.showMessage("Carry Forward can't be more than available days. ", 'info', 'error');
+                return false;
+            } else if (carryforward > document.leaveMaxEncash) {
+                app.showMessage("Applied days can't be greater than " + document.leaveMaxEncash, 'info', 'error');
+                return false;
+            } else {
+                $errorMsg.html("");
+                return true;
+            }
         })
 
-        var substituteEmp = { 
+        var substituteEmp = {
             list: [],
-            disable: function (employeeIds) { 
+            disable: function (employeeIds) {
                 if (this.list.length > 0) {
                     $.each(this.list, function (key, value) {
                         $leaveSubstitute.find('option[value="' + value + '"]').prop('disabled', false);
@@ -53,7 +53,8 @@
                     $leaveSubstitute.find('option[value="' + value + '"]').prop('disabled', true);
                 });
                 this.list = employeeIds;
-            }};
+            }
+        };
 
         app.floatingProfile.registerListener(function (data) {
             substituteEmp.disable([data.employeeId, data.recommenderId, data.approverId]);
@@ -75,8 +76,8 @@
                 leaveId: leaveId
             }).then(function (response) {
                 if (!response.success) {
-//                    app.showMessage(response.error, 'error');
-//                    return;
+                    //                    app.showMessage(response.error, 'error');
+                    //                    return;
                 }
 
                 var dateDiff = parseFloat(response.data['AVAILABLE_DAYS']);
@@ -114,7 +115,7 @@
 
         var $form = $('#leaveApply');
         var checkForErrors = function (startDateStr, endDateStr, employeeId) {
-            app.pullDataById(document.wsValidateLeaveRequest, {startDate: startDateStr, endDate: endDateStr, employeeId: employeeId}).then(function (response) {
+            app.pullDataById(document.wsValidateLeaveRequest, { startDate: startDateStr, endDate: endDateStr, employeeId: employeeId }).then(function (response) {
                 if (response.data['ERROR'] === null) {
                     $form.prop('valid', 'true');
                     $form.prop('error-message', '');
@@ -185,22 +186,22 @@
 
         var leaveChange = function (obj) {
             var $this = $(obj);
-            
+
             if ($this.val() === null || $this.val() === '' || $this.val() === '-1') {
                 return;
             }
             calculateAvailableDays($employee.val(), $leave.val());
-            App.blockUI({target: "#hris-page-content", message: "Calculating Leave Days"});
-           
+            App.blockUI({ target: "#hris-page-content", message: "Calculating Leave Days" });
+
             app.pullDataById(document.wsPullLeaveDetail, {
                 'leaveId': $this.val(),
                 'employeeId': $employee.val()
-                
+
             }).then(function (success) {
                 $("#carryforward").removeAttr("readonly");
                 App.unblockUI("#hris-page-content");
                 var leaveDetail = success.data;
-                availableDays = (typeof leaveDetail.BALANCE=='undefined')?0:parseFloat(leaveDetail.BALANCE);
+                availableDays = (typeof leaveDetail.BALANCE == 'undefined') ? 0 : parseFloat(leaveDetail.BALANCE);
                 $availableDays.val(availableDays);
 
                 var noOfDays = parseFloat($noOfDays.val());
@@ -230,15 +231,15 @@
 
 
         var employeeChange = function (obj) {
-            
+
             var $this = $(obj);
 
             app.floatingProfile.setDataFromRemote($this.val());
-            App.blockUI({target: "#hris-page-content", message: "Fetching Employee Leaves"});
+            App.blockUI({ target: "#hris-page-content", message: "Fetching Employee Leaves" });
             app.pullDataById(document.wsPullLeaveDetailWidEmployeeId, {
                 'employeeId': $this.val()
             }).then(function (success) {
-                
+
                 App.unblockUI("#hris-page-content");
                 leaveList = success.data;
                 app.populateSelect($leave, leaveList, 'id', 'name', 'Select a Leave', null, null, false);
@@ -263,9 +264,9 @@
                 calculateAvailableDays($startDate.val(), $endDate.val(), halfDayValue, $employee.val(), $leave.val());
             }
         });
- 
-  
- 
+
+
+
 
 
 

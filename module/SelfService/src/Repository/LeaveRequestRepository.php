@@ -472,7 +472,7 @@ and Sub_Ref_Id is not null
     WHERE
             had.employee_id = he.employee_id
         AND he1.employee_id = hra.recommend_by
-        AND had.employee_id = hra.employee_id and had.attendance_dt='13-jul-23'
+        AND had.employee_id = hra.employee_id and had.attendance_dt=trunc(sysdate)
         AND had.employee_id = $result[RECOMMEND_BY]
     ORDER BY
         had.attendance_dt DESC";
