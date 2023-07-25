@@ -87,6 +87,7 @@ class LeaveApproveController extends HrisController
             }
         } else {
 
+
             $getData = $request->getPost();
             $action = $getData->submit;
 
@@ -112,7 +113,6 @@ class LeaveApproveController extends HrisController
                     $leaveApply->id = $id;
                     $leaveApply->employeeId = $requestedEmployeeID;
                     $leaveApply->approvedBy = $detail['APPROVER_ID'];
-
                     try {
                         if ($leaveApply->status == 'RC') {
                             HeadNotification::pushNotification(NotificationEvents::LEAVE_RECOMMEND_ACCEPTED, $leaveApply, $this->adapter, $this);
@@ -139,11 +139,11 @@ class LeaveApproveController extends HrisController
                         $leaveApply->recommendedBy = $this->employeeId;
                         $leaveApply->recommendedDt = Helper::getcurrentExpressionDate();
                     }
+
                     $this->repository->edit($leaveApply, $id);
 
                     $leaveApply->id = $id;
                     $leaveApply->employeeId = $requestedEmployeeID;
-
                     try {
                         HeadNotification::pushNotification(($leaveApply->status == 'AP') ? NotificationEvents::LEAVE_APPROVE_ACCEPTED : NotificationEvents::LEAVE_APPROVE_REJECTED, $leaveApply, $this->adapter, $this);
                     } catch (Exception $e) {
@@ -154,6 +154,7 @@ class LeaveApproveController extends HrisController
             return $this->redirect()->toRoute("leaveapprove");
         }
         $fileDetails = $this->repository->fetchAttachmentsById($id);
+        // echo '<pre>';print_r($role);die;
         return Helper::addFlashMessagesToArray($this, [
             'form' => $this->form,
             'id' => $id,

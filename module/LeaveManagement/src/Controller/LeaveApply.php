@@ -19,15 +19,18 @@ use Zend\Authentication\Storage\StorageInterface;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\View\Model\JsonModel;
 
-class LeaveApply extends HrisController {
+class LeaveApply extends HrisController
+{
 
-    public function __construct(AdapterInterface $adapter, StorageInterface $storage) {
+    public function __construct(AdapterInterface $adapter, StorageInterface $storage)
+    {
         parent::__construct($adapter, $storage);
         $this->initializeRepository(LeaveApplyRepository::class);
         $this->initializeForm(LeaveApplyForm::class);
     }
 
-    public function fileUploadAction() {
+    public function fileUploadAction()
+    {
         $request = $this->getRequest();
         $responseData = [];
         $files = $request->getFiles()->toArray();
@@ -54,7 +57,8 @@ class LeaveApply extends HrisController {
         return new JsonModel($responseData);
     }
 
-    public function pushLeaveFileLinkAction() {
+    public function pushLeaveFileLinkAction()
+    {
         try {
             $newsId = $this->params()->fromRoute('id');
             $request = $this->getRequest();
@@ -66,35 +70,49 @@ class LeaveApply extends HrisController {
         }
     }
 
-    public function addAction() {
+    public function addAction()
+    {
         $request = $this->getRequest();
         if ($request->isPost()) {
             $postedData = $request->getPost();
+
             $this->form->setData($postedData);
             $leaveSubstitute = $postedData->leaveSubstitute;
+            $leaveRequestRepo = new LeaverequestRepository($this->adapter);
+            $checkAttendance = $leaveRequestRepo->getCurrentAttd($postedData['employeeId']);
+
             if ($this->form->isValid()) {
                 $leaveRequest = new LeaveApplyModel();
                 $leaveRequest->exchangeArrayFromForm($this->form->getData());
-				
+
                 $leaveRequest->id = (int) Helper::getMaxId($this->adapter, LeaveApplyModel::TABLE_NAME, LeaveApplyModel::ID) + 1;
                 $leaveRequest->startDate = Helper::getExpressionDate($leaveRequest->startDate);
                 $leaveRequest->endDate = Helper::getExpressionDate($leaveRequest->endDate);
                 $leaveRequest->requestedDt = Helper::getcurrentExpressionDate();
                 $leaveRequest->status = "RQ";
-                
-                if(isset($postedData['subRefId']) && $postedData['subRefId']!=' '){
-                $leaveRequest->subRefId = $postedData['subRefId'];
+
+                if (isset($postedData['subRefId']) && $postedData['subRefId'] != ' ') {
+                    $leaveRequest->subRefId = $postedData['subRefId'];
                 }
                 $leaveRequest->status = ($postedData['applyStatus'] == 'AP') ? 'AP' : 'RQ';
 
-                if($leaveRequest->status == 'AP'){
+                if ($leaveRequest->status == 'AP') {
                     $leaveRequest->hardcopySignedFlag = 'Y';
-					$leaveRequest->recommendedBy = $this->employeeId;
-					$leaveRequest->recommendedDt = Helper::getcurrentExpressionDate();
-					$leaveRequest->approvedBy = $this->employeeId;
-					$leaveRequest->approvedDt = Helper::getcurrentExpressionDate();
+                    $leaveRequest->recommendedBy = $this->employeeId;
+                    $leaveRequest->recommendedDt = Helper::getcurrentExpressionDate();
+                    $leaveRequest->approvedBy = $this->employeeId;
+                    $leaveRequest->approvedDt = Helper::getcurrentExpressionDate();
                 }
-				//echo '<pre>'; print_r($leaveRequest); die;
+                if ($leaveRequest->status == 'RQ') {
+                    if ($checkAttendance['OVERALL_STATUS'] != 'PR') {
+                        $leaveRequest->status = "RC";
+                    } else {
+                        $leaveRequest->status = "RQ";
+                    }
+                }
+                echo '<pre>';
+                print_r($leaveRequest);
+                die;
                 $this->repository->add($leaveRequest);
                 $this->flashmessenger()->addMessage("Leave Request Successfully added!!!");
                 if ($leaveRequest->status == 'RQ') {
@@ -123,27 +141,33 @@ class LeaveApply extends HrisController {
                         }
                     }
                 }
-				
-				return $this->redirect()->toRoute('leaveapply', array(
-					'controller' => 'LeaveApply',
-					'action' =>  'add'				
-				));
+
+                if ($leaveRequest->status == 'RC') {
+                    try {
+                        HeadNotification::pushNotification(NotificationEvents::LEAVE_APPLIED_APPROVER, $leaveRequest, $this->adapter, $this);
+                    } catch (Exception $e) {
+                        $this->flashmessenger()->addMessage($e->getMessage());
+                    }
+                }
+                return $this->redirect()->toRoute('leaveapply', array(
+                    'controller' => 'LeaveApply',
+                    'action' =>  'add'
+                ));
                 //return $this->redirect()->toRoute("leavestatus");
             }
         }
-		if($this->acl['HR_APPROVE']=='Y'){
-		$applyOptionValues = [
-            'RQ' => 'Pending',
-            'AP' => 'Approved'
-        ];	
-		}
-		else{
-		$applyOptionValues = [
-            'RQ' => 'Pending',
-        ];	
-		}
+        if ($this->acl['HR_APPROVE'] == 'Y') {
+            $applyOptionValues = [
+                'RQ' => 'Pending',
+                'AP' => 'Approved'
+            ];
+        } else {
+            $applyOptionValues = [
+                'RQ' => 'Pending',
+            ];
+        }
 
-        
+
         $applyOption = $this->getSelectElement(['name' => 'applyStatus', 'id' => 'applyStatus', 'class' => 'form-control', 'label' => 'Type'], $applyOptionValues);
 
         $subLeaveReference = 'N';
@@ -160,16 +184,17 @@ class LeaveApply extends HrisController {
         // print_r($data);
         // die;
         return Helper::addFlashMessagesToArray($this, [
-                    'form' => $this->form,
-                    'employees' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["EMPLOYEE_CODE", "FULL_NAME"], ["STATUS" => 'E', 'RETIRED_FLAG' => 'N', 'IS_ADMIN' => "N"], "FULL_NAME", "ASC", "-", FALSE, TRUE, $this->employeeId),
-                    'customRenderer' => Helper::renderCustomView(),
-                    'applyOption' => $applyOption,
-                    'subLeaveReference' => $subLeaveReference,
-                    'subLeaveMaxDays' => $subLeaveMaxDays
+            'form' => $this->form,
+            'employees' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_EMPLOYEES", "EMPLOYEE_ID", ["EMPLOYEE_CODE", "FULL_NAME"], ["STATUS" => 'E', 'RETIRED_FLAG' => 'N', 'IS_ADMIN' => "N"], "FULL_NAME", "ASC", "-", FALSE, TRUE, $this->employeeId),
+            'customRenderer' => Helper::renderCustomView(),
+            'applyOption' => $applyOption,
+            'subLeaveReference' => $subLeaveReference,
+            'subLeaveMaxDays' => $subLeaveMaxDays
         ]);
     }
 
-    public function pullLeaveDetailWidEmployeeIdAction() {
+    public function pullLeaveDetailWidEmployeeIdAction()
+    {
         try {
             $request = $this->getRequest();
             if ($request->isPost()) {
@@ -192,7 +217,8 @@ class LeaveApply extends HrisController {
         }
     }
 
-    public function pullLeaveDetailAction() {
+    public function pullLeaveDetailAction()
+    {
         try {
             $request = $this->getRequest();
             if ($request->isPost()) {
@@ -202,13 +228,13 @@ class LeaveApply extends HrisController {
                 $employeeId = $postedData['employeeId'];
                 $startDate = $postedData['startDate'];
                 $leaveDetail = $leaveRequestRepository->getLeaveDetail($employeeId, $leaveId, $startDate);
-                
-                $maxSubDays=500;
-                if(isset($this->preference['subLeaveMaxDays'])){
-                $maxSubDays=$this->preference['subLeaveMaxDays'];
+
+                $maxSubDays = 500;
+                if (isset($this->preference['subLeaveMaxDays'])) {
+                    $maxSubDays = $this->preference['subLeaveMaxDays'];
                 }
-                
-                $subtituteDetails = $leaveRequestRepository->getSubstituteList($leaveId, $employeeId,$maxSubDays);
+
+                $subtituteDetails = $leaveRequestRepository->getSubstituteList($leaveId, $employeeId, $maxSubDays);
 
                 return new CustomViewModel(['success' => true, 'data' => $leaveDetail, 'subtituteDetails' => $subtituteDetails, 'error' => '']);
             } else {
@@ -219,7 +245,8 @@ class LeaveApply extends HrisController {
         }
     }
 
-    public function fetchAvailableDaysAction() {
+    public function fetchAvailableDaysAction()
+    {
         try {
             $request = $this->getRequest();
             if ($request->isPost()) {
@@ -235,7 +262,8 @@ class LeaveApply extends HrisController {
         }
     }
 
-    public function validateLeaveRequestAction() {
+    public function validateLeaveRequestAction()
+    {
         try {
             $request = $this->getRequest();
             if ($request->isPost()) {
@@ -250,6 +278,4 @@ class LeaveApply extends HrisController {
             return new CustomViewModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
         }
     }
-    
-
 }

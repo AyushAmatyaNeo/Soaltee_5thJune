@@ -455,4 +455,29 @@ and Sub_Ref_Id is not null
         $result = $statement->execute();
         return Helper::extractDbData($result);
     }
+
+    public function getCurrentAttd($empId)
+    {
+        $sql = "
+        select recommend_by from hris_recommender_approver where employee_id=$empId";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute()->current();
+        $sql = "SELECT
+        had.overall_status
+    FROM
+        hris_attendance_detail    had,
+        hris_recommender_approver hra,
+        hris_employees            he,
+        hris_employees            he1
+    WHERE
+            had.employee_id = he.employee_id
+        AND he1.employee_id = hra.recommend_by
+        AND had.employee_id = hra.employee_id and had.attendance_dt='13-jul-23'
+        AND had.employee_id = $result[RECOMMEND_BY]
+    ORDER BY
+        had.attendance_dt DESC";
+        $statement = $this->adapter->query($sql);
+        $result = $statement->execute()->current();
+        return $result;
+    }
 }

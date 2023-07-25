@@ -1422,6 +1422,9 @@ class HeadNotification
             case NotificationEvents::LEAVE_RECOMMEND_REJECTED:
                 self::leaveRecommend($model, $adapter, $url, self::REJECTED);
                 break;
+            case NotificationEvents::LEAVE_APPLIED_APPROVER: //DIRECT MAIL TO APPROVER IF RECOMMENDER IS NOT PRESENT
+                self::leaveApplied($model, $adapter, $url, self::APPROVER);
+                break;
             case NotificationEvents::LEAVE_APPROVE_ACCEPTED:
                 self::leaveApprove($model, $adapter, $url, self::ACCEPTED);
                 break;
