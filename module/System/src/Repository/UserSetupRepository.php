@@ -13,25 +13,30 @@ use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\TableGateway\TableGateway;
 
-class UserSetupRepository implements RepositoryInterface {
+class UserSetupRepository implements RepositoryInterface
+{
 
     private $adapter;
     private $tableGateway;
 
-    public function __construct(AdapterInterface $adapter) {
+    public function __construct(AdapterInterface $adapter)
+    {
         $this->tableGateway = new TableGateway(UserSetup::TABLE_NAME, $adapter);
         $this->adapter = $adapter;
     }
 
-    public function add(Model $model) {
+    public function add(Model $model)
+    {
         $this->tableGateway->insert($model->getArrayCopyForDB());
     }
 
-    public function edit(Model $model, $id) {
+    public function edit(Model $model, $id)
+    {
         $this->tableGateway->update($model->getArrayCopyForDB(), [UserSetup::USER_ID => $id]);
     }
 
-    public function fetchAll(): Traversable {
+    public function fetchAll(): Traversable
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->columns([
@@ -41,19 +46,20 @@ class UserSetupRepository implements RepositoryInterface {
             new Expression("FN_DECRYPT_PASSWORD(US.PASSWORD) AS PASSWORD"),
             new Expression("US.EMPLOYEE_ID AS EMPLOYEE_ID"),
             new Expression("US.ROLE_ID AS ROLE_ID"),
-                ], true);
+        ], true);
 
         $select->from(['US' => UserSetup::TABLE_NAME])
-                ->join(['R' => 'HRIS_ROLES'], "R.ROLE_ID=US.ROLE_ID", ['ROLE_NAME'])
-                ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=US.EMPLOYEE_ID", ['FULL_NAME' => new Expression("INITCAP(E.FULL_NAME)")], Select::JOIN_LEFT)
-                ->join(['C' => "HRIS_COMPANY"], "C.COMPANY_ID=E.COMPANY_ID", ['COMPANY_NAME' => new Expression("(C.COMPANY_NAME)")], Select::JOIN_LEFT);
+            ->join(['R' => 'HRIS_ROLES'], "R.ROLE_ID=US.ROLE_ID", ['ROLE_NAME'])
+            ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=US.EMPLOYEE_ID", ['FULL_NAME' => new Expression("INITCAP(E.FULL_NAME)")], Select::JOIN_LEFT)
+            ->join(['C' => "HRIS_COMPANY"], "C.COMPANY_ID=E.COMPANY_ID", ['COMPANY_NAME' => new Expression("(C.COMPANY_NAME)")], Select::JOIN_LEFT);
 
         $select->order(['C.COMPANY_NAME' => Select::ORDER_ASCENDING, 'R.ROLE_NAME' => Select::ORDER_ASCENDING]);
         $statement = $sql->prepareStatementForSqlObject($select);
         return $statement->execute();
     }
 
-    public function fetchFiltered($filter = null): array {
+    public function fetchFiltered($filter = null): array
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->columns([
@@ -63,14 +69,14 @@ class UserSetupRepository implements RepositoryInterface {
             new Expression("FN_DECRYPT_PASSWORD(US.PASSWORD) AS PASSWORD"),
             new Expression("US.EMPLOYEE_ID AS EMPLOYEE_ID"),
             new Expression("US.ROLE_ID AS ROLE_ID"),
-                ], true);
+        ], true);
 
         $select->from(['US' => UserSetup::TABLE_NAME])
-                ->join(['R' => 'HRIS_ROLES'], "R.ROLE_ID=US.ROLE_ID", ['ROLE_NAME'])
-                ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=US.EMPLOYEE_ID", ['FULL_NAME' => new Expression("INITCAP(E.FULL_NAME)"),'EMPLOYEE_CODE'=>'EMPLOYEE_CODE'], Select::JOIN_LEFT)
-                ->join(['C' => "HRIS_COMPANY"], "C.COMPANY_ID=E.COMPANY_ID", ['COMPANY_NAME' => new Expression("(C.COMPANY_NAME)")], Select::JOIN_LEFT);
+            ->join(['R' => 'HRIS_ROLES'], "R.ROLE_ID=US.ROLE_ID", ['ROLE_NAME'])
+            ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=US.EMPLOYEE_ID", ['FULL_NAME' => new Expression("INITCAP(E.FULL_NAME)"), 'EMPLOYEE_CODE' => 'EMPLOYEE_CODE'], Select::JOIN_LEFT)
+            ->join(['C' => "HRIS_COMPANY"], "C.COMPANY_ID=E.COMPANY_ID", ['COMPANY_NAME' => new Expression("(C.COMPANY_NAME)")], Select::JOIN_LEFT);
 
-        $select->where(["US.STATUS" =>"E" ]);
+        $select->where(["US.STATUS" => "E"]);
         if (isset($filter['companyId']) && $filter['companyId'] != -1) {
             $select->where(["E.COMPANY_ID" => $filter['companyId']]);
         }
@@ -103,7 +109,8 @@ class UserSetupRepository implements RepositoryInterface {
     }
 
     //to get the employee list for select option
-    public function getEmployeeList($employeeId = null) {
+    public function getEmployeeList($employeeId = null)
+    {
 
         $sql = "SELECT EMPLOYEE_CODE||'-'||FULL_NAME  AS FULL_NAME,EMPLOYEE_ID FROM HRIS_EMPLOYEES WHERE STATUS='E' AND RETIRED_FLAG='N' AND EMPLOYEE_ID NOT IN (SELECT EMPLOYEE_ID FROM HRIS_USERS WHERE STATUS='E'AND EMPLOYEE_ID IS NOT NULL)";
 
@@ -122,7 +129,8 @@ class UserSetupRepository implements RepositoryInterface {
         return $entitiesArray;
     }
 
-    public function fetchById($id) {
+    public function fetchById($id)
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->columns([
@@ -133,7 +141,7 @@ class UserSetupRepository implements RepositoryInterface {
             new Expression("EMPLOYEE_ID AS EMPLOYEE_ID"),
             new Expression("ROLE_ID AS ROLE_ID"),
             new Expression("IS_LOCKED AS IS_LOCKED"),
-                ], true);
+        ], true);
 
         $select->from(UserSetup::TABLE_NAME);
         $select->where([
@@ -145,7 +153,8 @@ class UserSetupRepository implements RepositoryInterface {
         return $result->current();
     }
 
-    public function fetchByUsername($username) {
+    public function fetchByUsername($username)
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->columns([
@@ -155,11 +164,11 @@ class UserSetupRepository implements RepositoryInterface {
             new Expression("US.PASSWORD AS PASSWORD"),
             new Expression("US.EMPLOYEE_ID AS EMPLOYEE_ID"),
             new Expression("US.ROLE_ID AS ROLE_ID"),
-                ], true);
+        ], true);
 
         $select->from(['US' => UserSetup::TABLE_NAME])
-                ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=US.EMPLOYEE_ID", ['FIRST_NAME' => new Expression("INITCAP(E.FIRST_NAME)"), 'MIDDLE_NAME' => new Expression("INITCAP(E.MIDDLE_NAME)"), 'LAST_NAME' => new Expression("INITCAP(E.LAST_NAME)"), 'EMAIL_OFFICIAL'])
-                ->join(['R' => 'HRIS_ROLES'], "R.ROLE_ID=US.ROLE_ID", ['ROLE_NAME']);
+            ->join(['E' => "HRIS_EMPLOYEES"], "E.EMPLOYEE_ID=US.EMPLOYEE_ID", ['FIRST_NAME' => new Expression("INITCAP(E.FIRST_NAME)"), 'MIDDLE_NAME' => new Expression("INITCAP(E.MIDDLE_NAME)"), 'LAST_NAME' => new Expression("INITCAP(E.LAST_NAME)"), 'EMAIL_OFFICIAL'])
+            ->join(['R' => 'HRIS_ROLES'], "R.ROLE_ID=US.ROLE_ID", ['ROLE_NAME']);
 
         $select->where([
             "US.STATUS='E'",
@@ -173,15 +182,18 @@ class UserSetupRepository implements RepositoryInterface {
         return $result->current();
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $this->tableGateway->update([UserSetup::STATUS => "D"], [UserSetup::USER_ID => $id]);
     }
 
-    public function updateByEmpId($employeeId, $password) {
-        $this->tableGateway->update([UserSetup::PASSWORD => $password,UserSetup::FIRST_TIME=>'N',UserSetup::MODIFIED_DT=> new Expression2('TRUNC(SYSDATE)')], [UserSetup::EMPLOYEE_ID => $employeeId]);
+    public function updateByEmpId($employeeId, $password)
+    {
+        $this->tableGateway->update([UserSetup::PASSWORD => $password, UserSetup::FIRST_TIME => 'N', UserSetup::MODIFIED_DT => new Expression2('TRUNC(SYSDATE)')], [UserSetup::EMPLOYEE_ID => $employeeId]);
     }
 
-    public function getUserByEmployeeId($employeeId) {
+    public function getUserByEmployeeId($employeeId)
+    {
         $sql = new Sql($this->adapter);
         $select = $sql->select();
         $select->columns([
@@ -191,7 +203,7 @@ class UserSetupRepository implements RepositoryInterface {
             new Expression("FN_DECRYPT_PASSWORD(PASSWORD) AS PASSWORD"),
             new Expression("EMPLOYEE_ID AS EMPLOYEE_ID"),
             new Expression("ROLE_ID AS ROLE_ID"),
-                ], true);
+        ], true);
 
         $select->from(UserSetup::TABLE_NAME);
         $select->where([
@@ -203,16 +215,18 @@ class UserSetupRepository implements RepositoryInterface {
         return $result->current();
     }
 
-    public function checkUserNameAvailability($userName,$userId) {
+    public function checkUserNameAvailability($userName, $userId)
+    {
         $sql = "SELECT * FROM HRIS_USERS WHERE LOWER(USER_NAME)=LOWER('{$userName}') ";
-        
-        if($userId){
-        $sql .= "AND USER_ID!={$userId}";
+
+        if ($userId) {
+            $sql .= "AND USER_ID!={$userId}";
         }
-        
+        echo '<pre>';
+        print_r($sql);
+        die;
         $statement = $this->adapter->query($sql);
         $result = $statement->execute();
         return $result->current();
     }
-
 }

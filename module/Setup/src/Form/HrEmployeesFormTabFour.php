@@ -18,7 +18,7 @@ class HrEmployeesFormTabFour extends Model
     public $joinDate;
 
     /**
-     * @Annotation\Required(true)
+     * @Annotation\Required(false)
      * @Annotation\Type("Zend\Form\Element\Text")
      * @Annotation\Filter({"name":"StringTrim","name":"StripTags"})
      * @Annotation\Options({"label":"Last Working Date"})

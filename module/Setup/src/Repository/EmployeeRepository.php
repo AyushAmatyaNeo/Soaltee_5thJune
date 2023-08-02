@@ -122,10 +122,12 @@ class EmployeeRepository extends HrisRepository implements RepositoryInterface
                 HrEmployees::ID_DRIVING_LICENCE_EXPIRY,
                 HrEmployees::ID_CITIZENSHIP_ISSUE_DATE,
                 HrEmployees::ID_PASSPORT_EXPIRY,
-                HrEmployees::JOIN_DATE
+                HrEmployees::JOIN_DATE,
+                HrEmployees::LEFT_DATE
             ]), false);
             $select->where(['EMPLOYEE_ID' => $id]);
         });
+
         return $rowset->current();
     }
 

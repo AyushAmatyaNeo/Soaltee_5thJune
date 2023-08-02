@@ -13,15 +13,18 @@ use Zend\Authentication\Storage\StorageInterface;
 use Zend\Db\Adapter\AdapterInterface;
 use Zend\View\Model\JsonModel;
 
-class UserSetupController extends HrisController {
+class UserSetupController extends HrisController
+{
 
-    public function __construct(AdapterInterface $adapter, StorageInterface $storage) {
+    public function __construct(AdapterInterface $adapter, StorageInterface $storage)
+    {
         parent::__construct($adapter, $storage);
         $this->initializeRepository(UserSetupRepository::class);
         $this->initializeForm(UserSetupForm::class);
     }
 
-    public function indexAction() {
+    public function indexAction()
+    {
         $request = $this->getRequest();
         if ($request->isPost()) {
             try {
@@ -32,11 +35,12 @@ class UserSetupController extends HrisController {
             }
         }
         return $this->stickFlashMessagesTo([
-                    'acl' => $this->acl
+            'acl' => $this->acl
         ]);
     }
 
-    public function addAction() {
+    public function addAction()
+    {
         $request = $this->getRequest();
         if ($request->isPost()) {
             $this->form->setData($request->getPost());
@@ -57,15 +61,16 @@ class UserSetupController extends HrisController {
             }
         }
         return $this->stickFlashMessagesTo([
-                    'form' => $this->form,
-                    'userStatus' => $detail['STATUS'],
-                    'employeeList' => $this->repository->getEmployeeList(),
-                    'roleList' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ROLES", "ROLE_ID", ["ROLE_NAME"], ["STATUS" => "E"], "ROLE_NAME", "ASC", null, false, true),
-                    'customRenderer' => Helper::renderCustomView(),
+            'form' => $this->form,
+            'userStatus' => $detail['STATUS'],
+            'employeeList' => $this->repository->getEmployeeList(),
+            'roleList' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ROLES", "ROLE_ID", ["ROLE_NAME"], ["STATUS" => "E"], "ROLE_NAME", "ASC", null, false, true),
+            'customRenderer' => Helper::renderCustomView(),
         ]);
     }
 
-    public function editAction() {
+    public function editAction()
+    {
         $id = (int) $this->params()->fromRoute("id");
         $request = $this->getRequest();
 
@@ -78,7 +83,9 @@ class UserSetupController extends HrisController {
                 $userSetup->modifiedDt = Helper::getcurrentExpressionDate();
                 $userSetup->modifiedBy = $this->employeeId;
                 $userSetup->password = Helper::encryptPassword($userSetup->password);
-
+                echo '<pre>';
+                print_r($userSetup);
+                die;
                 $this->repository->edit($userSetup, $id);
                 $this->flashmessenger()->addMessage("User Successfully Updated!!!");
                 return $this->redirect()->toRoute("usersetup");
@@ -87,17 +94,18 @@ class UserSetupController extends HrisController {
         $userSetup->exchangeArrayFromDB($detail);
         $this->form->bind($userSetup);
         return $this->stickFlashMessagesTo([
-                    'form' => $this->form,
-                    'id' => $id,
-                    'status' => $detail['STATUS'],
-                    'passwordDtl' => $detail['PASSWORD'],
-                    'employeeList' => $this->repository->getEmployeeList($detail['EMPLOYEE_ID']),
-                    'roleList' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ROLES", "ROLE_ID", ["ROLE_NAME"], ["STATUS" => "E"], "ROLE_NAME", "ASC", null, false, true),
-                    'customRenderer' => Helper::renderCustomView(),
+            'form' => $this->form,
+            'id' => $id,
+            'status' => $detail['STATUS'],
+            'passwordDtl' => $detail['PASSWORD'],
+            'employeeList' => $this->repository->getEmployeeList($detail['EMPLOYEE_ID']),
+            'roleList' => EntityHelper::getTableKVListWithSortOption($this->adapter, "HRIS_ROLES", "ROLE_ID", ["ROLE_NAME"], ["STATUS" => "E"], "ROLE_NAME", "ASC", null, false, true),
+            'customRenderer' => Helper::renderCustomView(),
         ]);
     }
 
-    public function deleteAction() {
+    public function deleteAction()
+    {
         $id = (int) $this->params()->fromRoute("id");
 
         if (!$id) {
@@ -108,13 +116,14 @@ class UserSetupController extends HrisController {
         return $this->redirect()->toRoute('usersetup');
     }
 
-    public function checkUserNameAction() {
+    public function checkUserNameAction()
+    {
         try {
             $request = $this->getRequest();
             $userName = $request->getPost('userName');
             $userId = $request->getPost('userId');
-            
-            $returnData = $this->repository->checkUserNameAvailability($userName,$userId);
+
+            $returnData = $this->repository->checkUserNameAvailability($userName, $userId);
 
             $availability = 'YES';
             if ($returnData) {
@@ -125,5 +134,4 @@ class UserSetupController extends HrisController {
             return new JsonModel(['success' => false, 'data' => [], 'error' => $e->getMessage()]);
         }
     }
-
 }

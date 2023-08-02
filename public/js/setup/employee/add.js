@@ -9,11 +9,11 @@
         var addrTempDistrictId = $('#addrTempDistrictId');
         var addrTempVdcMunicipality = $('#addrTempVdcMunicipality');
 
-        var $serviceEventId  = $('#serviceEventId');
+        var $serviceEventId = $('#serviceEventId');
         /*
          * 
          */
-
+        app.datePickerWithNepali('leftDate', 'nepalileftDate');
         app.populateSelectElement($('#idCitizenshipIssuePlace'), document.allDistrict, address['citizenshipIssuePlace']);
 
         var onChangePermZone = function (zoneId) {
@@ -22,7 +22,7 @@
                 onChangePermDistrict(null);
                 return;
             }
-            app.pullDataById(document.urlDistrict, {id: zoneId}).then(function (data) {
+            app.pullDataById(document.urlDistrict, { id: zoneId }).then(function (data) {
                 app.populateSelectElement(addrPermDistrictId, data, address['addrPermDistrictId']);
                 onChangePermDistrict(addrPermDistrictId.val());
             }, function (error) {
@@ -39,7 +39,7 @@
                 return;
             }
 
-            app.pullDataById(document.urlMunicipality, {id: districtId}).then(function (data) {
+            app.pullDataById(document.urlMunicipality, { id: districtId }).then(function (data) {
                 var nameList = [];
                 var value = "";
                 $.each(data, function (key, item) {
@@ -63,7 +63,7 @@
                 onChangeTempDistrict(null);
                 return;
             }
-            app.pullDataById(document.urlDistrict, {id: zoneId}).then(function (data) {
+            app.pullDataById(document.urlDistrict, { id: zoneId }).then(function (data) {
                 app.populateSelectElement(addrTempDistrictId, data, address['addrTempDistrictId']);
                 onChangeTempDistrict(addrTempDistrictId.val());
             }, function (error) {
@@ -80,7 +80,7 @@
                 return;
             }
 
-            app.pullDataById(document.urlMunicipality, {id: districtId}).then(function (data) {
+            app.pullDataById(document.urlMunicipality, { id: districtId }).then(function (data) {
                 var nameList = [];
                 var value = "";
                 $.each(data, function (key, item) {
@@ -217,10 +217,10 @@
                 });
             });
         })([
-            {form: $modalDegree, url: document.addDegreeLink},
-            {form: $modalUniversity, url: document.addUniversityLink},
-            {form: $modalProgram, url: document.addProgramLink},
-            {form: $modalCourse, url: document.addCourseLink}
+            { form: $modalDegree, url: document.addDegreeLink },
+            { form: $modalUniversity, url: document.addUniversityLink },
+            { form: $modalProgram, url: document.addProgramLink },
+            { form: $modalCourse, url: document.addCourseLink }
         ]);
 
 
@@ -228,45 +228,45 @@
         $('#distributionBtn').confirmation({
             placement: 'right',
             onConfirm: function () {
-                app.serverRequest(document.addDistributionEmp,{id:document.employeeId}).then(
-                        function(success){
-                            app.showMessage('Sucessfully Created Employee for Distribution','success','succcess')
-                        });
+                app.serverRequest(document.addDistributionEmp, { id: document.employeeId }).then(
+                    function (success) {
+                        app.showMessage('Sucessfully Created Employee for Distribution', 'success', 'succcess')
+                    });
             },
             onCancel: function () {
                 console.log('cancel');
             },
-        
+
         });
-        
-        function enableAbroadAddress(countryId){
-            if(countryId!=168){
+
+        function enableAbroadAddress(countryId) {
+            if (countryId != 168) {
                 $('#permanentAddressDiv :input').attr("disabled", true);
                 $('#permanentAddressDiv').hide();
                 $('#abroadAddressDiv').show();
-            }else{
+            } else {
                 $('#permanentAddressDiv :input').attr("disabled", false);
                 $('#permanentAddressDiv').show();
                 $('#abroadAddressDiv').hide();
             }
         }
-        
-        $('#countryId').on('change',function(){
+
+        $('#countryId').on('change', function () {
             enableAbroadAddress($(this).val());
         });
-        
+
         enableAbroadAddress($('#countryId').val());
 
         // hide and unhide update service status div
         $serviceEventId.hide();
-        $('input[name=update]').change(function(){
-            if($(this).is(':checked')) {
+        $('input[name=update]').change(function () {
+            if ($(this).is(':checked')) {
                 $serviceEventId.show();
                 $('#serviceEventTypeId').prop('required', 'required');
                 $('#eventDate').prop('required', 'required');
                 $('#startDate').prop('required', 'required');
             } else {
-                 $serviceEventId.hide();
+                $serviceEventId.hide();
                 $('#serviceEventTypeId').prop('required', false);
                 $('#eventDate').prop('required', false);
                 $('#startDate').prop('required', false);
